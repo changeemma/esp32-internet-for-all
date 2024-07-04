@@ -10,7 +10,6 @@
 #include "esp_log.h"
 
 #include "spi_netif.h"
-#include "spi_tx_netif.h"
 
 
 void bind_udp_spi();

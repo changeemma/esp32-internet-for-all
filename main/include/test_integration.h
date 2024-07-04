@@ -3,8 +3,7 @@
 
 #include <stdio.h>
 
-#include "spi_tx_netif.h"
-#include "spi_rx_netif.h"
+#include "spi_netif.h"
 #include "udp_spi.h"
 #include "wifi.h"
 #include "config.h"

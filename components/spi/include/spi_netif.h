@@ -26,9 +26,12 @@
 #include "lwip/stats.h"
 #include "lwip/inet_chksum.h"
 
-#include "physical_spi.h"
+#include "spi_payload.h"
 #include "config.h"
 #include "utils.h"
+
+ESP_EVENT_DECLARE_BASE(SPI_RX_EVENT);
+ESP_EVENT_DECLARE_BASE(SPI_TX_EVENT);
 
 typedef enum
 {
@@ -50,4 +53,6 @@ uint32_t get_spi_gateway_v4_by_orientation(void);
 esp_err_t spi_netif_attach(esp_netif_t * esp_netif, esp_err_t (*post_attach_callback)(esp_netif_t *, void *));
 esp_err_t spi_netif_init(esp_netif_t **esp_netif, esp_netif_config_t *esp_netif_config, esp_err_t (*post_attach_callback)(esp_netif_t *, void *));
 
+esp_err_t spi_netif_handler(spi_payload_t *p);
+esp_netif_t *get_spi_tx_netif(void);
 #endif

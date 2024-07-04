@@ -7,10 +7,8 @@
 
 // Private components
 #include "config.h"
-#include "physical_spi.h"
+#include "spi.h"
 #include "spi_netif.h"
-#include "spi_rx_netif.h"
-#include "spi_tx_netif.h"
 #include "udp_spi.h"
 #include "wifi.h"
 #include "route.h"
@@ -36,7 +34,7 @@ void app_main(void)
 
     // Initializing spi/wifi drivers
     ESP_ERROR_CHECK(spi_init());
-    ESP_ERROR_CHECK(test_spi(false));
+    //ESP_ERROR_CHECK(test_spi(false));
 
     ESP_ERROR_CHECK(wifi_init());
 
