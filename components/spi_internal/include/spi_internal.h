@@ -1,5 +1,8 @@
 #pragma once
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
+
 #include "spi_payload.h"
 
 #ifdef __cplusplus

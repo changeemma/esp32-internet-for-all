@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "esp_wifi.h"
 
 #include "spi_netif.h"
 
