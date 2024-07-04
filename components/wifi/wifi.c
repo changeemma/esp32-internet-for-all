@@ -50,7 +50,7 @@ esp_err_t wifi_netif_init(void)
                                                         &wifi_event_handler,
                                                         NULL,
                                                         NULL));
-    if (get_board_mode() == BOARD_MODE_ACCESS_POINT) {
+    if (device_config_get_mode() == DEVICE_MODE_ACCESS_POINT) {
         ESP_LOGI(WIFI_TAG, "wifi_netif_init: I'm AP! Configuring as AP.");
         wifi_ap_netif_init();
     } else {

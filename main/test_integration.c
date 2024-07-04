@@ -141,7 +141,7 @@ void test(int activate){
         // test_sending_upd_packet_fordwarding_to_the_spi_interface();
         // printf("End Test 1 -------\n\n");
 
-        if (get_board_mode() == BOARD_MODE_ACCESS_POINT) {
+        if (device_config_get_mode() == DEVICE_MODE_ACCESS_POINT) {
             printf("Begin Test 2 -------\n\n");
             test_sending_upd_packet_fordwarding_to_the_wifi_interface();
             printf("End Test 2 -------\n\n");

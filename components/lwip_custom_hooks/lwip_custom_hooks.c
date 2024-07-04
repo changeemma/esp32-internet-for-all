@@ -1,12 +1,12 @@
 #include "lwip_custom_hooks.h"
 
 
-bool get_higher_priority_mask(ip4_addr_t* mask1, ip4_addr_t* mask2) {
+bool get_higher_priority_mask(ip4_addr_t* mask1, ip4_addr_t* mask2)
+{
     return ntohl(mask1->addr) > ntohl(mask2->addr)? 1: 0;
 }
 
-struct netif *
-custom_ip4_route_src_hook(const ip4_addr_t *src,const ip4_addr_t *dest)
+struct netif *custom_ip4_route_src_hook(const ip4_addr_t *src,const ip4_addr_t *dest)
 {
     struct netif *netif = NULL;
     int n_netif = 0;

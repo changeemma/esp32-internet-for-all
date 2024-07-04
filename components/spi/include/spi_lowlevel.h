@@ -1,16 +1,24 @@
-#ifndef __PHYSICAL_SPI_H
-#define __PHYSICAL_SPI_H
+#pragma once
 
+// C libraries
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 
+// ESP32 libraries
+#include "esp_check.h"
 #include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
 
 #include "driver/spi_master.h"
 #include "driver/spi_slave.h"
-#include "lwip/ip4.h"
 
-#include "utils.h"
+#include "config.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define SPI_QUEUE_SIZE 3
 
@@ -25,12 +33,14 @@
 #define SPI_SENDER_HOST VSPI_HOST
 #define SPI_RECEIVER_HOST HSPI_HOST
 
-#define SPI_PAYLOAD_BUFFER_SIZE 800
 
-esp_err_t spi_init(void);
-esp_err_t spi_tx_init(void);
-esp_err_t spi_rx_init(void);
-void spi_transmit(void * buffer, size_t len);
-size_t spi_receive(void *buffer);
+esp_err_t spi_lowlevel_init(void);
 
+esp_err_t spi_lowlevel_transmit(void *p, size_t len);
+
+esp_err_t spi_lowlevel_receive(void *p, size_t len);
+
+#ifdef __cplusplus
+}
 #endif
+

@@ -4,8 +4,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "esp_wifi.h"
 
-#include "spi_tx_netif.h"
+#include "spi_netif.h"
 
 #define MAX_NUMBER_ROUTES 10
 
