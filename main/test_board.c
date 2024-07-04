@@ -22,7 +22,7 @@ esp_err_t test_spi(bool activate) {
             
         ESP_LOGI(BOARD_TEST_TAG, "========== TEST SPI ==========");
 
-        if (get_board_mode() == BOARD_MODE_ACCESS_POINT) {
+        if (device_config_get_mode() == DEVICE_MODE_ACCESS_POINT) {
             vTaskDelay(1000/portTICK_PERIOD_MS); // delay transmision to wait for others
             send_test_payload();
             receive_test_payload();

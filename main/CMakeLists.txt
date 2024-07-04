@@ -10,7 +10,7 @@ set(MAIN_INCLUDE_DIRS
 )
 
 set(MAIN_REQUIRES
-    config
+    device
     utils
     spi
     wifi
