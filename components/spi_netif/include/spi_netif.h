@@ -52,12 +52,10 @@ typedef struct spi_netif_driver *spi_netif_driver_t;
 
 uint32_t get_spi_ip_v4_by_orientation(void);
 uint32_t get_spi_gateway_v4_by_orientation(void);
-esp_err_t spi_netif_attach(esp_netif_t * esp_netif, esp_err_t (*post_attach_callback)(esp_netif_t *, void *));
-esp_err_t spi_netif_init(esp_netif_t **esp_netif, esp_netif_config_t *esp_netif_config, esp_err_t (*post_attach_callback)(esp_netif_t *, void *));
 
 esp_err_t spi_netif_handler(spi_payload_t *p);
 esp_netif_t *get_spi_tx_netif(void);
-esp_err_t spi_netif_init_changeme(void);
+esp_err_t spi_netif_init(void);
 
 #ifdef __cplusplus
 }

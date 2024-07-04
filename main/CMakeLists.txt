@@ -3,6 +3,7 @@ set(MAIN_SRCS
     "nvs.c"
     "test_integration.c"
     "test_board.c"
+    "test_spi.c"
 )
 
 set(MAIN_INCLUDE_DIRS

@@ -72,7 +72,7 @@ uint32_t get_spi_gateway_v4_by_orientation(void){
     return ESP_IP4TOADDR(127, 0, 0, (int) orientation + 1);
 }
 
-esp_err_t spi_netif_attach(esp_netif_t * esp_netif, esp_err_t (*post_attach_callback)(esp_netif_t *, void *))
+static esp_err_t spi_netif_esp_netif_attach(esp_netif_t * esp_netif, esp_err_t (*post_attach_callback)(esp_netif_t *, void *))
 {
 
     spi_netif_driver_t driver = calloc(1, sizeof(struct spi_netif_driver));
@@ -97,7 +97,7 @@ esp_err_t spi_netif_attach(esp_netif_t * esp_netif, esp_err_t (*post_attach_call
 
 
 
-esp_err_t spi_netif_init(esp_netif_t **esp_netif, esp_netif_config_t *esp_netif_config, esp_err_t (*post_attach_callback)(esp_netif_t *, void *))
+static esp_err_t spi_netif_esp_netif_init(esp_netif_t **esp_netif, esp_netif_config_t *esp_netif_config, esp_err_t (*post_attach_callback)(esp_netif_t *, void *))
 {       
     *esp_netif = esp_netif_new(esp_netif_config);
 
@@ -107,7 +107,7 @@ esp_err_t spi_netif_init(esp_netif_t **esp_netif, esp_netif_config_t *esp_netif_
 
     struct netif *spi_netif_impl = esp_netif_get_netif_impl(*esp_netif);
     netif_set_flags(spi_netif_impl, NETIF_FLAG_BROADCAST);
-    spi_netif_attach(*esp_netif, post_attach_callback);
+    spi_netif_esp_netif_attach(*esp_netif, post_attach_callback);
 
     return ESP_OK;
 }
@@ -220,7 +220,7 @@ esp_err_t spi_rx_netif_init(void)
         .stack = &s_spi_netif_config,
         .driver = NULL};
     
-    spi_netif_init(&spi_rx_netif, &netif_config, spi_rx_driver_post_attach);
+    spi_netif_esp_netif_init(&spi_rx_netif, &netif_config, spi_rx_driver_post_attach);
 
     uint8_t mac[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
     esp_netif_set_mac(spi_rx_netif, mac);
@@ -414,7 +414,7 @@ esp_err_t spi_tx_netif_init(void)
         .stack = &s_spi_netif_config,
         .driver = NULL};
     
-    spi_netif_init(&spi_tx_netif, &netif_config, spi_tx_driver_post_attach);
+    spi_netif_esp_netif_init(&spi_tx_netif, &netif_config, spi_tx_driver_post_attach);
 
     ESP_ERROR_CHECK(esp_event_handler_instance_register(SPI_TX_EVENT, SPI_EVENT_START, spi_default_action_sta_start, NULL, NULL));
     ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, spi_default_handler, NULL, NULL));
@@ -423,7 +423,7 @@ esp_err_t spi_tx_netif_init(void)
 }
 
 
-esp_err_t spi_netif_init_changeme(void)
+esp_err_t spi_netif_init(void)
 {
     ESP_ERROR_CHECK(spi_rx_netif_init());
     ESP_ERROR_CHECK(spi_tx_netif_init());

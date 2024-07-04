@@ -7,7 +7,7 @@
 
 // Private components
 #include "config.h"
-#include "spi.h"
+#include "spi_internal.h"
 #include "spi_netif.h"
 #include "udp_spi.h"
 #include "wifi.h"
@@ -18,6 +18,7 @@
 // Test files
 #include "test_board.h"
 #include "test_integration.h"
+#include "test_spi.h"
 
 #define TEST_ALL true
 
@@ -76,12 +77,13 @@ void app_main(void)
 
     // Initializing spi/wifi drivers
     ESP_ERROR_CHECK(spi_init());
+    test_spi_run_all();
     //ESP_ERROR_CHECK(test_spi(false));
 
     ESP_ERROR_CHECK(wifi_init());
 
     // Initializing spi/wifi network interfaces
-    ESP_ERROR_CHECK(spi_netif_init_changeme());
+    ESP_ERROR_CHECK(spi_netif_init());
     bind_udp_spi();
     ESP_ERROR_CHECK(wifi_netif_init());
 
