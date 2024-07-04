@@ -15,9 +15,6 @@
 extern "C" {
 #endif
 
-esp_err_t spi_init(void);
-esp_err_t spi_rx_netif_init(void);
-esp_err_t spi_tx_netif_init(void);
 
 #ifdef __cplusplus
 }

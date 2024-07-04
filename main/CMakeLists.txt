@@ -13,6 +13,8 @@ set(MAIN_REQUIRES
     device
     utils
     spi
+    spi_internal
+    spi_netif
     wifi
     route
     nvs_flash

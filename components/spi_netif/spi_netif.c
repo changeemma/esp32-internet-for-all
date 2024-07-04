@@ -15,6 +15,8 @@ esp_netif_t *spi_tx_netif = NULL;
 esp_netif_t *get_spi_tx_netif(void){
     return spi_tx_netif;
 }
+
+
 static esp_err_t spi_netif_process(spi_payload_t *p)
 {
     printf("call esp_netif_receive(netif, %s, %i, NULL)\n", p->buffer, p->len);
@@ -420,3 +422,10 @@ esp_err_t spi_tx_netif_init(void)
     return ESP_OK;
 }
 
+
+esp_err_t spi_netif_init_changeme(void)
+{
+    ESP_ERROR_CHECK(spi_rx_netif_init());
+    ESP_ERROR_CHECK(spi_tx_netif_init());
+    return ESP_OK;
+}

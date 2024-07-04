@@ -55,4 +55,6 @@ esp_err_t spi_netif_init(esp_netif_t **esp_netif, esp_netif_config_t *esp_netif_
 
 esp_err_t spi_netif_handler(spi_payload_t *p);
 esp_netif_t *get_spi_tx_netif(void);
+esp_err_t spi_netif_init_changeme(void);
+
 #endif
