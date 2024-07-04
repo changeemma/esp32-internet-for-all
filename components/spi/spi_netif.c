@@ -3,14 +3,14 @@
 const char *SPI_NETIF_TAG = "==> spi_netif";
 
 uint32_t get_spi_ip_v4_by_orientation(void){
-    orientation_t orientation;
-    orientation = get_orientation();
+    device_orientation_t orientation;
+    orientation = device_config_get_orientation();
     return ESP_IP4TOADDR(127, 0, 0, (int) orientation + 1);
 }
 
 uint32_t get_spi_gateway_v4_by_orientation(void){
-    orientation_t orientation;
-    orientation = get_orientation();
+    device_orientation_t orientation;
+    orientation = device_config_get_orientation();
     return ESP_IP4TOADDR(127, 0, 0, (int) orientation + 1);
 }
 
