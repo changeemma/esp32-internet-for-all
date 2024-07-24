@@ -15,6 +15,7 @@
 #include "driver/spi_slave.h"
 
 #include "config.h"
+#include "spi_payload.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,9 +37,12 @@ extern "C" {
 
 esp_err_t spi_lowlevel_init(void);
 
-esp_err_t spi_lowlevel_transmit(void *p, size_t len);
+esp_err_t spi_lowlevel_transmit_payload(spi_payload_t *p);
 
-esp_err_t spi_lowlevel_receive(void *p, size_t len);
+esp_err_t spi_lowlevel_receive_payload(spi_payload_t *p);
+
+esp_err_t spi_lowlevel_forward_payload(spi_payload_t *p);
+
 
 #ifdef __cplusplus
 }

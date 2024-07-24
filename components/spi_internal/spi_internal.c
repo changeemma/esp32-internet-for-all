@@ -39,7 +39,7 @@ static esp_err_t spi_internal_broadcast(const void *buffer, uint16_t len){
         .len = len,
     };
     memccpy(p.buffer, buffer, len, SPI_PAYLOAD_BUFFER_SIZE);
-    return spi_payload_transmit(&p);
+    return spi_lowlevel_transmit_payload(&p);
 }
 
 bool broadcast_to_siblings(const void *msg, uint16_t len)
@@ -72,7 +72,7 @@ static esp_err_t spi_internal_broadcast_handler(spi_payload_t *p)
     else
     {
         ESP_ERROR_CHECK(spi_internal_process(p));
-        return spi_payload_forward(p);
+        return spi_lowlevel_forward_payload(p);
     }
 }
 
@@ -88,6 +88,6 @@ esp_err_t spi_internal_handler(spi_payload_t *p)
     }
     else  // not for me, forwarding
     {
-        return spi_payload_forward(p);        
+        return spi_lowlevel_forward_payload(p);        
     }
 }

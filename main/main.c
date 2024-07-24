@@ -7,6 +7,8 @@
 
 // Private components
 #include "config.h"
+#include "spi_payload.h"
+#include "spi_lowlevel.h"
 #include "spi_internal.h"
 #include "spi_netif.h"
 #include "udp_spi.h"
@@ -16,7 +18,6 @@
 #include "nvs.h"
 
 // Test files
-#include "test_board.h"
 #include "test_integration.h"
 #include "test_spi.h"
 
@@ -31,7 +32,7 @@ static void spi_receive_task( void *pvParameters )
     spi_payload_t p;
     while (true) {
         memset(&p, 0, sizeof(spi_payload_t));
-        rc = spi_payload_receive(&p);
+        rc = spi_lowlevel_receive_payload(&p);
         ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
         if (rc != ESP_OK) continue;
 
@@ -78,7 +79,6 @@ void app_main(void)
     // Initializing spi/wifi drivers
     ESP_ERROR_CHECK(spi_init());
     test_spi_run_all();
-    //ESP_ERROR_CHECK(test_spi(false));
 
     ESP_ERROR_CHECK(wifi_init());
 

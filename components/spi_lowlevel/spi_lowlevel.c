@@ -6,7 +6,7 @@ static SemaphoreHandle_t s_tx_semaphore_handle = NULL;
 static spi_device_handle_t s_spi_device_handle = {0};
 
 
-static esp_err_t spi_rx_init() {
+static esp_err_t spi_lowlevel_rx_init() {
     //Configuration for the SPI bus
     spi_bus_config_t buscfg={
         .mosi_io_num=RECEIVER_GPIO_MOSI,
@@ -31,7 +31,7 @@ static esp_err_t spi_rx_init() {
     return ESP_OK;
 }
 
-static esp_err_t spi_tx_init() {
+static esp_err_t spi_lowlevel_tx_init() {
     //Configuration for the SPI bus
     spi_bus_config_t buscfg={
         .mosi_io_num=SENDER_GPIO_MOSI,
@@ -62,12 +62,12 @@ static esp_err_t spi_tx_init() {
 }
 
 esp_err_t spi_lowlevel_init(void) {
-    ESP_ERROR_CHECK(spi_rx_init());
-    ESP_ERROR_CHECK(spi_tx_init());
+    ESP_ERROR_CHECK(spi_lowlevel_rx_init());
+    ESP_ERROR_CHECK(spi_lowlevel_tx_init());
     return ESP_OK;
 }
 
-esp_err_t spi_lowlevel_transmit(void *p, size_t len) {
+static esp_err_t spi_lowlevel_transmit(void *p, size_t len) {
     esp_err_t rc;
     spi_transaction_t t = {
         .length = len * 8,
@@ -83,11 +83,32 @@ esp_err_t spi_lowlevel_transmit(void *p, size_t len) {
     return ESP_FAIL;
 }
 
-esp_err_t spi_lowlevel_receive(void *p, size_t len)
+static esp_err_t spi_lowlevel_receive(void *p, size_t len)
 {
     spi_slave_transaction_t t = {
         .rx_buffer = p,
         .length = len * 8,
     };
     return spi_slave_transmit(SPI_RECEIVER_HOST, &t, portMAX_DELAY);
+}
+
+esp_err_t spi_lowlevel_transmit_payload(spi_payload_t *p)
+{
+    return spi_lowlevel_transmit(p, sizeof(spi_payload_t));
+}
+
+esp_err_t spi_lowlevel_receive_payload(spi_payload_t *p)
+{
+    return spi_lowlevel_receive(p, sizeof(spi_payload_t));
+}
+
+esp_err_t spi_lowlevel_forward_payload(spi_payload_t *p)
+{
+    if (p->ttl <= 0) {
+        ESP_LOGW(TAG, "Discarding packet id '%i' ('%s') due to TTL. Won't forward.", p->id, p->buffer);
+        return ESP_OK;
+    }
+    p->ttl--;
+    ESP_LOGI(TAG, "Forwarding packet id '%i' with dest '%i' (TTL=%i).", p->id, p->dst_device_id, p->ttl);
+    return spi_lowlevel_transmit_payload(p);
 }

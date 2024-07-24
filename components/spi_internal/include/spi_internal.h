@@ -4,6 +4,7 @@
 #include "freertos/queue.h"
 
 #include "spi_payload.h"
+#include "spi_lowlevel.h"
 
 #ifdef __cplusplus
 extern "C" {

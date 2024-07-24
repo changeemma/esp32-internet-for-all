@@ -2,7 +2,6 @@ set(MAIN_SRCS
     "main.c"
     "nvs.c"
     "test_integration.c"
-    "test_board.c"
     "test_spi.c"
 )
 
@@ -13,7 +12,7 @@ set(MAIN_INCLUDE_DIRS
 set(MAIN_REQUIRES
     device
     utils
-    spi
+    spi_lowlevel
     spi_internal
     spi_netif
     wifi

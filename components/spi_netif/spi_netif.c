@@ -304,7 +304,7 @@ esp_err_t esp_netif_spi_driver_transmit(void *h, void *buffer, size_t len)
         .len = len,
     };
     memccpy(p.buffer, buffer, len, SPI_PAYLOAD_BUFFER_SIZE);
-    return spi_payload_transmit(&p);
+    return spi_lowlevel_transmit_payload(&p);
 }
 
 err_t spi_netif_netstack_init_fn(struct netif *netif)

@@ -24,6 +24,7 @@
 #include "arpa/inet.h" // for ntohs, etc.
 
 #include "spi_payload.h"
+#include "spi_lowlevel.h"
 #include "config.h"
 #include "utils.h"
 

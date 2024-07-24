@@ -5,7 +5,6 @@
 #include <stdint.h>
 
 #include "config.h"
-#include "spi_lowlevel.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,12 +37,6 @@ bool spi_payload_is_for_device(spi_payload_t *p);
 bool spi_payload_is_from_device(spi_payload_t *p);
 
 bool spi_payload_is_broadcast(spi_payload_t *p);
-
-esp_err_t spi_payload_transmit(spi_payload_t *p);
-
-esp_err_t spi_payload_receive(spi_payload_t *p);
-
-esp_err_t spi_payload_forward(spi_payload_t *p);
 
 #ifdef __cplusplus
 }
