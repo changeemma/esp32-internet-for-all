@@ -7,9 +7,9 @@
 
 // Private components
 #include "config.h"
-#include "spi_payload.h"
-#include "spi_lowlevel.h"
-#include "spi_internal.h"
+#include "ring_link_payload.h"
+#include "ring_link_lowlevel.h"
+#include "ring_link.h"
 #include "spi_netif.h"
 #include "udp_spi.h"
 #include "wifi.h"
@@ -29,19 +29,19 @@ static const char *TAG = "==> main";
 static void spi_receive_task( void *pvParameters )
 {
     esp_err_t rc;
-    spi_payload_t p;
+    ring_link_payload_t p;
     while (true) {
-        memset(&p, 0, sizeof(spi_payload_t));
-        rc = spi_lowlevel_receive_payload(&p);
+        memset(&p, 0, sizeof(ring_link_payload_t));
+        rc = ring_link_lowlevel_receive_payload(&p);
         ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
         if (rc != ESP_OK) continue;
 
         switch (p.buffer_type)
         {
-        case SPI_PAYLOAD_TYPE_INTERNAL:
-            ESP_ERROR_CHECK_WITHOUT_ABORT(spi_internal_handler(&p));
+        case RING_LINK_PAYLOAD_TYPE_INTERNAL:
+            ESP_ERROR_CHECK_WITHOUT_ABORT(ring_link_handler(&p));
             break;
-        case SPI_PAYLOAD_TYPE_ESP_NETIF:
+        case RING_LINK_PAYLOAD_TYPE_ESP_NETIF:
             // check if netif is up
             ESP_ERROR_CHECK_WITHOUT_ABORT(spi_netif_handler(&p));
             break;
@@ -55,8 +55,8 @@ static void spi_receive_task( void *pvParameters )
 
 esp_err_t spi_init(void)
 {
-    spi_lowlevel_init();
-    spi_internal_init();
+    ring_link_lowlevel_init();
+    ring_link_init();
 
     BaseType_t ret = xTaskCreate(spi_receive_task, "spi_receive_task", 2048, NULL, (tskIDLE_PRIORITY + 2), NULL);
 

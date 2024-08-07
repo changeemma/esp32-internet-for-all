@@ -3,8 +3,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
-#include "spi_payload.h"
-#include "spi_lowlevel.h"
+#include "ring_link_payload.h"
+#include "ring_link_lowlevel.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,9 +12,9 @@ extern "C" {
 
 bool broadcast_to_siblings(const void *msg, uint16_t len);
 
-esp_err_t spi_internal_init(void);
+esp_err_t ring_link_init(void);
 
-esp_err_t spi_internal_handler(spi_payload_t *p);
+esp_err_t ring_link_handler(ring_link_payload_t *p);
 
 #ifdef __cplusplus
 }

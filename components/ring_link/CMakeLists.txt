@@ -1,5 +1,5 @@
 idf_component_register(SRCS 
-        "spi_payload.c"
+      "ring_link.c"
     INCLUDE_DIRS "include"
-    REQUIRES device
+    REQUIRES ring_link_lowlevel
 )

@@ -15,7 +15,7 @@
 #include "driver/spi_slave.h"
 
 #include "config.h"
-#include "spi_payload.h"
+#include "ring_link_payload.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,13 +35,13 @@ extern "C" {
 #define SPI_RECEIVER_HOST HSPI_HOST
 
 
-esp_err_t spi_lowlevel_init(void);
+esp_err_t ring_link_lowlevel_init(void);
 
-esp_err_t spi_lowlevel_transmit_payload(spi_payload_t *p);
+esp_err_t ring_link_lowlevel_transmit_payload(ring_link_payload_t *p);
 
-esp_err_t spi_lowlevel_receive_payload(spi_payload_t *p);
+esp_err_t ring_link_lowlevel_receive_payload(ring_link_payload_t *p);
 
-esp_err_t spi_lowlevel_forward_payload(spi_payload_t *p);
+esp_err_t ring_link_lowlevel_forward_payload(ring_link_payload_t *p);
 
 
 #ifdef __cplusplus

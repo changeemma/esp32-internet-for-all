@@ -23,8 +23,8 @@
 #include "lwip/esp_pbuf_ref.h"
 #include "arpa/inet.h" // for ntohs, etc.
 
-#include "spi_payload.h"
-#include "spi_lowlevel.h"
+#include "ring_link_payload.h"
+#include "ring_link_lowlevel.h"
 #include "config.h"
 #include "utils.h"
 
@@ -54,7 +54,7 @@ typedef struct spi_netif_driver *spi_netif_driver_t;
 uint32_t get_spi_ip_v4_by_orientation(void);
 uint32_t get_spi_gateway_v4_by_orientation(void);
 
-esp_err_t spi_netif_handler(spi_payload_t *p);
+esp_err_t spi_netif_handler(ring_link_payload_t *p);
 esp_netif_t *get_spi_tx_netif(void);
 esp_err_t spi_netif_init(void);
 

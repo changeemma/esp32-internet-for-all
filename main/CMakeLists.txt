@@ -12,8 +12,8 @@ set(MAIN_INCLUDE_DIRS
 set(MAIN_REQUIRES
     device
     utils
-    spi_lowlevel
-    spi_internal
+    ring_link_lowlevel
+    ring_link
     spi_netif
     wifi
     route

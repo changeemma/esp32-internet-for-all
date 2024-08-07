@@ -10,8 +10,8 @@
 #include "esp_log.h"
 
 #include "config.h"
-#include "spi_payload.h"
-#include "spi_internal.h"
+#include "ring_link_payload.h"
+#include "ring_link.h"
 
 #ifdef __cplusplus
 extern "C" {

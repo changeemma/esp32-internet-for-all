@@ -17,7 +17,7 @@ esp_netif_t *get_spi_tx_netif(void){
 }
 
 
-static esp_err_t spi_netif_process(spi_payload_t *p)
+static esp_err_t spi_netif_process(ring_link_payload_t *p)
 {
     printf("call esp_netif_receive(netif, %s, %i, NULL)\n", p->buffer, p->len);
     struct pbuf *q;
@@ -41,14 +41,14 @@ static esp_err_t spi_netif_process(spi_payload_t *p)
     return ESP_OK;
 }
 
-esp_err_t spi_netif_handler(spi_payload_t *p)
+esp_err_t spi_netif_handler(ring_link_payload_t *p)
 {    
-    if (spi_payload_is_from_device(p))  // bounced package
+    if (ring_link_payload_is_from_device(p))  // bounced package
     {
         ESP_LOGW(TAG, "Discarding bounced packet. id '%i' ('%s').", p->id, p->buffer);
         return ESP_OK;
     }
-    else if (spi_payload_is_for_device(p))  // payload for me
+    else if (ring_link_payload_is_for_device(p))  // payload for me
     {
         return spi_netif_process(p);
     }
@@ -295,16 +295,16 @@ esp_err_t esp_netif_spi_driver_transmit(void *h, void *buffer, size_t len)
         ESP_LOGI(TAG, "buffer is null");
         return ESP_OK;
     }
-    spi_payload_t p = {
+    ring_link_payload_t p = {
         .id = 0,
-        .ttl = SPI_PAYLOAD_TTL,
+        .ttl = RING_LINK_PAYLOAD_TTL,
         .src_device_id = device_config_get_id(),
         .dst_device_id = DEVICE_ID_ANY,
-        .buffer_type = SPI_PAYLOAD_TYPE_ESP_NETIF,
+        .buffer_type = RING_LINK_PAYLOAD_TYPE_ESP_NETIF,
         .len = len,
     };
-    memccpy(p.buffer, buffer, len, SPI_PAYLOAD_BUFFER_SIZE);
-    return spi_lowlevel_transmit_payload(&p);
+    memccpy(p.buffer, buffer, len, RING_LINK_PAYLOAD_BUFFER_SIZE);
+    return ring_link_lowlevel_transmit_payload(&p);
 }
 
 err_t spi_netif_netstack_init_fn(struct netif *netif)
