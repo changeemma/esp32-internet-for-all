@@ -1,47 +1,47 @@
-#include "spi_netif.h"
+#include "ring_link_netif.h"
 
-static const char* TAG = "==> spi-netif";
+static const char* TAG = "==> ring_link_netif";
 
-u32_t spi_ipv6_addr[6] = {0xfe800000, 0x00000000, 0xb2a1a2ff, 0xfea3b5b6};
+u32_t ring_link_ipv6_addr[6] = {0xfe800000, 0x00000000, 0xb2a1a2ff, 0xfea3b5b6};
 uint8_t mac[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
 
-ESP_EVENT_DEFINE_BASE(SPI_TX_EVENT);
-ESP_EVENT_DEFINE_BASE(SPI_RX_EVENT);
+ESP_EVENT_DEFINE_BASE(RING_LINK_TX_EVENT);
+ESP_EVENT_DEFINE_BASE(RING_LINK_RX_EVENT);
 
 
-esp_netif_t *spi_rx_netif = NULL;
-esp_netif_t *spi_tx_netif = NULL;
+esp_netif_t *ring_link_rx_netif = NULL;
+esp_netif_t *ring_link_tx_netif = NULL;
 
-esp_netif_t *get_spi_tx_netif(void){
-    return spi_tx_netif;
+esp_netif_t *get_ring_link_tx_netif(void){
+    return ring_link_tx_netif;
 }
 
 
-static esp_err_t spi_netif_process(ring_link_payload_t *p)
+static esp_err_t ring_link_netif_process(ring_link_payload_t *p)
 {
     printf("call esp_netif_receive(netif, %s, %i, NULL)\n", p->buffer, p->len);
     struct pbuf *q;
     q = pbuf_alloc(PBUF_TRANSPORT, 500, PBUF_POOL);
 
-    ESP_LOGI(TAG, "esp_netif_spi_receive_task()...");
+    ESP_LOGI(TAG, "esp_netif_ring_link_receive_task()...");
     if (p->len <= 0) {
         printf("an error ocurred receiving or empty data\n");
         return ESP_OK;
     }
     printf("%d\n", p->len);
-    ESP_LOGI(TAG, "Calling esp_netif_receive(netif, spi_rx_buffer, len, NULL)");
+    ESP_LOGI(TAG, "Calling esp_netif_receive(netif, ring_link_rx_buffer, len, NULL)");
     q->payload = p->buffer;
     struct ip_hdr *iphdr = (struct ip_hdr *)q->payload;
     if((IPH_V(iphdr) == 4) || (IPH_V(iphdr) == 6)){
         q->next = NULL;
         q->len = lwip_ntohs(IPH_LEN(iphdr));
         q->tot_len = p->len/8;
-        esp_netif_receive(spi_rx_netif, q, q->tot_len, NULL);
+        esp_netif_receive(ring_link_rx_netif, q, q->tot_len, NULL);
     }
     return ESP_OK;
 }
 
-esp_err_t spi_netif_handler(ring_link_payload_t *p)
+esp_err_t ring_link_netif_handler(ring_link_payload_t *p)
 {    
     if (ring_link_payload_is_from_device(p))  // bounced package
     {
@@ -50,7 +50,7 @@ esp_err_t spi_netif_handler(ring_link_payload_t *p)
     }
     else if (ring_link_payload_is_for_device(p))  // payload for me
     {
-        return spi_netif_process(p);
+        return ring_link_netif_process(p);
     }
     else  // not for me, warn and discard
     {
@@ -60,44 +60,44 @@ esp_err_t spi_netif_handler(ring_link_payload_t *p)
 }
 
 
-uint32_t get_spi_ip_v4_by_orientation(void){
+uint32_t get_ring_link_ip_v4_by_orientation(void){
     device_orientation_t orientation;
     orientation = device_config_get_orientation();
     return ESP_IP4TOADDR(127, 0, 0, (int) orientation + 1);
 }
 
-uint32_t get_spi_gateway_v4_by_orientation(void){
+uint32_t get_ring_link_gateway_v4_by_orientation(void){
     device_orientation_t orientation;
     orientation = device_config_get_orientation();
     return ESP_IP4TOADDR(127, 0, 0, (int) orientation + 1);
 }
 
-static esp_err_t spi_netif_esp_netif_attach(esp_netif_t * esp_netif, esp_err_t (*post_attach_callback)(esp_netif_t *, void *))
+static esp_err_t ring_link_netif_esp_netif_attach(esp_netif_t * esp_netif, esp_err_t (*post_attach_callback)(esp_netif_t *, void *))
 {
 
-    spi_netif_driver_t driver = calloc(1, sizeof(struct spi_netif_driver));
+    ring_link_netif_driver_t driver = calloc(1, sizeof(struct ring_link_netif_driver));
     if (driver == NULL)
     {
-        ESP_LOGE(TAG, "No memory to create a spi interface handle");
+        ESP_LOGE(TAG, "No memory to create a ring-link interface handle");
         return ESP_FAIL;
     }
 
     driver->base.post_attach = post_attach_callback;
-    ESP_LOGI(TAG, "esp_spi_create_if_driver() called");
+    ESP_LOGI(TAG, "esp_ring_link_create_if_driver() called");
     
     if (driver == NULL)
     {
-        ESP_LOGE(TAG, "Failed to create spi interface handle");
+        ESP_LOGE(TAG, "Failed to create ring-link interface handle");
         return ESP_FAIL;
     }
-    ESP_LOGI(TAG, "esp_netif_attach_spi(esp_netif_t * esp_netif) called");
+    ESP_LOGI(TAG, "ring_link_netif_esp_netif_attach(esp_netif_t * esp_netif) called");
 
     return esp_netif_attach(esp_netif, driver);
 }
 
 
 
-static esp_err_t spi_netif_esp_netif_init(esp_netif_t **esp_netif, esp_netif_config_t *esp_netif_config, esp_err_t (*post_attach_callback)(esp_netif_t *, void *))
+static esp_err_t ring_link_netif_esp_netif_init(esp_netif_t **esp_netif, esp_netif_config_t *esp_netif_config, esp_err_t (*post_attach_callback)(esp_netif_t *, void *))
 {       
     *esp_netif = esp_netif_new(esp_netif_config);
 
@@ -105,15 +105,15 @@ static esp_err_t spi_netif_esp_netif_init(esp_netif_t **esp_netif, esp_netif_con
         ESP_LOGE(TAG, "esp_netif_new failed!");
     }
 
-    struct netif *spi_netif_impl = esp_netif_get_netif_impl(*esp_netif);
-    netif_set_flags(spi_netif_impl, NETIF_FLAG_BROADCAST);
-    spi_netif_esp_netif_attach(*esp_netif, post_attach_callback);
+    struct netif *ring_link_netif_impl = esp_netif_get_netif_impl(*esp_netif);
+    netif_set_flags(ring_link_netif_impl, NETIF_FLAG_BROADCAST);
+    ring_link_netif_esp_netif_attach(*esp_netif, post_attach_callback);
 
     return ESP_OK;
 }
 
 
-err_t spi_rx_netstack_lwip_init_fn(struct netif *netif)
+err_t ring_link_rx_netstack_lwip_init_fn(struct netif *netif)
 {
     LWIP_ASSERT("netif != NULL", (netif != NULL));
     /* Have to get the esp-netif handle from netif first and then driver==ethernet handle from there */
@@ -124,12 +124,12 @@ err_t spi_rx_netstack_lwip_init_fn(struct netif *netif)
     return ERR_OK;
 }
 
-esp_netif_recv_ret_t spi_rx_netstack_lwip_input_fn(void *h, void *buffer, size_t len, void* l2_buff)
+esp_netif_recv_ret_t ring_link_rx_netstack_lwip_input_fn(void *h, void *buffer, size_t len, void* l2_buff)
 {
     struct netif *netif = h;
     esp_netif_t *esp_netif = esp_netif_get_handle_from_netif_impl(netif);
     struct pbuf *p;
-    printf("spi_netif_rx_netstack_input_fn\n");
+    printf("ring_link_netif_rx_netstack_input_fn\n");
 
     /* allocate custom pbuf to hold  */
     p = pbuf_alloc(PBUF_TRANSPORT, 120, PBUF_POOL);
@@ -142,8 +142,8 @@ esp_netif_recv_ret_t spi_rx_netstack_lwip_input_fn(void *h, void *buffer, size_t
     }
     /* full packet send to tcpip_thread to process */
     if (unlikely(netif->input(p, netif) != ERR_OK)) {
-        LWIP_DEBUGF(NETIF_DEBUG, ("spi_netif_rx_netstack_input_fn: IP input error\n"));
-        printf('spi_netif_rx_netstack_input_fn: pbuf_free(p)');
+        LWIP_DEBUGF(NETIF_DEBUG, ("ring_link_netif_rx_netstack_input_fn: IP input error\n"));
+        printf('ring_link_netif_rx_netstack_input_fn: pbuf_free(p)');
         // pbuf_free(p);
         return ESP_NETIF_OPTIONAL_RETURN_CODE(ESP_FAIL);
     }
@@ -151,9 +151,9 @@ esp_netif_recv_ret_t spi_rx_netstack_lwip_input_fn(void *h, void *buffer, size_t
     return ESP_NETIF_OPTIONAL_RETURN_CODE(ESP_OK);
 }
 
-esp_err_t spi_rx_driver_transmit(void *h, void *buffer, size_t len)
+esp_err_t ring_link_rx_driver_transmit(void *h, void *buffer, size_t len)
 {
-    ESP_LOGW(TAG, "spi_rx_driver_transmit(void *h, void *buffer, size_t len) called");
+    ESP_LOGW(TAG, "ring_link_rx_driver_transmit(void *h, void *buffer, size_t len) called");
     
     if (buffer==NULL) {
         ESP_LOGW(TAG, "buffer is null");
@@ -162,14 +162,14 @@ esp_err_t spi_rx_driver_transmit(void *h, void *buffer, size_t len)
     return ESP_OK;
 }
 
-esp_err_t spi_rx_driver_post_attach(esp_netif_t * esp_netif, void * args)
+esp_err_t ring_link_rx_driver_post_attach(esp_netif_t * esp_netif, void * args)
 {
-    ESP_LOGI(TAG, "Calling esp_netif_spi_post_attach_start(esp_netif_t * esp_netif, void *args)");
-    spi_netif_driver_t driver = (spi_netif_driver_t) args;
+    ESP_LOGI(TAG, "Calling esp_netif_ring_link_post_attach_start(esp_netif_t * esp_netif, void *args)");
+    ring_link_netif_driver_t driver = (ring_link_netif_driver_t) args;
     driver->base.netif = esp_netif;
     esp_netif_driver_ifconfig_t driver_ifconfig = {
         .handle = driver,
-        .transmit = spi_rx_driver_transmit,
+        .transmit = ring_link_rx_driver_transmit,
         .driver_free_rx_buffer = NULL,
     };
 
@@ -177,28 +177,28 @@ esp_err_t spi_rx_driver_post_attach(esp_netif_t * esp_netif, void * args)
     return ESP_OK;
 }
 
-void spi_rx_default_handler(void *arg, esp_event_base_t base, int32_t event_id, void *data)
+void ring_link_rx_default_handler(void *arg, esp_event_base_t base, int32_t event_id, void *data)
 {
-    printf("spi_default_handler\n");
-    esp_netif_action_got_ip(spi_rx_netif, base, event_id, data);
+    printf("ring_link_default_handler\n");
+    esp_netif_action_got_ip(ring_link_rx_netif, base, event_id, data);
 }
 
-void spi_rx_default_action_sta_start(void *arg, esp_event_base_t base, int32_t event_id, void *data)
+void ring_link_rx_default_action_sta_start(void *arg, esp_event_base_t base, int32_t event_id, void *data)
 {
-    printf("spi_default_action_sta_start\n");
-    esp_netif_action_start(spi_rx_netif, base, event_id, data);
-    //esp_netif_set_default_netif(spi_netif_rx);
+    printf("ring_link_default_action_sta_start\n");
+    esp_netif_action_start(ring_link_rx_netif, base, event_id, data);
+    //esp_netif_set_default_netif(ring_link_netif_rx);
 }
 
 
 
-esp_err_t spi_rx_netif_init(void)
+esp_err_t ring_link_rx_netif_init(void)
 {
-    printf("spi_rx_netif_init\n");
-    const esp_netif_netstack_config_t s_spi_netif_config = {
+    printf("ring_link_rx_netif_init\n");
+    const esp_netif_netstack_config_t s_ring_link_netif_config = {
         .lwip = {
-            .init_fn = spi_rx_netstack_lwip_init_fn,
-            .input_fn = spi_rx_netstack_lwip_input_fn
+            .init_fn = ring_link_rx_netstack_lwip_init_fn,
+            .input_fn = ring_link_rx_netstack_lwip_input_fn
         }};
     const esp_netif_ip_info_t ip_info = {
         .ip = {.addr = ESP_IP4TOADDR(127, 0, 0, 13)},
@@ -210,26 +210,26 @@ esp_err_t spi_rx_netif_init(void)
         .ip_info = &ip_info,
         .get_ip_event = 0,
         .lost_ip_event = 0,
-        .if_key = "spi_rx",
-        .if_desc = "spi-rx if",
+        .if_key = "ring_link_rx",
+        .if_desc = "ring-link-rx if",
         .route_prio = 15,
         .bridge_info = NULL};
 
     esp_netif_config_t netif_config = {
         .base = &base_netif_config,
-        .stack = &s_spi_netif_config,
+        .stack = &s_ring_link_netif_config,
         .driver = NULL};
     
-    spi_netif_esp_netif_init(&spi_rx_netif, &netif_config, spi_rx_driver_post_attach);
+    ring_link_netif_esp_netif_init(&ring_link_rx_netif, &netif_config, ring_link_rx_driver_post_attach);
 
     uint8_t mac[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
-    esp_netif_set_mac(spi_rx_netif, mac);
+    esp_netif_set_mac(ring_link_rx_netif, mac);
 
     
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(SPI_RX_EVENT, SPI_EVENT_START, spi_rx_default_action_sta_start, NULL, NULL));
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, spi_rx_default_handler, NULL, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(RING_LINK_RX_EVENT, RING_LINK_EVENT_START, ring_link_rx_default_action_sta_start, NULL, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, ring_link_rx_default_handler, NULL, NULL));
     printf("esp_event_handler_instance_register\n");
-    ESP_ERROR_CHECK(esp_event_post(SPI_RX_EVENT, SPI_EVENT_START, NULL, 0, portMAX_DELAY));
+    ESP_ERROR_CHECK(esp_event_post(RING_LINK_RX_EVENT, RING_LINK_EVENT_START, NULL, 0, portMAX_DELAY));
     printf("esp_event_post\n");
 
     return ESP_OK;
@@ -287,9 +287,9 @@ err_t linkoutput_function(struct netif *netif, struct pbuf *p)
 
 }
 
-esp_err_t esp_netif_spi_driver_transmit(void *h, void *buffer, size_t len)
+esp_err_t esp_netif_ring_link_driver_transmit(void *h, void *buffer, size_t len)
 {
-    ESP_LOGI(TAG, "spi_netif_driver_transmit(void *h, void *buffer, size_t len) called");
+    ESP_LOGI(TAG, "ring_link_netif_driver_transmit(void *h, void *buffer, size_t len) called");
     
     if (buffer==NULL) {
         ESP_LOGI(TAG, "buffer is null");
@@ -307,7 +307,7 @@ esp_err_t esp_netif_spi_driver_transmit(void *h, void *buffer, size_t len)
     return ring_link_lowlevel_transmit_payload(&p);
 }
 
-err_t spi_netif_netstack_init_fn(struct netif *netif)
+err_t ring_link_netif_netstack_init_fn(struct netif *netif)
 {
     LWIP_ASSERT("netif != NULL", (netif != NULL));
     /* Have to get the esp-netif handle from netif first and then driver==ethernet handle from there */
@@ -320,12 +320,12 @@ err_t spi_netif_netstack_init_fn(struct netif *netif)
     return ERR_OK;
 }
 
-esp_netif_recv_ret_t spi_netif_netstack_input_fn(void *h, void *buffer, size_t len, void* l2_buff)
+esp_netif_recv_ret_t ring_link_netif_netstack_input_fn(void *h, void *buffer, size_t len, void* l2_buff)
 {
     struct netif *netif = h;
     esp_netif_t *esp_netif = esp_netif_get_handle_from_netif_impl(netif);
     struct pbuf *p;
-    printf("spi_netif_netstack_input_fn\n");
+    printf("ring_link_netif_netstack_input_fn\n");
 
     /* allocate custom pbuf to hold  */
     p = pbuf_alloc(PBUF_TRANSPORT, 120, PBUF_POOL);
@@ -338,8 +338,8 @@ esp_netif_recv_ret_t spi_netif_netstack_input_fn(void *h, void *buffer, size_t l
     }
     /* full packet send to tcpip_thread to process */
     if (unlikely(netif->input(p, netif) != ERR_OK)) {
-        LWIP_DEBUGF(NETIF_DEBUG, ("spi_netif_netstack_input_fn: IP input error\n"));
-        printf('spi_netif_netstack_input_fn: pbuf_free(p)');
+        LWIP_DEBUGF(NETIF_DEBUG, ("ring_link_netif_netstack_input_fn: IP input error\n"));
+        printf('ring_link_netif_netstack_input_fn: pbuf_free(p)');
         // pbuf_free(p);
         return ESP_NETIF_OPTIONAL_RETURN_CODE(ESP_FAIL);
     }
@@ -347,21 +347,21 @@ esp_netif_recv_ret_t spi_netif_netstack_input_fn(void *h, void *buffer, size_t l
     return ESP_NETIF_OPTIONAL_RETURN_CODE(ESP_OK);
 }
 
-esp_err_t esp_netif_spi_driver_transmit_wrap(void *h, void *buffer, size_t len, void *netstack_buffer)
+esp_err_t esp_netif_ring_link_driver_transmit_wrap(void *h, void *buffer, size_t len, void *netstack_buffer)
 {
     printf("transmit_wrap_function\n");
     return ESP_OK;
 };
 
-esp_err_t spi_tx_driver_post_attach(esp_netif_t * esp_netif, void * args)
+esp_err_t ring_link_tx_driver_post_attach(esp_netif_t * esp_netif, void * args)
 {
-    ESP_LOGI(TAG, "Calling esp_netif_spi_post_attach_start(esp_netif_t * esp_netif, void *args)");
-    spi_netif_driver_t driver = (spi_netif_driver_t) args;
+    ESP_LOGI(TAG, "Calling esp_netif_ring_link_post_attach_start(esp_netif_t * esp_netif, void *args)");
+    ring_link_netif_driver_t driver = (ring_link_netif_driver_t) args;
     driver->base.netif = esp_netif;
     esp_netif_driver_ifconfig_t driver_ifconfig = {
         .handle = driver,
-        .transmit = esp_netif_spi_driver_transmit,
-        .transmit_wrap = esp_netif_spi_driver_transmit_wrap,
+        .transmit = esp_netif_ring_link_driver_transmit,
+        .transmit_wrap = esp_netif_ring_link_driver_transmit_wrap,
         .driver_free_rx_buffer = NULL,
     };
 
@@ -370,33 +370,33 @@ esp_err_t spi_tx_driver_post_attach(esp_netif_t * esp_netif, void * args)
     return ESP_OK;
 }
 
-void spi_default_handler(void *arg, esp_event_base_t base, int32_t event_id, void *data)
+void ring_link_default_handler(void *arg, esp_event_base_t base, int32_t event_id, void *data)
 {
-    printf("spi_default_handler\n");
-    esp_netif_action_got_ip(spi_tx_netif, base, event_id, data);
+    printf("ring_link_default_handler\n");
+    esp_netif_action_got_ip(ring_link_tx_netif, base, event_id, data);
 }
 
 
-void spi_default_action_sta_start(void *arg, esp_event_base_t base, int32_t event_id, void *data)
+void ring_link_default_action_sta_start(void *arg, esp_event_base_t base, int32_t event_id, void *data)
 {
-    printf("spi_default_action_sta_start\n");
-    esp_netif_action_start(spi_tx_netif, base, event_id, data);
-    const esp_ip_addr_t spi_ip6_addr = ESP_IP6ADDR_INIT(spi_ipv6_addr[0], spi_ipv6_addr[1], spi_ipv6_addr[2], spi_ipv6_addr[3]);
-    esp_netif_set_ip6_linklocal(spi_tx_netif, spi_ip6_addr);
-    esp_netif_set_default_netif(spi_tx_netif);
+    printf("ring_link_default_action_sta_start\n");
+    esp_netif_action_start(ring_link_tx_netif, base, event_id, data);
+    const esp_ip_addr_t ring_link_ip6_addr = ESP_IP6ADDR_INIT(ring_link_ipv6_addr[0], ring_link_ipv6_addr[1], ring_link_ipv6_addr[2], ring_link_ipv6_addr[3]);
+    esp_netif_set_ip6_linklocal(ring_link_tx_netif, ring_link_ip6_addr);
+    esp_netif_set_default_netif(ring_link_tx_netif);
 }
 
-esp_err_t spi_tx_netif_init(void)
+esp_err_t ring_link_tx_netif_init(void)
 {
-    printf("spi_tx_netif_init\n");
-    const esp_netif_netstack_config_t s_spi_netif_config = {
+    printf("ring_link_tx_netif_init\n");
+    const esp_netif_netstack_config_t s_ring_link_netif_config = {
         .lwip = {
-            .init_fn = spi_netif_netstack_init_fn,
-            .input_fn = spi_netif_netstack_input_fn
+            .init_fn = ring_link_netif_netstack_init_fn,
+            .input_fn = ring_link_netif_netstack_input_fn
         }};
     const esp_netif_ip_info_t ip_info = {
-        .ip = {.addr = get_spi_ip_v4_by_orientation()},
-        .gw = {.addr = get_spi_gateway_v4_by_orientation()},
+        .ip = {.addr = get_ring_link_ip_v4_by_orientation()},
+        .gw = {.addr = get_ring_link_gateway_v4_by_orientation()},
         .netmask = {.addr = ESP_IP4TOADDR(0, 0, 0, 0)},
     };
     esp_netif_inherent_config_t base_netif_config = {
@@ -404,28 +404,28 @@ esp_err_t spi_tx_netif_init(void)
         .ip_info = &ip_info,
         .get_ip_event = 0,
         .lost_ip_event = 0,
-        .if_key = "spi_tx",
-        .if_desc = "spi-tx if",
+        .if_key = "ring_link_tx",
+        .if_desc = "ring-link-tx if",
         .route_prio = 15,
         .bridge_info = NULL};
 
     esp_netif_config_t netif_config = {
         .base = &base_netif_config,
-        .stack = &s_spi_netif_config,
+        .stack = &s_ring_link_netif_config,
         .driver = NULL};
     
-    spi_netif_esp_netif_init(&spi_tx_netif, &netif_config, spi_tx_driver_post_attach);
+    ring_link_netif_esp_netif_init(&ring_link_tx_netif, &netif_config, ring_link_tx_driver_post_attach);
 
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(SPI_TX_EVENT, SPI_EVENT_START, spi_default_action_sta_start, NULL, NULL));
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, spi_default_handler, NULL, NULL));
-    ESP_ERROR_CHECK(esp_event_post(SPI_TX_EVENT, SPI_EVENT_START, NULL, 0, portMAX_DELAY));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(RING_LINK_TX_EVENT, RING_LINK_EVENT_START, ring_link_default_action_sta_start, NULL, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, ring_link_default_handler, NULL, NULL));
+    ESP_ERROR_CHECK(esp_event_post(RING_LINK_TX_EVENT, RING_LINK_EVENT_START, NULL, 0, portMAX_DELAY));
     return ESP_OK;
 }
 
 
-esp_err_t spi_netif_init(void)
+esp_err_t ring_link_netif_init(void)
 {
-    ESP_ERROR_CHECK(spi_rx_netif_init());
-    ESP_ERROR_CHECK(spi_tx_netif_init());
+    ESP_ERROR_CHECK(ring_link_rx_netif_init());
+    ESP_ERROR_CHECK(ring_link_tx_netif_init());
     return ESP_OK;
 }

@@ -10,7 +10,7 @@
 #include "ring_link_payload.h"
 #include "ring_link_lowlevel.h"
 #include "ring_link.h"
-#include "spi_netif.h"
+#include "ring_link_netif.h"
 #include "udp_spi.h"
 #include "wifi.h"
 #include "route.h"
@@ -43,7 +43,7 @@ static void spi_receive_task( void *pvParameters )
             break;
         case RING_LINK_PAYLOAD_TYPE_ESP_NETIF:
             // check if netif is up
-            ESP_ERROR_CHECK_WITHOUT_ABORT(spi_netif_handler(&p));
+            ESP_ERROR_CHECK_WITHOUT_ABORT(ring_link_netif_handler(&p));
             break;
         default:
             ESP_LOGE(TAG, "Unknown payload type: '%i'", p.buffer_type);
@@ -83,7 +83,7 @@ void app_main(void)
     ESP_ERROR_CHECK(wifi_init());
 
     // Initializing spi/wifi network interfaces
-    ESP_ERROR_CHECK(spi_netif_init());
+    ESP_ERROR_CHECK(ring_link_netif_init());
     bind_udp_spi();
     ESP_ERROR_CHECK(wifi_netif_init());
 

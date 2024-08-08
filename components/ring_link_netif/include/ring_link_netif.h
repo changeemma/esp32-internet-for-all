@@ -33,30 +33,30 @@ extern "C" {
 #endif
 
 
-ESP_EVENT_DECLARE_BASE(SPI_RX_EVENT);
-ESP_EVENT_DECLARE_BASE(SPI_TX_EVENT);
+ESP_EVENT_DECLARE_BASE(RING_LINK_RX_EVENT);
+ESP_EVENT_DECLARE_BASE(RING_LINK_TX_EVENT);
 
 typedef enum
 {
-    SPI_EVENT_START, /**< ESP32 soft-AP start */
-    SPI_EVENT_STOP, /**< ESP32 soft-AP stop */
-    SPI_EVENT_NEW_ROUTE, /**< ESP32 soft-AP stop */
-} network_spi_event_t;
+    RING_LINK_EVENT_START, /**< ESP32 soft-AP start */
+    RING_LINK_EVENT_STOP, /**< ESP32 soft-AP stop */
+    RING_LINK_EVENT_NEW_ROUTE, /**< ESP32 soft-AP stop */
+} network_ring_link_event_t;
 
-struct spi_netif_driver
+struct ring_link_netif_driver
 {
     esp_netif_driver_base_t base; /*!< base structure reserved as esp-netif driver */
     void *interface;    /*!< handle of driver implementation */
 };
 
-typedef struct spi_netif_driver *spi_netif_driver_t;
+typedef struct ring_link_netif_driver *ring_link_netif_driver_t;
 
-uint32_t get_spi_ip_v4_by_orientation(void);
-uint32_t get_spi_gateway_v4_by_orientation(void);
+uint32_t get_ring_link_ip_v4_by_orientation(void);
+uint32_t get_ring_link_gateway_v4_by_orientation(void);
 
-esp_err_t spi_netif_handler(ring_link_payload_t *p);
-esp_netif_t *get_spi_tx_netif(void);
-esp_err_t spi_netif_init(void);
+esp_err_t ring_link_netif_handler(ring_link_payload_t *p);
+esp_netif_t *get_ring_link_tx_netif(void);
+esp_err_t ring_link_netif_init(void);
 
 #ifdef __cplusplus
 }

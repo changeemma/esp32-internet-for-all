@@ -77,7 +77,7 @@ void bind_udp_to_netif_ipv6(esp_netif_t *esp_netif, u16_t port)
 void bind_udp_spi(void){
     ESP_LOGI(SPI_UDP_TAG, " binding udp\n");
     esp_netif_t *spi_netif;
-    spi_netif = get_spi_tx_netif();
+    spi_netif = get_ring_link_tx_netif();
     bind_udp_to_netif(spi_netif, port);
     bind_udp_to_netif_ipv6(spi_netif, port_ipv6);
 }

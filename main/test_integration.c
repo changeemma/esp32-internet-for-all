@@ -11,7 +11,7 @@ void test_sending_upd_packet_fordwarding_to_the_spi_interface(){
     u16_t port;
     esp_netif_t *spi_netif;
 
-    spi_netif = get_spi_tx_netif();
+    spi_netif = get_ring_link_tx_netif();
 
     struct pbuf *p;
     port = get_active_spi_port();
@@ -55,7 +55,7 @@ void test_sending_upd_packet_ipv6_fordwarding_to_the_spi_interface(){
     struct netif *esp_netif_imp;
     esp_netif_t *spi_netif;
 
-    spi_netif = get_spi_tx_netif();
+    spi_netif = get_ring_link_tx_netif();
     esp_netif_imp = esp_netif_get_netif_impl(spi_netif);
 
     port = get_active_spi_port();
@@ -77,7 +77,7 @@ void test_send_upd_packet(){
     struct netif *esp_netif_imp;
     esp_netif_t *spi_netif;
 
-    spi_netif = get_spi_tx_netif();
+    spi_netif = get_ring_link_tx_netif();
 
     struct pbuf *p;
     port = get_active_spi_port();
@@ -98,7 +98,7 @@ void test_send_upd_packet_ipv6(){
     struct netif *esp_netif_imp;
     esp_netif_t *spi_netif;
 
-    spi_netif = get_spi_tx_netif();
+    spi_netif = get_ring_link_tx_netif();
     esp_netif_imp = esp_netif_get_netif_impl(spi_netif);
 
     struct pbuf *p;
@@ -125,7 +125,7 @@ void test_sending_upd_packet_fordwarding_to_the_spi_interface_with_input_ipv6(){
     ip6addr_aton("fe80::b2a1:ffff:fea3:a5b8", &dest_addr);
     
     struct pbuf *udp_packet = udp_create_test_packet_ipv6(32, port, port, &dest_addr, &src_addr);
-    spi_netif = get_spi_tx_netif();
+    spi_netif = get_ring_link_tx_netif();
     esp_netif_imp = esp_netif_get_netif_impl(spi_netif);
 
     ESP_LOGI(TEST_TAG, "sending packet IPv6 to SPI interface with esp_netif_imp->input()\n");

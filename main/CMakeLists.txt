@@ -10,11 +10,11 @@ set(MAIN_INCLUDE_DIRS
 )
 
 set(MAIN_REQUIRES
-    device
+    config
     utils
     ring_link_lowlevel
     ring_link
-    spi_netif
+    ring_link_netif
     wifi
     route
     nvs_flash

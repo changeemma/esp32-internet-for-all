@@ -9,7 +9,7 @@ unsigned num_routes = 1;
 esp_ip4_addr_t get_ip_gateway(gateway_t gw){
     esp_ip4_addr_t ip_addr;
     if(gw==SPI_GATEWAY){
-        uint32_t addr = get_spi_gateway_v4_by_orientation();
+        uint32_t addr = get_ring_link_gateway_v4_by_orientation();
         ip_addr.addr = addr;
         return ip_addr;
     }
@@ -74,7 +74,7 @@ esp_err_t add_route(char * ip, gateway_t gw, char * netmask, char * key)
         printf("ES NULL esp_netif_get_netif_impl \n");
     }
     ESP_ERROR_CHECK(esp_netif_attach_wifi_station(new_route));
-    esp_netif_action_start(new_route, SPI_TX_EVENT, SPI_EVENT_NEW_ROUTE, NULL);
+    esp_netif_action_start(new_route, RING_LINK_TX_EVENT, RING_LINK_EVENT_NEW_ROUTE, NULL);
     num_routes = num_routes + 1;
     return ESP_OK;
 }

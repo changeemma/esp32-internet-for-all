@@ -6,7 +6,7 @@
 #include <string.h>
 #include "esp_wifi.h"
 
-#include "spi_netif.h"
+#include "ring_link_netif.h"
 
 #define MAX_NUMBER_ROUTES 10
 
