@@ -15,7 +15,7 @@ typedef enum {
 } device_orientation_t;
 
 typedef enum {
-    DEVICE_MODE_PEER_LINK    = 0,
+    DEVICE_MODE_PEER_LINK    = 0, // 0**
     DEVICE_MODE_ACCESS_POINT = 4, // 100 - Wi-Fi AccessPoint
     DEVICE_MODE_ROOT         = 5, // 101
     DEVICE_MODE_NONE         = 9,

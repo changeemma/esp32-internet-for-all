@@ -1,10 +1,10 @@
-#include "spi_internal.h"
+#include "ring_link_internal.h"
 
-static const char* TAG = "==> spi-internal";
+static const char* TAG = "==> ring_link_internal";
 static SemaphoreHandle_t s_broadcast_semaphore_handle = NULL;
 static QueueHandle_t s_broadcast_queue = NULL;
 
-esp_err_t spi_internal_init( void )
+esp_err_t ring_link_init( void )
 {
     s_broadcast_semaphore_handle = xSemaphoreCreateMutex();
     if( s_broadcast_semaphore_handle == NULL )
@@ -13,7 +13,7 @@ esp_err_t spi_internal_init( void )
         return ESP_FAIL;
     }
 
-    s_broadcast_queue = xQueueCreate(1, sizeof(spi_payload_id_t));
+    s_broadcast_queue = xQueueCreate(1, sizeof(ring_link_payload_id_t));
     if( s_broadcast_queue == NULL )
     {
         ESP_LOGE(TAG, "an error ocurred creating queue.");
@@ -23,30 +23,30 @@ esp_err_t spi_internal_init( void )
 }
 
 
-static esp_err_t spi_internal_process(spi_payload_t *p)
+static esp_err_t ring_link_process(ring_link_payload_t *p)
 {
     printf("call on_sibling_message(%s, %i)\n", p->buffer, p->len);
     return ESP_OK;
 }
 
-static esp_err_t spi_internal_broadcast(const void *buffer, uint16_t len){
-    spi_payload_t p = {
+static esp_err_t ring_link_broadcast(const void *buffer, uint16_t len){
+    ring_link_payload_t p = {
         .id = 0,
-        .ttl = SPI_PAYLOAD_TTL,
+        .ttl = RING_LINK_PAYLOAD_TTL,
         .src_device_id = device_config_get_id(),
         .dst_device_id = DEVICE_ID_ALL,
-        .buffer_type = SPI_PAYLOAD_TYPE_INTERNAL,
+        .buffer_type = RING_LINK_PAYLOAD_TYPE_INTERNAL,
         .len = len,
     };
-    memccpy(p.buffer, buffer, len, SPI_PAYLOAD_BUFFER_SIZE);
-    return spi_payload_transmit(&p);
+    memccpy(p.buffer, buffer, len, RING_LINK_PAYLOAD_BUFFER_SIZE);
+    return ring_link_lowlevel_transmit_payload(&p);
 }
 
 bool broadcast_to_siblings(const void *msg, uint16_t len)
 {
     if( xSemaphoreTake( s_broadcast_semaphore_handle, ( TickType_t ) 10 ) == pdTRUE )
     {
-        esp_err_t rc = spi_internal_broadcast(msg, len);
+        esp_err_t rc = ring_link_broadcast(msg, len);
         uint8_t id;
         if( xQueueReceive( s_broadcast_queue, &( id ), ( TickType_t ) 10 ) == pdPASS )
         {
@@ -60,10 +60,10 @@ bool broadcast_to_siblings(const void *msg, uint16_t len)
     return false;
 }
 
-static esp_err_t spi_internal_broadcast_handler(spi_payload_t *p)
+static esp_err_t ring_link_broadcast_handler(ring_link_payload_t *p)
 {
     // broadcast origin
-    if (spi_payload_is_from_device(p))
+    if (ring_link_payload_is_from_device(p))
     {
         xQueueSend(s_broadcast_queue, (void *) &(p->id), ( TickType_t ) 0 );
         ESP_LOGI(TAG, "Broadcast complete for packet id '%i'.", p->id);
@@ -71,23 +71,23 @@ static esp_err_t spi_internal_broadcast_handler(spi_payload_t *p)
     }
     else
     {
-        ESP_ERROR_CHECK(spi_internal_process(p));
-        return spi_payload_forward(p);
+        ESP_ERROR_CHECK(ring_link_process(p));
+        return ring_link_lowlevel_forward_payload(p);
     }
 }
 
-esp_err_t spi_internal_handler(spi_payload_t *p)
+esp_err_t ring_link_handler(ring_link_payload_t *p)
 {
-    if (spi_payload_is_broadcast(p))  // broadcast
+    if (ring_link_payload_is_broadcast(p))  // broadcast
     {
-        return spi_internal_broadcast_handler(p);
+        return ring_link_broadcast_handler(p);
     }
-    else if (spi_payload_is_for_device(p))  // payload for me
+    else if (ring_link_payload_is_for_device(p))  // payload for me
     {
-        return spi_internal_process(p);
+        return ring_link_process(p);
     }
     else  // not for me, forwarding
     {
-        return spi_payload_forward(p);        
+        return ring_link_lowlevel_forward_payload(p);        
     }
 }

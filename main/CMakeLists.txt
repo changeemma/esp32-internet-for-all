@@ -2,7 +2,6 @@ set(MAIN_SRCS
     "main.c"
     "nvs.c"
     "test_integration.c"
-    "test_board.c"
     "test_spi.c"
 )
 
@@ -11,11 +10,11 @@ set(MAIN_INCLUDE_DIRS
 )
 
 set(MAIN_REQUIRES
-    device
+    config
     utils
-    spi
-    spi_internal
-    spi_netif
+    ring_link_lowlevel
+    ring_link_internal
+    ring_link_netif
     wifi
     route
     nvs_flash

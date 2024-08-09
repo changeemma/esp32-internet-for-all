@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include "spi_netif.h"
+#include "ring_link_netif.h"
 #include "udp_spi.h"
 #include "wifi.h"
 #include "config.h"

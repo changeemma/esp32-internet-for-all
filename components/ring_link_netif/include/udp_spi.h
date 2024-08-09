@@ -7,7 +7,7 @@
 #include "esp_netif_net_stack.h"
 #include "esp_log.h"
 
-#include "spi_netif.h"
+#include "ring_link_netif.h"
 
 
 #ifdef __cplusplus

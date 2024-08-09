@@ -7,8 +7,9 @@
 
 // Private components
 #include "config.h"
-#include "spi_internal.h"
-#include "spi_netif.h"
+#include "ring_link_lowlevel.h"
+#include "ring_link_internal.h"
+#include "ring_link_netif.h"
 #include "udp_spi.h"
 #include "wifi.h"
 #include "route.h"
@@ -16,7 +17,6 @@
 #include "nvs.h"
 
 // Test files
-#include "test_board.h"
 #include "test_integration.h"
 #include "test_spi.h"
 
@@ -28,21 +28,21 @@ static const char *TAG = "==> main";
 static void spi_receive_task( void *pvParameters )
 {
     esp_err_t rc;
-    spi_payload_t p;
+    ring_link_payload_t p;
     while (true) {
-        memset(&p, 0, sizeof(spi_payload_t));
-        rc = spi_payload_receive(&p);
+        memset(&p, 0, sizeof(ring_link_payload_t));
+        rc = ring_link_lowlevel_receive_payload(&p);
         ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
         if (rc != ESP_OK) continue;
 
         switch (p.buffer_type)
         {
-        case SPI_PAYLOAD_TYPE_INTERNAL:
-            ESP_ERROR_CHECK_WITHOUT_ABORT(spi_internal_handler(&p));
+        case RING_LINK_PAYLOAD_TYPE_INTERNAL:
+            ESP_ERROR_CHECK_WITHOUT_ABORT(ring_link_handler(&p));
             break;
-        case SPI_PAYLOAD_TYPE_ESP_NETIF:
+        case RING_LINK_PAYLOAD_TYPE_ESP_NETIF:
             // check if netif is up
-            ESP_ERROR_CHECK_WITHOUT_ABORT(spi_netif_handler(&p));
+            ESP_ERROR_CHECK_WITHOUT_ABORT(ring_link_netif_handler(&p));
             break;
         default:
             ESP_LOGE(TAG, "Unknown payload type: '%i'", p.buffer_type);
@@ -54,8 +54,8 @@ static void spi_receive_task( void *pvParameters )
 
 esp_err_t spi_init(void)
 {
-    spi_lowlevel_init();
-    spi_internal_init();
+    ring_link_lowlevel_init();
+    ring_link_init();
 
     BaseType_t ret = xTaskCreate(spi_receive_task, "spi_receive_task", 2048, NULL, (tskIDLE_PRIORITY + 2), NULL);
 
@@ -78,12 +78,11 @@ void app_main(void)
     // Initializing spi/wifi drivers
     ESP_ERROR_CHECK(spi_init());
     test_spi_run_all();
-    //ESP_ERROR_CHECK(test_spi(false));
 
     ESP_ERROR_CHECK(wifi_init());
 
     // Initializing spi/wifi network interfaces
-    ESP_ERROR_CHECK(spi_netif_init());
+    ESP_ERROR_CHECK(ring_link_netif_init());
     bind_udp_spi();
     ESP_ERROR_CHECK(wifi_netif_init());
 

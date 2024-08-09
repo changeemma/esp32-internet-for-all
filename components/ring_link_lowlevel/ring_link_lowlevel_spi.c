@@ -1,12 +1,10 @@
-#include "spi_lowlevel.h"
+#include "ring_link_lowlevel_spi.h"
 
-static const char* TAG = "==> spi-lowlevel";
 
-static SemaphoreHandle_t s_tx_semaphore_handle = NULL;
 static spi_device_handle_t s_spi_device_handle = {0};
 
 
-static esp_err_t spi_rx_init() {
+static esp_err_t spi_lowlevel_rx_init() {
     //Configuration for the SPI bus
     spi_bus_config_t buscfg={
         .mosi_io_num=RECEIVER_GPIO_MOSI,
@@ -31,7 +29,7 @@ static esp_err_t spi_rx_init() {
     return ESP_OK;
 }
 
-static esp_err_t spi_tx_init() {
+static esp_err_t spi_lowlevel_tx_init() {
     //Configuration for the SPI bus
     spi_bus_config_t buscfg={
         .mosi_io_num=SENDER_GPIO_MOSI,
@@ -57,33 +55,24 @@ static esp_err_t spi_tx_init() {
     //Initialize the SPI bus and add the device we want to send stuff to.
     ESP_ERROR_CHECK(spi_bus_initialize(SPI_SENDER_HOST, &buscfg, SPI_DMA_CH_AUTO));
     ESP_ERROR_CHECK(spi_bus_add_device(SPI_SENDER_HOST, &devcfg, &s_spi_device_handle));
-    s_tx_semaphore_handle = xSemaphoreCreateMutex();
     return ESP_OK;
 }
 
-esp_err_t spi_lowlevel_init(void) {
-    ESP_ERROR_CHECK(spi_rx_init());
-    ESP_ERROR_CHECK(spi_tx_init());
+esp_err_t ring_link_lowlevel_init_impl(void) {
+    ESP_ERROR_CHECK(spi_lowlevel_rx_init());
+    ESP_ERROR_CHECK(spi_lowlevel_tx_init());
     return ESP_OK;
 }
 
-esp_err_t spi_lowlevel_transmit(void *p, size_t len) {
-    esp_err_t rc;
+esp_err_t ring_link_lowlevel_transmit_impl(void *p, size_t len) {
     spi_transaction_t t = {
         .length = len * 8,
         .tx_buffer = p,
     };
-    if( xSemaphoreTake( s_tx_semaphore_handle, ( TickType_t ) 10 ) == pdTRUE )
-    {
-        rc = spi_device_transmit(s_spi_device_handle, &t);
-        xSemaphoreGive( s_tx_semaphore_handle );
-        return rc;
-    }
-    ESP_LOGE(TAG, "Could not adquire Mutex...");
-    return ESP_FAIL;
+    return spi_device_transmit(s_spi_device_handle, &t);;
 }
 
-esp_err_t spi_lowlevel_receive(void *p, size_t len)
+esp_err_t ring_link_lowlevel_receive_impl(void *p, size_t len)
 {
     spi_slave_transaction_t t = {
         .rx_buffer = p,

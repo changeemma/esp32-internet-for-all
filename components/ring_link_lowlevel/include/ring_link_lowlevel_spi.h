@@ -6,15 +6,9 @@
 #include <string.h>
 
 // ESP32 libraries
-#include "esp_check.h"
-#include "esp_log.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/semphr.h"
-
 #include "driver/spi_master.h"
 #include "driver/spi_slave.h"
 
-#include "config.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,12 +27,10 @@ extern "C" {
 #define SPI_SENDER_HOST VSPI_HOST
 #define SPI_RECEIVER_HOST HSPI_HOST
 
+esp_err_t ring_link_lowlevel_init_impl(void);
+esp_err_t ring_link_lowlevel_transmit_impl(void *p, size_t len);
+esp_err_t ring_link_lowlevel_receive_impl(void *p, size_t len);
 
-esp_err_t spi_lowlevel_init(void);
-
-esp_err_t spi_lowlevel_transmit(void *p, size_t len);
-
-esp_err_t spi_lowlevel_receive(void *p, size_t len);
 
 #ifdef __cplusplus
 }
