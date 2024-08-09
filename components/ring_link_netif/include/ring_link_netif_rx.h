@@ -10,7 +10,7 @@ extern "C" {
 ESP_EVENT_DECLARE_BASE(RING_LINK_RX_EVENT);
 
 esp_err_t ring_link_rx_netif_init(void);
-esp_err_t ring_link_netif_handler(ring_link_payload_t *p);
+esp_err_t ring_link_rx_netif_receive(ring_link_payload_t *p);
 
 #ifdef __cplusplus
 }

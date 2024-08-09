@@ -3,7 +3,6 @@
 static const char* TAG = "==> ring_link_netif_rx";
 
 static u32_t ring_link_ipv6_addr[6] = {0xfe800000, 0x00000000, 0xb2a1a2ff, 0xfea3b5b6};
-static uint8_t mac[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
 
 ESP_EVENT_DEFINE_BASE(RING_LINK_RX_EVENT);
 
@@ -11,7 +10,7 @@ ESP_EVENT_DEFINE_BASE(RING_LINK_RX_EVENT);
 esp_netif_t *ring_link_rx_netif = NULL;
 
 
-static esp_err_t ring_link_netif_process(ring_link_payload_t *p)
+esp_err_t ring_link_rx_netif_receive(ring_link_payload_t *p)
 {
     printf("call esp_netif_receive(netif, %s, %i, NULL)\n", p->buffer, p->len);
     struct pbuf *q;
@@ -35,23 +34,7 @@ static esp_err_t ring_link_netif_process(ring_link_payload_t *p)
     return ESP_OK;
 }
 
-esp_err_t ring_link_netif_handler(ring_link_payload_t *p)
-{    
-    if (ring_link_payload_is_from_device(p))  // bounced package
-    {
-        ESP_LOGW(TAG, "Discarding bounced packet. id '%i' ('%s').", p->id, p->buffer);
-        return ESP_OK;
-    }
-    else if (ring_link_payload_is_for_device(p))  // payload for me
-    {
-        return ring_link_netif_process(p);
-    }
-    else  // not for me, warn and discard
-    {
-        ESP_LOGW(TAG, "Discarding packet. id '%i' ('%s').", p->id, p->buffer);
-        return ESP_OK;        
-    }
-}
+
 
 err_t ring_link_rx_netstack_lwip_init_fn(struct netif *netif)
 {
@@ -127,6 +110,7 @@ void ring_link_rx_default_action_sta_start(void *arg, esp_event_base_t base, int
 {
     printf("ring_link_default_action_sta_start\n");
     esp_netif_action_start(ring_link_rx_netif, base, event_id, data);
+    esp_netif_set_ip6_linklocal(ring_link_rx_netif, ring_link_ip6_addr);
     //esp_netif_set_default_netif(ring_link_netif_rx);
 }
 

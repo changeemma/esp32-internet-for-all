@@ -3,7 +3,6 @@
 static const char* TAG = "==> ring_link_netif";
 
 static u32_t ring_link_ipv6_addr[6] = {0xfe800000, 0x00000000, 0xb2a1a2ff, 0xfea3b5b6};
-static uint8_t mac[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
 
 ESP_EVENT_DEFINE_BASE(RING_LINK_TX_EVENT);
 
@@ -156,7 +155,7 @@ void ring_link_tx_default_handler(void *arg, esp_event_base_t base, int32_t even
 }
 
 
-void ring_link_default_action_sta_start(void *arg, esp_event_base_t base, int32_t event_id, void *data)
+void ring_link_tx_default_action_sta_start(void *arg, esp_event_base_t base, int32_t event_id, void *data)
 {
     printf("ring_link_default_action_sta_start\n");
     esp_netif_action_start(ring_link_tx_netif, base, event_id, data);
@@ -194,8 +193,11 @@ esp_err_t ring_link_tx_netif_init(void)
         .driver = NULL};
     
     ring_link_netif_esp_netif_init(&ring_link_tx_netif, &netif_config, ring_link_tx_driver_post_attach);
+    
+    uint8_t mac[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
+    esp_netif_set_mac(ring_link_tx_netif, mac);
 
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(RING_LINK_TX_EVENT, RING_LINK_EVENT_START, ring_link_default_action_sta_start, NULL, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(RING_LINK_TX_EVENT, RING_LINK_EVENT_START, ring_link_tx_default_action_sta_start, NULL, NULL));
     ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, ring_link_tx_default_handler, NULL, NULL));
     ESP_ERROR_CHECK(esp_event_post(RING_LINK_TX_EVENT, RING_LINK_EVENT_START, NULL, 0, portMAX_DELAY));
     return ESP_OK;
