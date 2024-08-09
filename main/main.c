@@ -7,7 +7,6 @@
 
 // Private components
 #include "config.h"
-#include "ring_link_payload.h"
 #include "ring_link_lowlevel.h"
 #include "ring_link_internal.h"
 #include "ring_link_netif.h"
