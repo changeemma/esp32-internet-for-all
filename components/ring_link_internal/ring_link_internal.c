@@ -1,6 +1,6 @@
-#include "ring_link.h"
+#include "ring_link_internal.h"
 
-static const char* TAG = "==> ring_link";
+static const char* TAG = "==> ring_link_internal";
 static SemaphoreHandle_t s_broadcast_semaphore_handle = NULL;
 static QueueHandle_t s_broadcast_queue = NULL;
 

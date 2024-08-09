@@ -11,7 +11,7 @@
 
 #include "config.h"
 #include "ring_link_payload.h"
-#include "ring_link.h"
+#include "ring_link_internal.h"
 
 #ifdef __cplusplus
 extern "C" {

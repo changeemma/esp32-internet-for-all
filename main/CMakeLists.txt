@@ -13,7 +13,7 @@ set(MAIN_REQUIRES
     config
     utils
     ring_link_lowlevel
-    ring_link
+    ring_link_internal
     ring_link_netif
     wifi
     route
