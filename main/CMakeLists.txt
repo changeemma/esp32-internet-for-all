@@ -12,9 +12,7 @@ set(MAIN_INCLUDE_DIRS
 set(MAIN_REQUIRES
     config
     utils
-    ring_link_lowlevel
-    ring_link_internal
-    ring_link_netif
+    ring_link
     wifi
     route
     nvs_flash

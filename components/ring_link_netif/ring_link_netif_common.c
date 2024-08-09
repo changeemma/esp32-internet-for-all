@@ -38,8 +38,6 @@ static esp_err_t ring_link_netif_esp_netif_attach(esp_netif_t * esp_netif, esp_e
     return esp_netif_attach(esp_netif, driver);
 }
 
-
-
 esp_err_t ring_link_netif_esp_netif_init(esp_netif_t **esp_netif, esp_netif_config_t *esp_netif_config, esp_err_t (*post_attach_callback)(esp_netif_t *, void *))
 {       
     *esp_netif = esp_netif_new(esp_netif_config);

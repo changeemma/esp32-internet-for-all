@@ -4,7 +4,7 @@ static const char* TAG = "==> ring_link_internal";
 static SemaphoreHandle_t s_broadcast_semaphore_handle = NULL;
 static QueueHandle_t s_broadcast_queue = NULL;
 
-esp_err_t ring_link_init( void )
+esp_err_t ring_link_internal_init( void )
 {
     s_broadcast_semaphore_handle = xSemaphoreCreateMutex();
     if( s_broadcast_semaphore_handle == NULL )
@@ -76,7 +76,7 @@ static esp_err_t ring_link_broadcast_handler(ring_link_payload_t *p)
     }
 }
 
-esp_err_t ring_link_handler(ring_link_payload_t *p)
+esp_err_t ring_link_internal_handler(ring_link_payload_t *p)
 {
     if (ring_link_payload_is_broadcast(p))  // broadcast
     {

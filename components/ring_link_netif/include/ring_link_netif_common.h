@@ -32,6 +32,7 @@
 extern "C" {
 #endif
 
+#define RING_LINK_NETIF_MTU RING_LINK_PAYLOAD_BUFFER_SIZE
 
 typedef enum
 {
