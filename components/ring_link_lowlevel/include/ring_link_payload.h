@@ -5,13 +5,14 @@
 #include <stdint.h>
 
 #include "config.h"
+#include "ring_link_lowlevel_spi.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-#define RING_LINK_PAYLOAD_BUFFER_SIZE 40
+#define RING_LINK_PAYLOAD_BUFFER_SIZE RING_LINK_LOWLEVEL_BUFFER_SIZE
 #define RING_LINK_PAYLOAD_TTL 4
 
 typedef enum {

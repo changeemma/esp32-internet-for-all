@@ -14,6 +14,8 @@
 extern "C" {
 #endif
 
+#define RING_LINK_LOWLEVEL_BUFFER_SIZE 40
+
 #define SPI_QUEUE_SIZE 3
 
 #define SENDER_GPIO_MOSI 23
