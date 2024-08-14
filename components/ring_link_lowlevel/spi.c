@@ -1,15 +1,15 @@
-#include "ring_link_lowlevel_impl.h"
+#include "spi.h"
 
 
 static spi_device_handle_t s_spi_device_handle = {0};
 
 
-static esp_err_t spi_lowlevel_rx_init() {
+static esp_err_t spi_rx_init() {
     //Configuration for the SPI bus
     spi_bus_config_t buscfg={
-        .mosi_io_num=RECEIVER_GPIO_MOSI,
+        .mosi_io_num=SPI_RECEIVER_GPIO_MOSI,
         .miso_io_num=-1,
-        .sclk_io_num=RECEIVER_GPIO_SCLK,
+        .sclk_io_num=SPI_RECEIVER_GPIO_SCLK,
         .quadwp_io_num = -1,
         .quadhd_io_num = -1,
     };
@@ -17,7 +17,7 @@ static esp_err_t spi_lowlevel_rx_init() {
     //Configuration for the SPI slave interface
     spi_slave_interface_config_t slvcfg={
         .mode=0,
-        .spics_io_num=RECEIVER_GPIO_CS,
+        .spics_io_num=SPI_RECEIVER_GPIO_CS,
         .queue_size=SPI_QUEUE_SIZE,
         .flags=0,
         //.post_setup_cb=spi_post_setup_cb,
@@ -29,12 +29,12 @@ static esp_err_t spi_lowlevel_rx_init() {
     return ESP_OK;
 }
 
-static esp_err_t spi_lowlevel_tx_init() {
+static esp_err_t spi_tx_init() {
     //Configuration for the SPI bus
     spi_bus_config_t buscfg={
-        .mosi_io_num=SENDER_GPIO_MOSI,
+        .mosi_io_num=SPI_SENDER_GPIO_MOSI,
         .miso_io_num=-1,
-        .sclk_io_num=SENDER_GPIO_SCLK,
+        .sclk_io_num=SPI_SENDER_GPIO_SCLK,
         .quadwp_io_num=-1,
         .quadhd_io_num=-1
     };
@@ -47,7 +47,7 @@ static esp_err_t spi_lowlevel_tx_init() {
         .clock_speed_hz=SPI_MASTER_FREQ_8M,
         .duty_cycle_pos=128,        //50% duty cycle
         .mode=0,
-        .spics_io_num=SENDER_GPIO_CS,
+        .spics_io_num=SPI_SENDER_GPIO_CS,
         .cs_ena_posttrans=3,        //Keep the CS low 3 cycles after transaction, to stop slave from missing the last bit when CS has less propagation delay than CLK
         .queue_size=SPI_QUEUE_SIZE
     };
@@ -58,21 +58,21 @@ static esp_err_t spi_lowlevel_tx_init() {
     return ESP_OK;
 }
 
-esp_err_t ring_link_lowlevel_init_impl(void) {
-    ESP_ERROR_CHECK(spi_lowlevel_rx_init());
-    ESP_ERROR_CHECK(spi_lowlevel_tx_init());
+esp_err_t spi_init(void) {
+    ESP_ERROR_CHECK(spi_rx_init());
+    ESP_ERROR_CHECK(spi_tx_init());
     return ESP_OK;
 }
 
-esp_err_t ring_link_lowlevel_transmit_impl(void *p, size_t len) {
+esp_err_t spi_transmit(void *p, size_t len) {
     spi_transaction_t t = {
         .length = len * 8,
         .tx_buffer = p,
     };
-    return spi_device_transmit(s_spi_device_handle, &t);;
+    return spi_device_transmit(s_spi_device_handle, &t);
 }
 
-esp_err_t ring_link_lowlevel_receive_impl(void *p, size_t len)
+esp_err_t spi_receive(void *p, size_t len)
 {
     spi_slave_transaction_t t = {
         .rx_buffer = p,

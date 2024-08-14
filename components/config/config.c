@@ -76,6 +76,6 @@ device_orientation_t device_config_get_orientation(void)
 void device_config_print(void)
 {
     ESP_LOGI(TAG, "Board ID: '%i'", device_config_get_id());
-    ESP_LOGI(TAG, "Board Mode: '%s'", device_config_get_id());
-    ESP_LOGI(TAG, "Board Orientation: '%s'", device_config_get_id());
+    ESP_LOGI(TAG, "Board Mode: '%i'", device_config_get_mode());
+    ESP_LOGI(TAG, "Board Orientation: '%i'", device_config_get_orientation());
 }

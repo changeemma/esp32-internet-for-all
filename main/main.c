@@ -48,4 +48,11 @@ void app_main(void)
 
     rm_route("192.168.60.0", "255.255.254.0");
     print_route_table();
+    #ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI
+    printf("CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI\n");
+    #endif
+
+    #ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_UART
+    printf("CONFIG_RING_LINK_LOWLEVEL_IMPL_UART\n");
+    #endif
 }

@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 #include "config.h"
-#include "ring_link_lowlevel_spi.h"
+#include "ring_link_lowlevel_impl.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,40 +1,22 @@
-#pragma once
+#ifndef __RING_LINK_LOWLEVEL_IMPL_H
+#define __RING_LINK_LOWLEVEL_IMPL_H
 
-// C libraries
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
+#ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI
+#include "spi.h"
 
-// ESP32 libraries
-#include "driver/spi_master.h"
-#include "driver/spi_slave.h"
-
-
-#ifdef __cplusplus
-extern "C" {
+#define RING_LINK_LOWLEVEL_BUFFER_SIZE      SPI_BUFFER_SIZE
+#define RING_LINK_LOWLEVEL_IMPL_INIT        spi_init
+#define RING_LINK_LOWLEVEL_IMPL_TRANSMIT    spi_transmit
+#define RING_LINK_LOWLEVEL_IMPL_RECEIVE     spi_receive
 #endif
 
-#define RING_LINK_LOWLEVEL_BUFFER_SIZE 40
+#ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_UART
+#include "uart.h"
 
-#define SPI_QUEUE_SIZE 3
-
-#define SENDER_GPIO_MOSI 23
-#define SENDER_GPIO_SCLK 18
-#define SENDER_GPIO_CS 5
-
-#define RECEIVER_GPIO_MOSI 13
-#define RECEIVER_GPIO_SCLK 14
-#define RECEIVER_GPIO_CS 15
-
-#define SPI_SENDER_HOST VSPI_HOST
-#define SPI_RECEIVER_HOST HSPI_HOST
-
-esp_err_t ring_link_lowlevel_init_impl(void);
-esp_err_t ring_link_lowlevel_transmit_impl(void *p, size_t len);
-esp_err_t ring_link_lowlevel_receive_impl(void *p, size_t len);
-
-
-#ifdef __cplusplus
-}
+#define RING_LINK_LOWLEVEL_BUFFER_SIZE      UART_BUFFER_SIZE
+#define RING_LINK_LOWLEVEL_IMPL_INIT        uart_init
+#define RING_LINK_LOWLEVEL_IMPL_TRANSMIT    uart_transmit
+#define RING_LINK_LOWLEVEL_IMPL_RECEIVE     uart_receive
 #endif
 
+#endif
