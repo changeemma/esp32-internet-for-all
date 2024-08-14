@@ -1,0 +1,22 @@
+#ifndef __RING_LINK_LOWLEVEL_IMPL_H
+#define __RING_LINK_LOWLEVEL_IMPL_H
+
+#ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI
+#include "spi.h"
+
+#define RING_LINK_LOWLEVEL_BUFFER_SIZE      SPI_BUFFER_SIZE
+#define RING_LINK_LOWLEVEL_IMPL_INIT        spi_init
+#define RING_LINK_LOWLEVEL_IMPL_TRANSMIT    spi_transmit
+#define RING_LINK_LOWLEVEL_IMPL_RECEIVE     spi_receive
+#endif
+
+#ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_UART
+#include "uart.h"
+
+#define RING_LINK_LOWLEVEL_BUFFER_SIZE      UART_BUFFER_SIZE
+#define RING_LINK_LOWLEVEL_IMPL_INIT        uart_init
+#define RING_LINK_LOWLEVEL_IMPL_TRANSMIT    uart_transmit
+#define RING_LINK_LOWLEVEL_IMPL_RECEIVE     uart_receive
+#endif
+
+#endif

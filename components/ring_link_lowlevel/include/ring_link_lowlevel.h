@@ -7,9 +7,9 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
-#include "ring_link_lowlevel_spi.h"
-#include "config.h"
 #include "ring_link_payload.h"
+#include "ring_link_lowlevel_impl.h"
+#include "config.h"
 
 #ifdef __cplusplus
 extern "C" {
