@@ -16,6 +16,7 @@ static void ring_link_receive_task( void *pvParameters )
         switch (p.buffer_type)
         {
         case RING_LINK_PAYLOAD_TYPE_INTERNAL:
+        case RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT:
             ESP_ERROR_CHECK_WITHOUT_ABORT(ring_link_internal_handler(&p));
             break;
         case RING_LINK_PAYLOAD_TYPE_ESP_NETIF:
