@@ -44,17 +44,17 @@ static esp_err_t ring_link_broadcast(const void *buffer, uint16_t len, ring_link
 
 bool broadcast_to_siblings_internal(const void *msg, uint16_t len, ring_link_payload_buffer_type_t buffer_type)
 {
-    if( xSemaphoreTake( s_broadcast_semaphore_handle, ( TickType_t ) 10 ) == pdTRUE )
+    if( xSemaphoreTake( s_broadcast_semaphore_handle, ( TickType_t ) 100 ) == pdTRUE )
     {
         esp_err_t rc = ring_link_broadcast(msg, len, buffer_type);
         uint8_t id;
-        if( xQueueReceive( s_broadcast_queue, &( id ), ( TickType_t ) 10 ) == pdPASS )
+        bool result = false;
+        if( xQueueReceive( s_broadcast_queue, &( id ), ( TickType_t ) 100 ) == pdPASS )
         {
-            xSemaphoreGive( s_broadcast_semaphore_handle );
-            return rc == ESP_OK ? true : false;
+            result = (rc == ESP_OK);
         }
-        
-        return false;
+        xSemaphoreGive( s_broadcast_semaphore_handle );
+        return result;
     }
     ESP_LOGE(TAG, "Could not adquire Mutex...");
     return false;
