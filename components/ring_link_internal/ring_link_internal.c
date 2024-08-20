@@ -25,6 +25,9 @@ esp_err_t ring_link_internal_init( void )
 
 static esp_err_t ring_link_process(ring_link_payload_t *p)
 {
+    if (ring_link_payload_is_heartbeat(p)){
+        return ESP_OK;
+    }
     printf("call on_sibling_message(%s, %i)\n", p->buffer, p->len);
     return ESP_OK;
 }
@@ -80,10 +83,6 @@ static esp_err_t ring_link_broadcast_handler(ring_link_payload_t *p)
         xQueueSend(s_broadcast_queue, (void *) &(p->id), ( TickType_t ) 0 );
         ESP_LOGI(TAG, "Broadcast complete for packet id '%i'.", p->id);
         return ESP_OK;
-    }
-    else if (ring_link_payload_is_heartbeat(p))
-    {
-        return ring_link_lowlevel_forward_payload(p);
     }
     else
     {
