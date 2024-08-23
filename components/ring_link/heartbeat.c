@@ -16,6 +16,10 @@ void offline_board_callback(int failure_count){
     ESP_LOGE(TAG, "Hay una placa OFFLINE. Se invoca al callback. Luego de %d pruebas.", failure_count);
 }
 
+void online_board_callback(){
+    ESP_LOGE(TAG, "El nodo se encuentra ONLINE. Se invoca al callback.");
+}
+
 void send_heartbeat() {
     heartbeat_id++;
     const char msg[] = "HEARTBEAT...";
@@ -33,6 +37,7 @@ void check_heartbeat() {
         }
     } else {
         failure_count = 0;  // Reinicia el contador si se recibe el heartbeat
+        online_board_callback();
     }
 }
 
