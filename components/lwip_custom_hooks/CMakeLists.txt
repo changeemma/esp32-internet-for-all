@@ -3,7 +3,7 @@ idf_component_register(SRCS "lwip_custom_hooks.c"
     REQUIRES lwip
 )
 
-# Solo aplicar estas configuraciones si no estamos en el contexto de la aplicación de prueba unitaria
+# Only apply these configurations if we are not in the context of the unit test application
 if(NOT DEFINED PROJECT_VER)
     idf_component_get_property(lwip lwip COMPONENT_LIB)
     target_compile_options(${lwip} PRIVATE "-I${COMPONENT_DIR}/include")
