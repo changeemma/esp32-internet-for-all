@@ -8,6 +8,7 @@
 // Private components
 #include "config.h"
 #include "ring_link.h"
+#include "heartbeat.h"
 #include "udp_spi.h"
 #include "wifi.h"
 #include "route.h"
@@ -18,7 +19,7 @@
 #include "test_integration.h"
 #include "test_spi.h"
 
-#define TEST_ALL true
+#define TEST_ALL false
 
 static const char *TAG = "==> main";
 
@@ -35,19 +36,16 @@ void app_main(void)
     bind_udp_spi();
     test_spi_run_all();
 
-
     ESP_ERROR_CHECK(wifi_init());
     ESP_ERROR_CHECK(wifi_netif_init());
 
-    add_route("192.168.0.0", WIFI_GATEWAY, "255.255.0.0", "r_1");
-    add_route("192.168.60.0", WIFI_GATEWAY, "255.255.255.128", "r_3");
-    add_route("192.168.60.0", SPI_GATEWAY, "255.255.255.0", "r_2");
+    // add_route("192.168.0.0", WIFI_GATEWAY, "255.255.0.0", "r_1");
+    // add_route("192.168.60.0", WIFI_GATEWAY, "255.255.255.128", "r_3");
+    // add_route("192.168.60.0", SPI_GATEWAY, "255.255.255.0", "r_2");
     print_route_table();
 
-    test(TEST_ALL);
 
-    rm_route("192.168.60.0", "255.255.254.0");
-    print_route_table();
+    // rm_route("192.168.60.0", "255.255.254.0");
     #ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI
     printf("CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI\n");
     #endif
@@ -55,4 +53,9 @@ void app_main(void)
     #ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_UART
     printf("CONFIG_RING_LINK_LOWLEVEL_IMPL_UART\n");
     #endif
+    
+    print_route_table();
+    
+    test(TEST_ALL);
+    init_heartbeat();
 }

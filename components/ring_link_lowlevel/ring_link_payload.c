@@ -18,3 +18,8 @@ bool ring_link_payload_is_broadcast(ring_link_payload_t *p)
 {
     return p->dst_device_id == DEVICE_ID_ALL;
 }
+
+bool ring_link_payload_is_heartbeat(ring_link_payload_t *p)
+{
+    return IS_HEARTBEAT_PAYLOAD(p->buffer_type);
+}

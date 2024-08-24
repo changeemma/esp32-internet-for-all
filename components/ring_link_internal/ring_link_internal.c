@@ -25,39 +25,54 @@ esp_err_t ring_link_internal_init( void )
 
 static esp_err_t ring_link_process(ring_link_payload_t *p)
 {
+    if (ring_link_payload_is_heartbeat(p)){
+        return ESP_OK;
+    }
     printf("call on_sibling_message(%s, %i)\n", p->buffer, p->len);
     return ESP_OK;
 }
 
-static esp_err_t ring_link_broadcast(const void *buffer, uint16_t len){
+static esp_err_t ring_link_broadcast(const void *buffer, uint16_t len, ring_link_payload_buffer_type_t buffer_type){
     ring_link_payload_t p = {
         .id = 0,
         .ttl = RING_LINK_PAYLOAD_TTL,
         .src_device_id = device_config_get_id(),
         .dst_device_id = DEVICE_ID_ALL,
-        .buffer_type = RING_LINK_PAYLOAD_TYPE_INTERNAL,
+        .buffer_type = buffer_type,
         .len = len,
     };
     memccpy(p.buffer, buffer, len, RING_LINK_PAYLOAD_BUFFER_SIZE);
     return ring_link_lowlevel_transmit_payload(&p);
 }
 
-bool broadcast_to_siblings(const void *msg, uint16_t len)
+bool broadcast_to_siblings_internal(const void *msg, uint16_t len, ring_link_payload_buffer_type_t buffer_type)
 {
-    if( xSemaphoreTake( s_broadcast_semaphore_handle, ( TickType_t ) 10 ) == pdTRUE )
+    if( xSemaphoreTake( s_broadcast_semaphore_handle, ( TickType_t ) 100 ) == pdTRUE )
     {
-        esp_err_t rc = ring_link_broadcast(msg, len);
+        esp_err_t rc = ring_link_broadcast(msg, len, buffer_type);
         uint8_t id;
-        if( xQueueReceive( s_broadcast_queue, &( id ), ( TickType_t ) 10 ) == pdPASS )
+        bool result = false;
+        if( xQueueReceive( s_broadcast_queue, &( id ), ( TickType_t ) 100 ) == pdPASS )
         {
-            xSemaphoreGive( s_broadcast_semaphore_handle );
-            return rc == ESP_OK ? true : false;
+            result = (rc == ESP_OK);
         }
-        
-        return false;
+        xSemaphoreGive( s_broadcast_semaphore_handle );
+        return result;
     }
     ESP_LOGE(TAG, "Could not adquire Mutex...");
     return false;
+}
+
+bool broadcast_to_siblings_heartbeat(const void *msg, uint16_t len){
+    
+    ring_link_payload_buffer_type_t buffer_type = RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT;
+    return broadcast_to_siblings_internal(msg, len, buffer_type);
+}
+
+bool broadcast_to_siblings(const void *msg, uint16_t len){
+    
+    ring_link_payload_buffer_type_t buffer_type = RING_LINK_PAYLOAD_TYPE_INTERNAL;
+    return broadcast_to_siblings_internal(msg, len, buffer_type);
 }
 
 static esp_err_t ring_link_broadcast_handler(ring_link_payload_t *p)
