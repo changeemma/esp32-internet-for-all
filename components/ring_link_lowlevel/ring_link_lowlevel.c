@@ -6,7 +6,7 @@ static SemaphoreHandle_t s_tx_semaphore_handle = NULL;
 
 
 esp_err_t ring_link_lowlevel_init(void) {
-    ESP_ERROR_CHECK(ring_link_lowlevel_init_impl());
+    ESP_ERROR_CHECK(RING_LINK_LOWLEVEL_IMPL_INIT());
     s_tx_semaphore_handle = xSemaphoreCreateMutex();
     return ESP_OK;
 }
@@ -16,7 +16,7 @@ esp_err_t ring_link_lowlevel_transmit_payload(ring_link_payload_t *p)
     esp_err_t rc;
     if( xSemaphoreTake( s_tx_semaphore_handle, ( TickType_t ) 10 ) == pdTRUE )
     {
-        rc = ring_link_lowlevel_transmit_impl(p, sizeof(ring_link_payload_t));
+        rc = RING_LINK_LOWLEVEL_IMPL_TRANSMIT(p, sizeof(ring_link_payload_t));
         xSemaphoreGive( s_tx_semaphore_handle );
         return rc;
     }
@@ -26,7 +26,7 @@ esp_err_t ring_link_lowlevel_transmit_payload(ring_link_payload_t *p)
 
 esp_err_t ring_link_lowlevel_receive_payload(ring_link_payload_t *p)
 {
-    return ring_link_lowlevel_receive_impl(p, sizeof(ring_link_payload_t));
+    return RING_LINK_LOWLEVEL_IMPL_RECEIVE(p, sizeof(ring_link_payload_t));
 }
 
 esp_err_t ring_link_lowlevel_forward_payload(ring_link_payload_t *p)

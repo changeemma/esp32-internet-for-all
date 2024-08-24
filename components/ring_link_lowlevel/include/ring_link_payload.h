@@ -5,19 +5,39 @@
 #include <stdint.h>
 
 #include "config.h"
+#include "ring_link_lowlevel_impl.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-#define RING_LINK_PAYLOAD_BUFFER_SIZE 40
+#define RING_LINK_PAYLOAD_BUFFER_SIZE RING_LINK_LOWLEVEL_BUFFER_SIZE
 #define RING_LINK_PAYLOAD_TTL 4
 
-typedef enum {
-    RING_LINK_PAYLOAD_TYPE_INTERNAL = 0,
-    RING_LINK_PAYLOAD_TYPE_ESP_NETIF = 1,
+/**
+ * @brief Types of payloads in the ring link communication.
+ *
+ * This enumeration defines the various types of payloads that can be
+ * transmitted in the ring link system. The values are carefully chosen
+ * to distinguish between internal and external payloads.
+ *
+ * Internal payloads (< 0x80):
+ * - Used for communication within the ring link system itself.
+ * - Include types like regular internal messages and heartbeats.
+ *
+ * External payloads (>= 0x80):
+ * - Used for payloads originating from or destined to external systems.
+ * - Include types like ESP-NETIF messages.
+ */
+typedef enum: uint8_t {
+    RING_LINK_PAYLOAD_TYPE_INTERNAL = 0x00,
+    RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT = 0x01,
+    
+    RING_LINK_PAYLOAD_TYPE_ESP_NETIF = 0x80,
 } ring_link_payload_buffer_type_t;
+
+#define IS_HEARTBEAT_PAYLOAD(type) ((type) == RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT)
 
 typedef uint8_t ring_link_payload_id_t;
 
@@ -37,6 +57,9 @@ bool ring_link_payload_is_for_device(ring_link_payload_t *p);
 bool ring_link_payload_is_from_device(ring_link_payload_t *p);
 
 bool ring_link_payload_is_broadcast(ring_link_payload_t *p);
+
+bool ring_link_payload_is_heartbeat(ring_link_payload_t *p);
+
 
 #ifdef __cplusplus
 }

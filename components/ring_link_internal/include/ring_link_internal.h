@@ -12,9 +12,13 @@ extern "C" {
 
 bool broadcast_to_siblings(const void *msg, uint16_t len);
 
-esp_err_t ring_link_init(void);
+bool broadcast_to_siblings_heartbeat(const void *msg, uint16_t len);
 
-esp_err_t ring_link_handler(ring_link_payload_t *p);
+bool ring_link_send_heartbeat(const void *msg, uint16_t len);
+
+esp_err_t ring_link_internal_init(void);
+
+esp_err_t ring_link_internal_handler(ring_link_payload_t *p);
 
 #ifdef __cplusplus
 }
