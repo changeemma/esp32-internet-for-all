@@ -97,10 +97,10 @@ esp_err_t physim_init(void) {
     uint32_t simulation_device_id = physim_get_config_word(PS_CFG_DEVICE_ID);
     ESP_LOGI(TAG, "I am device %lu", simulation_device_id);
 
-    uint32_t spi_in_link_id = physim_get_config_word(SPI_IN);
+    spi_in_link_id = physim_get_config_word(SPI_IN);
     ESP_LOGI(TAG, "SPI_IN link id: %lu", spi_in_link_id);
 
-    uint32_t spi_out_link_id = physim_get_config_word(SPI_OUT);
+    spi_out_link_id = physim_get_config_word(SPI_OUT);
     ESP_LOGI(TAG, "SPI_OUT link id: %lu", spi_out_link_id);
     
     return ESP_OK;
