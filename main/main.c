@@ -9,14 +9,12 @@
 #include "config.h"
 #include "ring_link.h"
 #include "heartbeat.h"
-#include "udp_spi.h"
 #include "wifi.h"
 #include "route.h"
 
 #include "nvs.h"
 
 // Test files
-#include "test_integration.h"
 #include "test_spi.h"
 
 #define TEST_ALL false
@@ -33,7 +31,6 @@ void app_main(void)
     device_config_print();
 
     ESP_ERROR_CHECK(ring_link_init());
-    bind_udp_spi();
     test_spi_run_all();
 
     ESP_ERROR_CHECK(wifi_init());
@@ -50,12 +47,11 @@ void app_main(void)
     printf("CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI\n");
     #endif
 
-    #ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_UART
-    printf("CONFIG_RING_LINK_LOWLEVEL_IMPL_UART\n");
+    #ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_PHYSIM
+    printf("CONFIG_RING_LINK_LOWLEVEL_IMPL_PHYSIM\n");
     #endif
     
     print_route_table();
     
-    test(TEST_ALL);
     init_heartbeat();
 }

@@ -1,7 +1,6 @@
 set(MAIN_SRCS
     "main.c"
     "nvs.c"
-    "test_integration.c"
     "test_spi.c"
 )
 

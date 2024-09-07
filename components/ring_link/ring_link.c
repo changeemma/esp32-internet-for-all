@@ -32,6 +32,13 @@ static void ring_link_receive_task( void *pvParameters )
 
 esp_err_t ring_link_init(void)
 {
+    #ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI
+    printf("CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI\n");
+    #endif
+
+    #ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_UART
+    printf("CONFIG_RING_LINK_LOWLEVEL_IMPL_UART\n");
+    #endif
     ESP_ERROR_CHECK(ring_link_lowlevel_init());
     ESP_ERROR_CHECK(ring_link_internal_init());
     ESP_ERROR_CHECK(ring_link_netif_init());
