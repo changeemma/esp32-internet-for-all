@@ -53,24 +53,17 @@ This guide explains how to add unit tests to your ESP32 component and how to run
 
    Replace `/path/to/your/components/directory` with the actual path to your components.
 
-3. If you have custom LWIP hooks, ensure your `lwip_custom_hooks/CMakeLists.txt` is configured correctly:
-
-   ```cmake
-   idf_component_register(SRCS "lwip_custom_hooks.c"
-       INCLUDE_DIRS "include"
-       REQUIRES lwip
-   )
-
-   if(NOT DEFINED PROJECT_VER)
-       idf_component_get_property(lwip lwip COMPONENT_LIB)
-       target_compile_options(${lwip} PRIVATE "-I${COMPONENT_DIR}/include")
-       target_compile_definitions(${lwip} PRIVATE "-DESP_IDF_LWIP_HOOK_FILENAME=\"lwip_custom_hooks.h\"")
-   endif()
-   ```
 
 ## Running the Tests
 
-1. Configure the project:
+
+1. Navigate to the unit test app directory:
+
+   ```
+   cd $IDF_PATH/tools/unit-test-app
+   ```
+
+2. Configure the project:
 
    ```
    idf.py menuconfig
@@ -78,13 +71,18 @@ This guide explains how to add unit tests to your ESP32 component and how to run
 
    Ensure that "Component config" -> "Unity unit testing library" -> "Enable unit tests" is enabled.
 
-2. Build the unit test app:
+3. Build the unit test app:
 
    ```
-   idf.py build
+   idf.py -T build all build
+   ```
+   or 
+
+   ```
+   idf.py -T build your_component build
    ```
 
-3. Flash the app to your ESP32:
+4. Flash the app to your ESP32:
 
    ```
    idf.py -p PORT flash
@@ -92,7 +90,7 @@ This guide explains how to add unit tests to your ESP32 component and how to run
 
    Replace `PORT` with your ESP32's port (e.g., `/dev/ttyUSB0`).
 
-4. Run the tests:
+5. Run the tests:
 
    ```
    idf.py -p PORT monitor
