@@ -119,3 +119,8 @@ void wifi_ap_netif_init(void) {
     ESP_LOGI(WIFI_TAG, "wifi_ap_netif_init finished.");
 }
 
+esp_ip4_addr_t get_wifi_ip_interface_address(void){
+    esp_ip4_addr_t ip_addr;
+    esp_netif_str_to_ip4("192.168.4.1", &ip_addr);
+    return ip_addr;
+}
