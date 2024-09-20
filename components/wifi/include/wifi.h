@@ -24,3 +24,4 @@ void wifi_ap_netif_init(void);
 void wifi_sta_netif_init(void);
 esp_netif_t * get_wifi_netif(void);
 esp_err_t wifi_netif_init(void);
+esp_ip4_addr_t get_wifi_ip_interface_address(void);

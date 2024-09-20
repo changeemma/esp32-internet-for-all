@@ -13,8 +13,7 @@ esp_ip4_addr_t get_ip_gateway(gateway_t gw){
         ip_addr.addr = addr;
         return ip_addr;
     }
-    //TODO: tener una funcion para obtener la ip o interfaz Wi-Fi
-    esp_err_t err = esp_netif_str_to_ip4("192.168.4.1", &ip_addr); 
+    esp_err_t err = get_wifi_ip_interface_address();
     if (err != ESP_OK) {
         printf("Failed to convert IP string to struct, error: %d\n", err);
         ip_addr.addr = 0;
