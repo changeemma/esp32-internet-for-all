@@ -8,6 +8,7 @@
 
 
 #include "ring_link_netif.h"
+#include "wifi.h"
 
 #define MAX_NUMBER_ROUTES 10
 

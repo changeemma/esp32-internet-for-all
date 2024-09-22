@@ -16,11 +16,7 @@ esp_ip4_addr_t get_ip_gateway(gateway_t gw){
         ip_addr.addr = addr;
         return ip_addr;
     }
-    esp_err_t err = get_wifi_ip_interface_address();
-    if (err != ESP_OK) {
-        printf("Failed to convert IP string to struct, error: %d\n", err);
-        ip_addr.addr = 0;
-    }
+    ip_addr = get_wifi_ip_interface_address();
     return ip_addr;
 }
 
@@ -79,7 +75,7 @@ esp_err_t add_route(char * ip, gateway_t gw, char * netmask, char * key)
     esp_netif_config_t netif_config = {
         .base = &base_netif_config,
         .stack = &s_spi_netif_config,
-        .driver = &custom_driver_transmit};
+        .driver = &driver_ifconfig};
     new_route = esp_netif_new(&netif_config);
 
     if (new_route == NULL) {
