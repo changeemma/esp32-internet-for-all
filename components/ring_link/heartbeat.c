@@ -16,14 +16,14 @@ void offline_board_callback(int failure_count){
 }
 
 void online_board_callback(){
-    ESP_LOGE(TAG, "The node is ONLINE. Callback invoked.");
+    ESP_LOGD(TAG, "The node is ONLINE. Callback invoked.");
 }
 
 void send_heartbeat() {
     heartbeat_id++;
     const char msg[] = "HEARTBEAT...";
     heartbeat_received = broadcast_to_siblings_heartbeat(msg, sizeof(msg));
-    ESP_LOGE(TAG, "Sent heartbeat %d", heartbeat_id);
+    ESP_LOGD(TAG, "Sent heartbeat %d", heartbeat_id);
 }
 
 void check_heartbeat() {
