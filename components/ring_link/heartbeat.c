@@ -4,7 +4,6 @@
 static int heartbeat_id = 0;
 static bool heartbeat_received = false;
 static esp_timer_handle_t heartbeat_timer;
-static esp_timer_handle_t check_timer;
 static int failure_count = 0;
 static bool node_online = true;
 
@@ -45,12 +44,9 @@ static void check_heartbeat() {
     }
 }
 
-void heartbeat_timer_callback(void* arg) {
+static void heartbeat_timer_callback(void* arg) {
     send_heartbeat();
     check_heartbeat();
-}
-
-void check_timer_callback(void* arg) {
 }
 
 void init_heartbeat(void) {
