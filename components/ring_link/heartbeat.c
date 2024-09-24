@@ -6,6 +6,7 @@ static bool heartbeat_received = false;
 static esp_timer_handle_t heartbeat_timer;
 static esp_timer_handle_t check_timer;
 static int failure_count = 0;
+static bool node_online = true;
 
 static const char *TAG = "==> heartbeat";
 
@@ -28,14 +29,16 @@ static void check_heartbeat() {
     if (!heartbeat_received) {
         failure_count++;
         ESP_LOGE(TAG, "Heartbeat %d not received. Failure #%d", heartbeat_id, failure_count);
-        if (failure_count >= MAX_FAILURES) {
+        if (node_online && (failure_count >= MAX_FAILURES)) {
             ESP_LOGE(TAG, "Maximum failures reached. Board considered out of service.");
+            node_online = false;
             offline_board_callback();
         }
     } else
     {
         ESP_LOGD(TAG, "The node is ONLINE.");
-        if (failure_count > 0) {
+        if (!node_online) {
+            node_online = true;
             failure_count = 0;  // Reset the counter if heartbeat is received and it was failing before
             online_board_callback();
         }
