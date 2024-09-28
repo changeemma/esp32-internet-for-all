@@ -9,6 +9,7 @@ ESP_EVENT_DEFINE_BASE(RING_LINK_TX_EVENT);
 static esp_netif_t *ring_link_tx_netif = NULL;
 
 
+
 const struct esp_netif_netstack_config _g_esp_netif_netstack_ring_link_tx_config = {
         .lwip = {
             .init_fn = ring_link_tx_netif_netstack_init_fn,
@@ -27,6 +28,13 @@ const esp_netif_inherent_config_t _g_esp_netif_inherent_ring_link_tx_config = {
     .route_prio = 15,
     .bridge_info = NULL
 };
+
+static const esp_netif_config_t tx_cfg = {
+    .base = &_g_esp_netif_inherent_ring_link_tx_config,
+    .driver = NULL,
+    .stack = &_g_esp_netif_netstack_ring_link_tx_config,
+};
+
 
 esp_netif_t *get_ring_link_tx_netif(void){
     return ring_link_tx_netif;
@@ -195,11 +203,11 @@ static void ring_link_tx_default_action_start(void *arg, esp_event_base_t base, 
     ESP_ERROR_CHECK(esp_netif_set_default_netif(ring_link_tx_netif));
 }
 
-esp_err_t ring_link_tx_netif_init(esp_netif_config_t *cfg)
+esp_err_t ring_link_tx_netif_init(void)
 {
     ESP_LOGI(TAG, "Calling ring_link_tx_netif_init");
 
-    ring_link_tx_netif = esp_netif_new(cfg);
+    ring_link_tx_netif = esp_netif_new(&tx_cfg);
 
     if (ring_link_tx_netif == NULL) {
         ESP_LOGE(TAG, "esp_netif_new failed!");
