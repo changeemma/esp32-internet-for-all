@@ -9,6 +9,25 @@ ESP_EVENT_DEFINE_BASE(RING_LINK_TX_EVENT);
 static esp_netif_t *ring_link_tx_netif = NULL;
 
 
+const struct esp_netif_netstack_config _g_esp_netif_netstack_ring_link_tx_config = {
+        .lwip = {
+            .init_fn = ring_link_tx_netif_netstack_init_fn,
+            .input_fn = ring_link_tx_netif_netstack_input_fn
+        }
+};
+
+const esp_netif_inherent_config_t _g_esp_netif_inherent_ring_link_tx_config = {
+    .flags = (esp_netif_flags_t)(NETIF_FLAG_BROADCAST | NETIF_FLAG_LINK_UP | ESP_NETIF_FLAG_AUTOUP),
+    ESP_COMPILER_DESIGNATED_INIT_AGGREGATE_TYPE_EMPTY(mac)
+    ESP_COMPILER_DESIGNATED_INIT_AGGREGATE_TYPE_EMPTY(ip_info)
+    .get_ip_event = 0,
+    .lost_ip_event = 0,
+    .if_key = "ring_link_tx",
+    .if_desc = "ring-link-tx if",
+    .route_prio = 15,
+    .bridge_info = NULL
+};
+
 esp_netif_t *get_ring_link_tx_netif(void){
     return ring_link_tx_netif;
 }
@@ -85,7 +104,7 @@ static esp_err_t esp_netif_ring_link_driver_transmit(void *h, void *buffer, size
     return ring_link_lowlevel_transmit_payload(&p);
 }
 
-static err_t ring_link_tx_netif_netstack_init_fn(struct netif *netif)
+err_t ring_link_tx_netif_netstack_init_fn(struct netif *netif)
 {
     LWIP_ASSERT("netif != NULL", (netif != NULL));
     /* Have to get the esp-netif handle from netif first and then driver==ethernet handle from there */
@@ -98,7 +117,7 @@ static err_t ring_link_tx_netif_netstack_init_fn(struct netif *netif)
     return ERR_OK;
 }
 
-static esp_netif_recv_ret_t ring_link_tx_netif_netstack_input_fn(void *h, void *buffer, size_t len, void* l2_buff)
+esp_netif_recv_ret_t ring_link_tx_netif_netstack_input_fn(void *h, void *buffer, size_t len, void* l2_buff)
 {
     struct netif *netif = h;
     esp_netif_t *esp_netif = esp_netif_get_handle_from_netif_impl(netif);
@@ -161,47 +180,32 @@ static void ring_link_tx_default_action_start(void *arg, esp_event_base_t base, 
     u32_t ring_link_ipv6_addr[6] = {0xfe800000, 0x00000000, 0xb2a1a2ff, 0xfea3b5b6};
     const esp_ip_addr_t ring_link_ip6_addr = ESP_IP6ADDR_INIT(ring_link_ipv6_addr[0], ring_link_ipv6_addr[1], ring_link_ipv6_addr[2], ring_link_ipv6_addr[3]);
 
-    esp_netif_action_start(ring_link_tx_netif, base, event_id, data);
-    esp_netif_set_ip6_linklocal(ring_link_tx_netif, ring_link_ip6_addr);
-    esp_netif_set_default_netif(ring_link_tx_netif);
-}
-
-esp_err_t ring_link_tx_netif_init(void)
-{
-    ESP_LOGI(TAG, "Calling ring_link_tx_netif_init");
-    const esp_netif_netstack_config_t s_ring_link_netif_config = {
-        .lwip = {
-            .init_fn = ring_link_tx_netif_netstack_init_fn,
-            .input_fn = ring_link_tx_netif_netstack_input_fn
-        }};
     const esp_netif_ip_info_t ip_info = {
         .ip = {.addr = get_ring_link_ip_v4_by_orientation()},
         .gw = {.addr = get_ring_link_gateway_v4_by_orientation()},
         .netmask = {.addr = ESP_IP4TOADDR(0, 0, 0, 0)},
     };
-    esp_netif_inherent_config_t base_netif_config = {
-        .flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_LINK_UP | ESP_NETIF_FLAG_AUTOUP,
-        .ip_info = &ip_info,
-        .get_ip_event = 0,
-        .lost_ip_event = 0,
-        .if_key = "ring_link_tx",
-        .if_desc = "ring-link-tx if",
-        .route_prio = 15,
-        .bridge_info = NULL};
 
-    esp_netif_config_t netif_config = {
-        .base = &base_netif_config,
-        .stack = &s_ring_link_netif_config,
-        .driver = NULL};
-    
+    ESP_ERROR_CHECK(esp_netif_dhcps_stop(ring_link_tx_netif));
+    ESP_ERROR_CHECK(esp_netif_set_ip_info(ring_link_tx_netif, &ip_info));
+    ESP_ERROR_CHECK(esp_netif_dhcps_start(ring_link_tx_netif));
 
-    ring_link_tx_netif = esp_netif_new(&netif_config);
+    esp_netif_action_start(ring_link_tx_netif, base, event_id, data);
+    ESP_ERROR_CHECK(esp_netif_set_ip6_linklocal(ring_link_tx_netif, ring_link_ip6_addr));
+    ESP_ERROR_CHECK(esp_netif_set_default_netif(ring_link_tx_netif));
+}
+
+esp_err_t ring_link_tx_netif_init(esp_netif_config_t *cfg)
+{
+    ESP_LOGI(TAG, "Calling ring_link_tx_netif_init");
+
+    ring_link_tx_netif = esp_netif_new(cfg);
 
     if (ring_link_tx_netif == NULL) {
         ESP_LOGE(TAG, "esp_netif_new failed!");
     }
     
-    ring_link_netif_esp_netif_attach(ring_link_tx_netif, ring_link_tx_driver_post_attach);
+    ESP_ERROR_CHECK(ring_link_netif_esp_netif_attach(ring_link_tx_netif, ring_link_tx_driver_post_attach));
     
     uint8_t mac[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
     esp_netif_set_mac(ring_link_tx_netif, mac);
