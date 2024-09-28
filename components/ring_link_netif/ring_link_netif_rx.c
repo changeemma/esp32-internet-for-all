@@ -31,26 +31,17 @@ static const esp_netif_config_t netif_config = {
     .stack = &netif_netstack_config,
 };
 
-bool is_ip_packet(struct ip_hdr *ip_header)
-{
-    if ((IPH_V(ip_header) == 4) || (IPH_V(ip_header) == 6)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-
 esp_err_t ring_link_rx_netif_receive(ring_link_payload_t *p)
 {
     struct pbuf *q;
+    struct ip_hdr *ip_header;
 
     if (p->len <= 0) {
         ESP_LOGW(TAG, "Discarding empty payload.");
         return ESP_OK;
     }
-
-    if (!is_ip_packet((struct ip_hdr *) p->buffer))
+    ip_header = (struct ip_hdr *) p->buffer;
+    if (!((IPH_V(ip_header) == 4) || (IPH_V(ip_header) == 6)))
     {
         ESP_LOGW(TAG, "Discarding non-IP payload.");
         return ESP_OK;
