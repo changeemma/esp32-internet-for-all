@@ -2,6 +2,7 @@
 
 #include "ring_link_netif_rx.h"
 #include "ring_link_netif_tx.h"
+#include "ring_link_netif_defaults.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -6,29 +6,39 @@ ESP_EVENT_DEFINE_BASE(RING_LINK_RX_EVENT);
 
 static esp_netif_t *ring_link_rx_netif = NULL;
 
+bool is_ip_packet(struct ip_hdr *ip_header)
+{
+    if ((IPH_V(ip_header) == 4) || (IPH_V(ip_header) == 6)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 
 esp_err_t ring_link_rx_netif_receive(ring_link_payload_t *p)
 {
-    printf("call esp_netif_receive(netif, %s, %i, NULL)\n", p->buffer, p->len);
     struct pbuf *q;
-    q = pbuf_alloc(PBUF_TRANSPORT, 500, PBUF_POOL);
 
-    ESP_LOGI(TAG, "esp_netif_ring_link_receive_task()...");
     if (p->len <= 0) {
-        printf("an error ocurred receiving or empty data\n");
+        ESP_LOGW(TAG, "Discarding empty payload.");
         return ESP_OK;
     }
-    printf("%d\n", p->len);
-    ESP_LOGI(TAG, "Calling esp_netif_receive(netif, ring_link_rx_buffer, len, NULL)");
-    q->payload = p->buffer;
-    struct ip_hdr *iphdr = (struct ip_hdr *)q->payload;
-    if((IPH_V(iphdr) == 4) || (IPH_V(iphdr) == 6)){
-        q->next = NULL;
-        q->len = lwip_ntohs(IPH_LEN(iphdr));
-        q->tot_len = p->len/8;
-        esp_netif_receive(ring_link_rx_netif, q, q->tot_len, NULL);
+
+    if (!is_ip_packet((struct ip_hdr *) p->buffer))
+    {
+        ESP_LOGW(TAG, "Discarding non-IP payload.");
+        return ESP_OK;
     }
-    return ESP_OK;
+
+    q = pbuf_alloc(PBUF_TRANSPORT, RING_LINK_NETIF_MTU, PBUF_POOL);
+    q->payload = p->buffer;
+
+    q->next = NULL;
+    q->len = lwip_ntohs(IPH_LEN((struct ip_hdr *) p->buffer));
+    q->tot_len = p->len/8;
+    
+    return esp_netif_receive(ring_link_rx_netif, q, q->tot_len, NULL);
 }
 
 static err_t ring_link_rx_netstack_lwip_init_fn(struct netif *netif)
@@ -45,16 +55,14 @@ static err_t ring_link_rx_netstack_lwip_init_fn(struct netif *netif)
 static esp_netif_recv_ret_t ring_link_rx_netstack_lwip_input_fn(void *h, void *buffer, size_t len, void* l2_buff)
 {
     struct netif *netif = h;
-    esp_netif_t *esp_netif = esp_netif_get_handle_from_netif_impl(netif);
     struct pbuf *p;
     printf("ring_link_netif_rx_netstack_input_fn\n");
 
     /* allocate custom pbuf to hold  */
-    p = pbuf_alloc(PBUF_TRANSPORT, 120, PBUF_POOL);
+    p = pbuf_alloc(PBUF_TRANSPORT, RING_LINK_NETIF_MTU, PBUF_POOL);
     pbuf_copy(p, buffer);
 
     if (p == NULL || netif == NULL) {
-        printf('Entra aca esp_netif_free_rx_buffer\n');
         // esp_netif_free_rx_buffer(esp_netif, buffer);
         return ESP_NETIF_OPTIONAL_RETURN_CODE(ESP_ERR_NO_MEM);
     }
@@ -97,54 +105,68 @@ static esp_err_t ring_link_rx_driver_post_attach(esp_netif_t * esp_netif, void *
 
 static void ring_link_rx_default_handler(void *arg, esp_event_base_t base, int32_t event_id, void *data)
 {
-    printf("ring_link_default_handler\n");
+    ESP_LOGI(TAG, "Calling ring_link_rx_default_handler");
     esp_netif_action_got_ip(ring_link_rx_netif, base, event_id, data);
 }
 
-static void ring_link_rx_default_action_sta_start(void *arg, esp_event_base_t base, int32_t event_id, void *data)
+static void ring_link_rx_default_action_start(void *arg, esp_event_base_t base, int32_t event_id, void *data)
 {
-    printf("ring_link_default_action_sta_start\n");
+    ESP_LOGI(TAG, "Calling ring_link_rx_default_action_start");
     u32_t ring_link_ipv6_addr[6] = {0xfe800000, 0x00000000, 0xb2a1a2ff, 0xfea3b5b6};
     const esp_ip_addr_t ring_link_ip6_addr = ESP_IP6ADDR_INIT(ring_link_ipv6_addr[0], ring_link_ipv6_addr[1], ring_link_ipv6_addr[2], ring_link_ipv6_addr[3]);
 
-    esp_netif_action_start(ring_link_rx_netif, base, event_id, data);
-    esp_netif_set_ip6_linklocal(ring_link_rx_netif, ring_link_ip6_addr);
-}
 
-esp_err_t ring_link_rx_netif_init(void)
-{
-    printf("ring_link_rx_netif_init\n");
-    const esp_netif_netstack_config_t s_ring_link_netif_config = {
-        .lwip = {
-            .init_fn = ring_link_rx_netstack_lwip_init_fn,
-            .input_fn = ring_link_rx_netstack_lwip_input_fn
-        }};
+    esp_netif_set_ip6_linklocal(ring_link_rx_netif, ring_link_ip6_addr);
+
     const esp_netif_ip_info_t ip_info = {
         .ip = {.addr = ESP_IP4TOADDR(127, 0, 0, 13)},
         .gw = {.addr = ESP_IP4TOADDR(127, 0, 0, 13)},
         .netmask = {.addr = ESP_IP4TOADDR(0, 0, 0, 0)},
     };
-    esp_netif_inherent_config_t base_netif_config = {
-        .flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_LINK_UP | ESP_NETIF_FLAG_AUTOUP,
-        .ip_info = &ip_info,
-        .get_ip_event = 0,
-        .lost_ip_event = 0,
-        .if_key = "ring_link_rx",
-        .if_desc = "ring-link-rx if",
-        .route_prio = 15,
-        .bridge_info = NULL};
-
-    esp_netif_config_t netif_config = {
-        .base = &base_netif_config,
-        .stack = &s_ring_link_netif_config,
-        .driver = NULL};
     
-    ring_link_netif_esp_netif_init(&ring_link_rx_netif, &netif_config, ring_link_rx_driver_post_attach);
+    ESP_ERROR_CHECK(esp_netif_dhcps_stop(ring_link_rx_netif));
+    ESP_ERROR_CHECK(esp_netif_set_ip_info(ring_link_rx_netif, &ip_info));
+    ESP_ERROR_CHECK(esp_netif_dhcps_start(ring_link_rx_netif));
 
     uint8_t mac[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
     esp_netif_set_mac(ring_link_rx_netif, mac);
-    
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(RING_LINK_RX_EVENT, RING_LINK_EVENT_START, ring_link_rx_default_action_sta_start, NULL, NULL));
+    esp_netif_action_start(ring_link_rx_netif, base, event_id, data);
+}
+
+
+const struct esp_netif_netstack_config _g_esp_netif_netstack_ring_link_config = {
+        .lwip = {
+                .init_fn = ring_link_rx_netstack_lwip_init_fn,
+                .input_fn = ring_link_rx_netstack_lwip_input_fn
+        }
+};
+
+const esp_netif_inherent_config_t _g_esp_netif_inherent_ring_link_config = {
+    .flags = (esp_netif_flags_t)(NETIF_FLAG_BROADCAST | NETIF_FLAG_LINK_UP | ESP_NETIF_FLAG_AUTOUP),
+    ESP_COMPILER_DESIGNATED_INIT_AGGREGATE_TYPE_EMPTY(mac)
+    ESP_COMPILER_DESIGNATED_INIT_AGGREGATE_TYPE_EMPTY(ip_info)
+    .get_ip_event = 0,
+    .lost_ip_event = 0,
+    .if_key = "ring_link_rx",
+    .if_desc = "ring-link-rx if",
+    .route_prio = 15,
+    .bridge_info = NULL
+};
+
+
+
+esp_err_t ring_link_rx_netif_init(esp_netif_config_t *cfg)
+{
+    ESP_LOGI(TAG, "Calling ring_link_rx_netif_init");
+    ring_link_rx_netif = esp_netif_new(cfg);
+
+    if (ring_link_rx_netif == NULL) {
+        ESP_LOGE(TAG, "esp_netif_new failed!");
+    }
+
+    ring_link_netif_esp_netif_attach(ring_link_rx_netif, ring_link_rx_driver_post_attach);
+
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(RING_LINK_RX_EVENT, RING_LINK_EVENT_START, ring_link_rx_default_action_start, NULL, NULL));
     ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, ring_link_rx_default_handler, NULL, NULL));
     ESP_ERROR_CHECK(esp_event_post(RING_LINK_RX_EVENT, RING_LINK_EVENT_START, NULL, 0, portMAX_DELAY));
     return ESP_OK;

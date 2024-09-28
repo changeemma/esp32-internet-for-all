@@ -17,8 +17,10 @@ esp_err_t ring_link_netif_handler(ring_link_payload_t *p)
 }
 
 esp_err_t ring_link_netif_init(void)
-{
-    ESP_ERROR_CHECK(ring_link_rx_netif_init());
+{    
+    esp_netif_config_t rx_cfg = RING_LINK_NETIF_RX_CONFIG();
+
+    ESP_ERROR_CHECK(ring_link_rx_netif_init(&rx_cfg));
     ESP_ERROR_CHECK(ring_link_tx_netif_init());
     return ESP_OK;
 }
