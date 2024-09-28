@@ -8,8 +8,8 @@ static esp_netif_t *ring_link_tx_netif = NULL;
 
 static const struct esp_netif_netstack_config netif_netstack_config = {
     .lwip = {
-        .init_fn = ring_link_tx_netif_netstack_init_fn,
-        .input_fn = ring_link_tx_netif_netstack_input_fn
+        .init_fn = ring_link_tx_netstack_init_fn,
+        .input_fn = ring_link_tx_netstack_input_fn
     }
 };
 
@@ -107,10 +107,9 @@ static esp_err_t esp_netif_ring_link_driver_transmit(void *h, void *buffer, size
     return ring_link_lowlevel_transmit_payload(&p);
 }
 
-err_t ring_link_tx_netif_netstack_init_fn(struct netif *netif)
+err_t ring_link_tx_netstack_init_fn(struct netif *netif)
 {
     LWIP_ASSERT("netif != NULL", (netif != NULL));
-    /* Have to get the esp-netif handle from netif first and then driver==ethernet handle from there */
     netif->name[0]= 's';
     netif->name[1] = 'p';
     netif->output = output_function;
@@ -120,7 +119,7 @@ err_t ring_link_tx_netif_netstack_init_fn(struct netif *netif)
     return ERR_OK;
 }
 
-esp_netif_recv_ret_t ring_link_tx_netif_netstack_input_fn(void *h, void *buffer, size_t len, void* l2_buff)
+esp_netif_recv_ret_t ring_link_tx_netstack_input_fn(void *h, void *buffer, size_t len, void* l2_buff)
 {
     struct netif *netif = h;
     esp_netif_t *esp_netif = esp_netif_get_handle_from_netif_impl(netif);

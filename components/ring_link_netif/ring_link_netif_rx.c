@@ -60,7 +60,6 @@ esp_err_t ring_link_rx_netif_receive(ring_link_payload_t *p)
 err_t ring_link_rx_netstack_lwip_init_fn(struct netif *netif)
 {
     LWIP_ASSERT("netif != NULL", (netif != NULL));
-    /* Have to get the esp-netif handle from netif first and then driver==ethernet handle from there */
     netif->name[0]= 'r';
     netif->name[1] = 'x';
     netif->mtu = RING_LINK_NETIF_MTU;
