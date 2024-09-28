@@ -6,14 +6,14 @@ ESP_EVENT_DEFINE_BASE(RING_LINK_RX_EVENT);
 
 static esp_netif_t *ring_link_rx_netif = NULL;
 
-const struct esp_netif_netstack_config _g_esp_netif_netstack_ring_link_rx_config = {
+static const struct esp_netif_netstack_config netif_netstack_config = {
     .lwip = {
         .init_fn = ring_link_rx_netstack_lwip_init_fn,
         .input_fn = ring_link_rx_netstack_lwip_input_fn
     }
 };
 
-const esp_netif_inherent_config_t _g_esp_netif_inherent_ring_link_rx_config = {
+static const esp_netif_inherent_config_t netif_inherent_config = {
     .flags = (esp_netif_flags_t)(NETIF_FLAG_BROADCAST | NETIF_FLAG_LINK_UP | ESP_NETIF_FLAG_AUTOUP),
     ESP_COMPILER_DESIGNATED_INIT_AGGREGATE_TYPE_EMPTY(mac)
     ESP_COMPILER_DESIGNATED_INIT_AGGREGATE_TYPE_EMPTY(ip_info)
@@ -25,10 +25,10 @@ const esp_netif_inherent_config_t _g_esp_netif_inherent_ring_link_rx_config = {
     .bridge_info = NULL
 };
 
-static const esp_netif_config_t rx_cfg = {
-    .base = &_g_esp_netif_inherent_ring_link_rx_config,
+static const esp_netif_config_t netif_config = {
+    .base = &netif_inherent_config,
     .driver = NULL,
-    .stack = &_g_esp_netif_netstack_ring_link_rx_config,
+    .stack = &netif_netstack_config,
 };
 
 bool is_ip_packet(struct ip_hdr *ip_header)
@@ -146,7 +146,7 @@ static void ring_link_rx_default_action_start(void *arg, esp_event_base_t base, 
     
     ESP_ERROR_CHECK(esp_netif_dhcps_stop(ring_link_rx_netif));
     ESP_ERROR_CHECK(esp_netif_set_ip_info(ring_link_rx_netif, &ip_info));
-    ESP_ERROR_CHECK(esp_netif_dhcps_start(ring_link_rx_netif));
+    //ESP_ERROR_CHECK(esp_netif_dhcps_start(ring_link_rx_netif));
 
     uint8_t mac[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
     esp_netif_set_mac(ring_link_rx_netif, mac);
@@ -157,7 +157,7 @@ static void ring_link_rx_default_action_start(void *arg, esp_event_base_t base, 
 esp_err_t ring_link_rx_netif_init(void)
 {
     ESP_LOGI(TAG, "Calling ring_link_rx_netif_init");
-    ring_link_rx_netif = esp_netif_new(&rx_cfg);
+    ring_link_rx_netif = esp_netif_new(&netif_config);
 
     if (ring_link_rx_netif == NULL) {
         ESP_LOGE(TAG, "esp_netif_new failed!");
