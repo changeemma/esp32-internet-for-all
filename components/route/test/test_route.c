@@ -170,6 +170,7 @@ TEST_CASE("Test: route to Wi-Fi network", "[route]")
     
     // Check tx interface
     esp_netif_t * wifi_netif = get_wifi_netif();
+    
     struct netif * wifi_netif_impl = esp_netif_get_netif_impl(wifi_netif);
     TEST_ASSERT_EQUAL(netif_route, wifi_netif_impl);
 
@@ -207,7 +208,7 @@ TEST_CASE("Test: maximum number of routes", "[route]") {
     setup_custom_hook_test();
 
     unsigned initial_routes = get_num_routes();
-    unsigned max_routes = MAX_NUMBER_ROUTES(); // Ensure this function returns the maximum allowed routes
+    unsigned max_routes = MAX_NUMBER_ROUTES; // Ensure this function returns the maximum allowed routes
 
     // Add routes up to the maximum limit
     for (unsigned i = initial_routes; i < max_routes; ++i) {
