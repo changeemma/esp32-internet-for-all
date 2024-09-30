@@ -10,5 +10,8 @@ menu "Ring Link Lowlevel Configuration"
     config RING_LINK_LOWLEVEL_IMPL_PHYSIM
         bool "PHYSIM"
 
+    config RING_LINK_LOWLEVEL_IMPL_TEST
+        bool "TEST"
+
     endchoice
 endmenu

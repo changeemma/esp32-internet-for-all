@@ -19,4 +19,13 @@
 #define RING_LINK_LOWLEVEL_IMPL_RECEIVE     physim_receive
 #endif
 
+#ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_TEST
+#include "ring_link_lowlevel_mock.h"
+
+#define RING_LINK_LOWLEVEL_BUFFER_SIZE      40
+#define RING_LINK_LOWLEVEL_IMPL_INIT        mock_init_test
+#define RING_LINK_LOWLEVEL_IMPL_TRANSMIT    mock_transmit_test
+#define RING_LINK_LOWLEVEL_IMPL_RECEIVE     mock_receive_test
+#endif
+
 #endif
