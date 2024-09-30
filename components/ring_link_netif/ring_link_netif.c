@@ -4,7 +4,7 @@ static const char* TAG = "==> ring_link_netif";
 
 
 esp_err_t ring_link_netif_handler(ring_link_payload_t *p)
-{    
+{
     if (ring_link_payload_is_for_device(p))  // payload for me
     {
         return ring_link_rx_netif_receive(p);
