@@ -13,7 +13,7 @@ esp_err_t ring_link_internal_init( void )
         return ESP_FAIL;
     }
 
-    s_broadcast_queue = xQueueCreate(1, sizeof(ring_link_payload_id_t));
+    s_broadcast_queue = xQueueCreate(RING_LINK_INTERNAL_QUEUE_SIZE, sizeof(ring_link_payload_id_t));
     if( s_broadcast_queue == NULL )
     {
         ESP_LOGE(TAG, "an error ocurred creating queue.");
@@ -41,7 +41,11 @@ static esp_err_t ring_link_broadcast(const void *buffer, uint16_t len, ring_link
         .buffer_type = buffer_type,
         .len = len,
     };
-    memccpy(p.buffer, buffer, len, RING_LINK_PAYLOAD_BUFFER_SIZE);
+    if (len > RING_LINK_PAYLOAD_BUFFER_SIZE) {
+        ESP_LOGE(TAG, "Buffer length exceeds maximum allowed size.");
+        return ESP_ERR_INVALID_SIZE;
+    }
+    memcpy(p.buffer, buffer, len);
     return ring_link_lowlevel_transmit_payload(&p);
 }
 

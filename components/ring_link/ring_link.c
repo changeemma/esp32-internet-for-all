@@ -54,7 +54,7 @@ esp_err_t ring_link_init(void)
     ESP_ERROR_CHECK(ring_link_internal_init());
     ESP_ERROR_CHECK(ring_link_netif_init());
 
-    BaseType_t ret = xTaskCreate(ring_link_receive_task, "ring_link_receive_task", 2048, NULL, (tskIDLE_PRIORITY + 2), NULL);
+    BaseType_t ret = xTaskCreate(ring_link_receive_task, "ring_link_receive_task", RING_LINK_MEM_TASK, NULL, (tskIDLE_PRIORITY + 3), NULL);
 
     if (ret != pdTRUE) {
         ESP_LOGE(TAG, "create flow control task failed");
