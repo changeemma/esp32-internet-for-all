@@ -14,8 +14,8 @@
 extern "C" {
 #endif
 
-#define SPI_BUFFER_SIZE 40
-#define SPI_QUEUE_SIZE 3
+#define SPI_BUFFER_SIZE 120
+#define SPI_QUEUE_SIZE 5
 
 #define SPI_SENDER_GPIO_MOSI 23
 #define SPI_SENDER_GPIO_SCLK 18
@@ -27,6 +27,7 @@ extern "C" {
 
 #define SPI_SENDER_HOST VSPI_HOST
 #define SPI_RECEIVER_HOST HSPI_HOST
+#define SPI_FREQ SPI_MASTER_FREQ_8M
 
 esp_err_t spi_init(void);
 esp_err_t spi_transmit(void *p, size_t len);

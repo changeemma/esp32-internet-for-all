@@ -1,5 +1,15 @@
 menu "Wi-Fi Configuration"
+    choice ESP_WIFI_MODE
+        prompt "Wi-Fi Mode"
+        default ESP_WIFI_NORMAL_MODE
 
+    config ESP_WIFI_NORMAL_MODE
+        bool "NORMAL"
+
+    config ESP_WIFI_TEST_MODE
+        bool "TEST"
+
+    endchoice
     config ESP_WIFI_SSID
         string "WiFi SSID"
         default "myssid"

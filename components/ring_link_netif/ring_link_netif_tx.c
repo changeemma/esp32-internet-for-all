@@ -103,7 +103,11 @@ static esp_err_t esp_netif_ring_link_driver_transmit(void *h, void *buffer, size
         .buffer_type = RING_LINK_PAYLOAD_TYPE_ESP_NETIF,
         .len = len,
     };
-    memccpy(p.buffer, buffer, len, RING_LINK_PAYLOAD_BUFFER_SIZE);
+    if (len > RING_LINK_PAYLOAD_BUFFER_SIZE) {
+        ESP_LOGE(TAG, "Buffer length exceeds maximum allowed size.");
+        return ESP_ERR_INVALID_SIZE;
+    }
+    memcpy(p.buffer, buffer, len);
     return ring_link_lowlevel_transmit_payload(&p);
 }
 
@@ -162,8 +166,8 @@ static void ring_link_tx_default_action_start(void *arg, esp_event_base_t base, 
     const esp_ip_addr_t ring_link_ip6_addr = ESP_IP6ADDR_INIT(ring_link_ipv6_addr[0], ring_link_ipv6_addr[1], ring_link_ipv6_addr[2], ring_link_ipv6_addr[3]);
 
     const esp_netif_ip_info_t ip_info = {
-        .ip = {.addr = get_ring_link_ip_v4_by_orientation()},
-        .gw = {.addr = get_ring_link_gateway_v4_by_orientation()},
+        .ip = {.addr = get_ring_link_tx_ip_v4_by_orientation()},
+        .gw = {.addr = get_ring_link_tx_ip_v4_gateway_by_orientation()},
         .netmask = {.addr = ESP_IP4TOADDR(0, 0, 0, 0)},
     };
 
@@ -186,7 +190,12 @@ esp_err_t ring_link_tx_netif_init(void)
 
     ESP_ERROR_CHECK(ring_link_netif_esp_netif_attach(ring_link_tx_netif, ring_link_tx_driver_post_attach));
 
-    uint8_t mac[6] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};
+    uint8_t mac[6];
+    esp_err_t ret = esp_read_mac(mac, ESP_MAC_WIFI_SOFTAP);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Error getting MAC address");
+        return ret;
+    }
     esp_netif_set_mac(ring_link_tx_netif, mac);
 
     ESP_ERROR_CHECK(esp_event_handler_instance_register(RING_LINK_TX_EVENT, RING_LINK_EVENT_START, ring_link_tx_default_action_start, NULL, NULL));
