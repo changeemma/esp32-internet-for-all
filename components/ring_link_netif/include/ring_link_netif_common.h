@@ -34,9 +34,6 @@ extern "C" {
 
 #define RING_LINK_NETIF_MTU RING_LINK_PAYLOAD_BUFFER_SIZE
 
-#define GET_RX_IP(orientation) ESP_IP4TOADDR(192, 168, 0, (int)(orientation) + 1)
-#define GET_TX_IP(orientation) ESP_IP4TOADDR(192, 168, 1, (int)(orientation) + 1)
-
 typedef enum
 {
     RING_LINK_EVENT_START, /**< ESP32 soft-AP start */
@@ -52,10 +49,6 @@ struct ring_link_netif_driver
 
 typedef struct ring_link_netif_driver *ring_link_netif_driver_t;
 
-uint32_t get_ring_link_rx_ip_v4_by_orientation(void);
-uint32_t get_ring_link_tx_ip_v4_by_orientation(void);
-uint32_t get_ring_link_rx_ip_v4_gateway_by_orientation(void);
-uint32_t get_ring_link_tx_ip_v4_gateway_by_orientation(void);
 esp_err_t ring_link_netif_esp_netif_attach(esp_netif_t *esp_netif, esp_err_t (*post_attach_callback)(esp_netif_t *, void *));
 
 #ifdef __cplusplus

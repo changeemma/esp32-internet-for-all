@@ -12,7 +12,7 @@ unsigned get_num_routes(void){
 esp_ip4_addr_t get_ip_gateway(gateway_t gw){
     esp_ip4_addr_t ip_addr;
     if(gw==SPI_GATEWAY){
-        uint32_t addr = get_ring_link_tx_ip_v4_gateway_by_orientation();
+        uint32_t addr = config_get_tx_ip_addr();
         ip_addr.addr = addr;
         return ip_addr;
     }

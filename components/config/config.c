@@ -6,6 +6,8 @@ static config_t s_config = {
     .id          = CONFIG_ID_NONE,
     .mode        = CONFIG_MODE_NONE,
     .orientation = CONFIG_ORIENTATION_NONE,
+    .rx_ip_addr  = 0,
+    .tx_ip_addr  = 0,
 };
 
 static void enable_config_pins(void)
@@ -56,6 +58,8 @@ void config_setup(void)
         s_config.mode = (config_mode_t) config_bits;
         s_config.orientation = CONFIG_ORIENTATION_NONE;
     }
+    s_config.rx_ip_addr = ESP_IP4TOADDR(192, 168, 0, (int)(s_config.orientation) + 1);
+    s_config.tx_ip_addr = ESP_IP4TOADDR(192, 168, 1, (int)(s_config.orientation) + 1);
 }
 
 config_id_t config_get_id(void)
@@ -63,14 +67,14 @@ config_id_t config_get_id(void)
     return s_config.id;
 }
 
-config_mode_t config_get_mode(void)
+uint32_t config_get_rx_ip_addr(void)
 {
-    return s_config.mode;
+    return s_config.rx_ip_addr;
 }
 
-config_orientation_t config_get_orientation(void)
+uint32_t config_get_tx_ip_addr(void)
 {
-    return s_config.orientation;
+    return s_config.tx_ip_addr;
 }
 
 void config_print(void)

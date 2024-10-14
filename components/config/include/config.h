@@ -2,6 +2,7 @@
 
 #include "esp_log.h"
 #include "driver/gpio.h"
+#include "esp_netif_ip_addr.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,13 +43,15 @@ typedef struct {
     config_id_t id;
     config_mode_t mode;
     config_orientation_t orientation;
+    uint32_t rx_ip_addr;
+    uint32_t tx_ip_addr;
 } config_t;
 
 config_id_t config_get_id(void);
 
-config_mode_t config_get_mode(void);
+uint32_t config_get_rx_ip_addr(void);
 
-config_orientation_t config_get_orientation(void);
+uint32_t config_get_tx_ip_addr(void);
 
 void config_setup(void);
 

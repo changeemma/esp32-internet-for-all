@@ -166,8 +166,8 @@ static void ring_link_tx_default_action_start(void *arg, esp_event_base_t base, 
     const esp_ip_addr_t ring_link_ip6_addr = ESP_IP6ADDR_INIT(ring_link_ipv6_addr[0], ring_link_ipv6_addr[1], ring_link_ipv6_addr[2], ring_link_ipv6_addr[3]);
 
     const esp_netif_ip_info_t ip_info = {
-        .ip = {.addr = get_ring_link_tx_ip_v4_by_orientation()},
-        .gw = {.addr = get_ring_link_tx_ip_v4_gateway_by_orientation()},
+        .ip = {.addr = config_get_tx_ip_addr()},
+        .gw = {.addr = config_get_tx_ip_addr()},
         .netmask = {.addr = ESP_IP4TOADDR(0, 0, 0, 0)},
     };
 
