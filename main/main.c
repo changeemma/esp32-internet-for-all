@@ -34,11 +34,11 @@ void app_main(void)
     test_spi_run_all();
 
     #ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_PHYSIM
-    printf("CONFIG_RING_LINK_LOWLEVEL_IMPL_PHYSIM\n");
+    ESP_LOGI(TAG, "CONFIG_RING_LINK_LOWLEVEL_IMPL_PHYSIM\n");
     #endif
 
     #ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI
-    printf("CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI\n");
+    ESP_LOGI(TAG, "CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI\n");
     ESP_ERROR_CHECK(wifi_init());
     ESP_ERROR_CHECK(wifi_netif_init());
     #endif
