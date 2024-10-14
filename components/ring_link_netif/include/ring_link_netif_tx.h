@@ -17,6 +17,8 @@ err_t ring_link_tx_netstack_init_fn(struct netif *netif);
 
 esp_netif_recv_ret_t ring_link_tx_netstack_input_fn(void *h, void *buffer, size_t len, void* l2_buff);
 
+esp_ip4_addr_t get_spi_tx_ip_interface_address(void);
+
 #ifdef __cplusplus
 }
 #endif

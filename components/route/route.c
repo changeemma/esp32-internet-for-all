@@ -11,12 +11,11 @@ unsigned get_num_routes(void){
 
 esp_ip4_addr_t get_ip_gateway(gateway_t gw){
     esp_ip4_addr_t ip_addr;
-    if(gw==SPI_GATEWAY){
-        uint32_t addr = config_get_tx_ip_addr();
-        ip_addr.addr = addr;
-        return ip_addr;
+    if (gw==SPI_GATEWAY) {
+        ip_addr = get_spi_tx_ip_interface_address();
+    } else {
+        ip_addr = get_wifi_ip_interface_address();
     }
-    ip_addr = get_wifi_ip_interface_address();
     return ip_addr;
 }
 

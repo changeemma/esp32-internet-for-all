@@ -216,11 +216,7 @@ static void ring_link_rx_default_action_start(void *arg, esp_event_base_t base, 
 
     esp_netif_set_ip6_linklocal(ring_link_rx_netif, ring_link_ip6_addr);
 
-    const esp_netif_ip_info_t ip_info = {
-        .ip = {.addr = config_get_rx_ip_addr()},
-        .gw = {.addr = config_get_tx_ip_addr()},
-        .netmask = {.addr = ESP_IP4TOADDR(255, 255, 255, 255)},
-    };
+    const esp_netif_ip_info_t ip_info = config_get_rx_ip_info();
     
     ESP_ERROR_CHECK(esp_netif_set_ip_info(ring_link_rx_netif, &ip_info));
 

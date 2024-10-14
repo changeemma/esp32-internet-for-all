@@ -3,6 +3,7 @@
 #include "esp_log.h"
 #include "driver/gpio.h"
 #include "esp_netif_ip_addr.h"
+#include "esp_netif_types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,15 +48,16 @@ typedef struct {
     uint32_t tx_ip_addr;
 } config_t;
 
-config_id_t config_get_id(void);
-
-uint32_t config_get_rx_ip_addr(void);
-
-uint32_t config_get_tx_ip_addr(void);
 
 void config_setup(void);
 
 void config_print(void);
+
+config_id_t config_get_id(void);
+
+esp_netif_ip_info_t config_get_rx_ip_info(void);
+
+esp_netif_ip_info_t config_get_tx_ip_info(void);
 
 bool config_is_access_point(void);
 

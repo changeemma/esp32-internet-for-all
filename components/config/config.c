@@ -67,14 +67,24 @@ config_id_t config_get_id(void)
     return s_config.id;
 }
 
-uint32_t config_get_rx_ip_addr(void)
+esp_netif_ip_info_t config_get_rx_ip_info(void)
 {
-    return s_config.rx_ip_addr;
+    esp_netif_ip_info_t ip_info = {
+        .ip = {.addr = s_config.rx_ip_addr},
+        .gw = {.addr = s_config.tx_ip_addr},
+        .netmask = {.addr = ESP_IP4TOADDR(255, 255, 255, 255)},
+    };
+    return ip_info;
 }
 
-uint32_t config_get_tx_ip_addr(void)
+esp_netif_ip_info_t config_get_tx_ip_info(void)
 {
-    return s_config.tx_ip_addr;
+    esp_netif_ip_info_t ip_info = {
+        .ip = {.addr = s_config.tx_ip_addr},
+        .gw = {.addr = s_config.tx_ip_addr},
+        .netmask = {.addr = ESP_IP4TOADDR(0, 0, 0, 0)},
+    };
+    return ip_info;
 }
 
 void config_print(void)
