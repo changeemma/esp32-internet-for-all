@@ -224,11 +224,7 @@ static void ring_link_rx_default_action_start(void *arg, esp_event_base_t base, 
 esp_err_t ring_link_rx_netif_init(void)
 {
     ESP_LOGI(TAG, "Calling ring_link_rx_netif_init");
-    ring_link_rx_netif = esp_netif_new(&netif_config);
-
-    if (ring_link_rx_netif == NULL) {
-        ESP_LOGE(TAG, "esp_netif_new failed!");
-    }
+    ring_link_rx_netif = ring_link_netif_new(&netif_config);
 
     ESP_ERROR_CHECK(ring_link_netif_esp_netif_attach(ring_link_rx_netif, ring_link_rx_driver_post_attach));
 

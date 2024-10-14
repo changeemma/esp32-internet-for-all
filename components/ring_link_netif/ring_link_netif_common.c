@@ -2,6 +2,15 @@
 
 static const char* TAG = "==> ring_link_netif_common";
 
+esp_netif_t* ring_link_netif_new(const esp_netif_config_t* config)
+{
+    esp_netif_t *netif = esp_netif_new(config);
+
+    if (netif == NULL) {
+        ESP_LOGE(TAG, "esp_netif_new failed!");
+    }
+    return netif;
+}
 
 esp_err_t ring_link_netif_esp_netif_attach(esp_netif_t * esp_netif, esp_err_t (*post_attach_callback)(esp_netif_t *, void *))
 {
