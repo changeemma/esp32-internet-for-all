@@ -210,11 +210,6 @@ static void ring_link_rx_default_handler(void *arg, esp_event_base_t base, int32
 static void ring_link_rx_default_action_start(void *arg, esp_event_base_t base, int32_t event_id, void *data)
 {
     ESP_LOGI(TAG, "Calling ring_link_rx_default_action_start");
-    u32_t ring_link_ipv6_addr[6] = {0xfe800000, 0x00000000, 0xb2a1a2ff, 0xfea3b5b6};
-    const esp_ip_addr_t ring_link_ip6_addr = ESP_IP6ADDR_INIT(ring_link_ipv6_addr[0], ring_link_ipv6_addr[1], ring_link_ipv6_addr[2], ring_link_ipv6_addr[3]);
-
-
-    esp_netif_set_ip6_linklocal(ring_link_rx_netif, ring_link_ip6_addr);
 
     const esp_netif_ip_info_t ip_info = config_get_rx_ip_info();
     
@@ -235,7 +230,7 @@ esp_err_t ring_link_rx_netif_init(void)
         ESP_LOGE(TAG, "esp_netif_new failed!");
     }
 
-    ring_link_netif_esp_netif_attach(ring_link_rx_netif, ring_link_rx_driver_post_attach);
+    ESP_ERROR_CHECK(ring_link_netif_esp_netif_attach(ring_link_rx_netif, ring_link_rx_driver_post_attach));
 
     ESP_ERROR_CHECK(esp_event_handler_instance_register(RING_LINK_RX_EVENT, RING_LINK_EVENT_START, ring_link_rx_default_action_start, NULL, NULL));
     ESP_ERROR_CHECK(esp_event_post(RING_LINK_RX_EVENT, RING_LINK_EVENT_START, NULL, 0, portMAX_DELAY));

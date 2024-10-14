@@ -175,26 +175,3 @@ struct pbuf *udp_create_test_packet_ipv6_(u16_t length, u16_t dst_port, u16_t sr
     return p;
 }
 
-esp_err_t esp_netif_set_ip6_linklocal(esp_netif_t *esp_netif,  esp_ip_addr_t addr)
-{
-    struct netif *lwip_netif;
-    ip6_addr_t my_addr;
-    lwip_netif = esp_netif_get_netif_impl(esp_netif);
-    
-    IP6_ADDR(&my_addr, htonl(addr.u_addr.ip6.addr[0]), htonl(addr.u_addr.ip6.addr[1]), htonl(addr.u_addr.ip6.addr[2]), htonl(addr.u_addr.ip6.addr[3]));
-
-    if (lwip_netif != NULL)
-    {
-        if(netif_add_ip6_address(lwip_netif, &my_addr, NULL) == ERR_OK)
-        {
-            netif_ip6_addr_set_state(lwip_netif, 0, IP6_ADDR_PREFERRED);
-            ESP_LOGI(UTILS_TAG, "Se pudo asignar correctamente la IPV6");
-            ESP_LOGI(UTILS_TAG, "ip6 linklocal: %s\n", ip6addr_ntoa(&my_addr) );
-
-            return ESP_OK;
-        }
-            
-    }
-    ESP_LOGE(UTILS_TAG, "No se pudo asignar IPv6");
-    return ESP_FAIL;
-}

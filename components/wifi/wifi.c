@@ -26,8 +26,6 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
         ESP_LOGI(WIFI_TAG, "station " MACSTR " leave, AID=%d", MAC2STR(event_d->mac), event_d->aid);
         break;
     case WIFI_EVENT_AP_START:
-        const esp_ip_addr_t wifi_ip6_addr = ESP_IP6ADDR_INIT(0xfe800000, 0x00000000, 0xb2a1a2ff, 0xfea3a4a5);
-        esp_netif_set_ip6_linklocal(wifi_netif, wifi_ip6_addr);
         break;
     default:
         break;

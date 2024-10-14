@@ -162,15 +162,11 @@ static void ring_link_tx_default_handler(void *arg, esp_event_base_t base, int32
 static void ring_link_tx_default_action_start(void *arg, esp_event_base_t base, int32_t event_id, void *data)
 {
     ESP_LOGI(TAG, "Calling ring_link_tx_default_action_start");
-    u32_t ring_link_ipv6_addr[6] = {0xfe800000, 0x00000000, 0xb2a1a2ff, 0xfea3b5b6};
-    const esp_ip_addr_t ring_link_ip6_addr = ESP_IP6ADDR_INIT(ring_link_ipv6_addr[0], ring_link_ipv6_addr[1], ring_link_ipv6_addr[2], ring_link_ipv6_addr[3]);
-
     const esp_netif_ip_info_t ip_info = config_get_tx_ip_info();
 
     ESP_ERROR_CHECK(esp_netif_set_ip_info(ring_link_tx_netif, &ip_info));
 
     esp_netif_action_start(ring_link_tx_netif, base, event_id, data);
-    ESP_ERROR_CHECK(esp_netif_set_ip6_linklocal(ring_link_tx_netif, ring_link_ip6_addr));
     ESP_ERROR_CHECK(esp_netif_set_default_netif(ring_link_tx_netif));
 }
 
