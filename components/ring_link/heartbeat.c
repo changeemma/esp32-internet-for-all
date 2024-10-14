@@ -2,58 +2,51 @@
 
 
 static int heartbeat_id = 0;
-static bool heartbeat_received = false;
-static esp_timer_handle_t heartbeat_timer;
 static int failure_count = 0;
-static bool node_online = true;
+
+static bool node_online = false;
 
 static const char *TAG = "==> heartbeat";
 
-static void offline_board_callback(){
-    ESP_LOGE(TAG, "There is an OFFLINE board. Callback invoked.");
-}
-
 static void online_board_callback(){
-    ESP_LOGI(TAG, "The node is back ONLINE. Callback invoked.");
+    ESP_LOGI(TAG, "online_board_callback invoked.");
 }
 
-static void send_heartbeat() {
+static void offline_board_callback(){
+    ESP_LOGE(TAG, "offline_board_callback invoked.");
+}
+
+static void heartbeat_callback() {
     heartbeat_id++;
-    const char msg[] = "HEARTBEAT...";
-    heartbeat_received = broadcast_to_siblings_heartbeat(msg, sizeof(msg));
-    ESP_LOGD(TAG, "Sent heartbeat %d", heartbeat_id);
-}
-
-static void check_heartbeat() {
-    if (!heartbeat_received) {
+    if (broadcast_to_siblings_heartbeat(HEARTBEAT_PAYLOAD, sizeof(HEARTBEAT_PAYLOAD))) 
+    {
+        failure_count = 0;
+        ESP_LOGD(TAG, "Heartbeat %d succeded.", heartbeat_id);
+        if (!node_online) {
+            ESP_LOGI(TAG, "Node is ONLINE.");
+            node_online = true;
+            online_board_callback();
+        }
+    } 
+    else
+    {
         failure_count++;
-        ESP_LOGE(TAG, "Heartbeat %d not received. Failure #%d", heartbeat_id, failure_count);
-        if (node_online && (failure_count >= MAX_FAILURES)) {
-            ESP_LOGE(TAG, "Maximum failures reached. Board considered out of service.");
+        ESP_LOGW(TAG, "Heartbeat %d failed. Failure #%d", heartbeat_id, failure_count);
+        if (node_online && (failure_count >= HEARTBEAT_MAX_FAILURES)) {
+            ESP_LOGE(TAG, "Maximum failures reached. Node considered OFFLINE.");
             node_online = false;
             offline_board_callback();
-        }
-    } else
-    {
-        ESP_LOGD(TAG, "The node is ONLINE.");
-        if (!node_online) {
-            node_online = true;
-            failure_count = 0;  // Reset the counter if heartbeat is received and it was failing before
-            online_board_callback();
         }
     }
 }
 
-static void heartbeat_timer_callback(void* arg) {
-    send_heartbeat();
-    check_heartbeat();
-}
-
 void init_heartbeat(void) {
-    esp_timer_create_args_t heartbeat_timer_args = {
-        .callback = &heartbeat_timer_callback,
-        .name = "heartbeat_timer"
+    esp_timer_handle_t heartbeat;
+
+    esp_timer_create_args_t heartbeat_args = {
+        .callback = &heartbeat_callback,
+        .name = "heartbeat"
     };
-    ESP_ERROR_CHECK(esp_timer_create(&heartbeat_timer_args, &heartbeat_timer));
-    ESP_ERROR_CHECK(esp_timer_start_periodic(heartbeat_timer, HEARTBEAT_INTERVAL_SEC * 1000000));
+    ESP_ERROR_CHECK(esp_timer_create(&heartbeat_args, &heartbeat));
+    ESP_ERROR_CHECK(esp_timer_start_periodic(heartbeat, HEARTBEAT_INTERVAL_USEC));
 }
