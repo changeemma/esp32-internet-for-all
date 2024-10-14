@@ -56,7 +56,7 @@ esp_err_t wifi_netif_init(void)
 #endif
 
 #ifdef CONFIG_ESP_WIFI_NORMAL_MODE
-    if (device_config_get_mode() == DEVICE_MODE_ACCESS_POINT) {
+    if (config_is_access_point()) {
         ESP_LOGI(WIFI_TAG, "wifi_netif_init: I'm AP! Configuring as AP.");
         wifi_ap_netif_init();
     } else {

@@ -27,8 +27,8 @@ void app_main(void)
     ESP_ERROR_CHECK(init_nvs());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     ESP_ERROR_CHECK(esp_netif_init());
-    device_config_setup();
-    device_config_print();
+    config_setup();
+    config_print();
 
     ESP_ERROR_CHECK(ring_link_init());
     test_spi_run_all();

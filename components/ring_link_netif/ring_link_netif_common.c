@@ -3,25 +3,25 @@
 static const char* TAG = "==> ring_link_netif_common";
 
 uint32_t get_ring_link_rx_ip_v4_by_orientation(void) {
-    device_orientation_t orientation = device_config_get_orientation();
+    config_orientation_t orientation = config_get_orientation();
     uint32_t ip = GET_RX_IP(orientation);
     return ip;
 }
 
 uint32_t get_ring_link_tx_ip_v4_by_orientation(void) {
-    device_orientation_t orientation = device_config_get_orientation();
+    config_orientation_t orientation = config_get_orientation();
     uint32_t ip = GET_TX_IP(orientation);
     return ip;
 }
 
 uint32_t get_ring_link_rx_ip_v4_gateway_by_orientation(void) {
-    device_orientation_t orientation = device_config_get_orientation();
+    config_orientation_t orientation = config_get_orientation();
     uint32_t ip = GET_RX_IP(orientation);
     return ip;
 }
 
 uint32_t get_ring_link_tx_ip_v4_gateway_by_orientation(void) {
-    device_orientation_t orientation = device_config_get_orientation();
+    config_orientation_t orientation = config_get_orientation();
     uint32_t ip = GET_TX_IP(orientation);
     return ip;
 }

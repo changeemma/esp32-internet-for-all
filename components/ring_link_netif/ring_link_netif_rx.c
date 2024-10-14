@@ -173,8 +173,8 @@ static esp_err_t esp_netif_ring_link_driver_transmit(void *h, void *buffer, size
     ring_link_payload_t p = {
         .id = 0,
         .ttl = RING_LINK_PAYLOAD_TTL,
-        .src_device_id = device_config_get_id(),
-        .dst_device_id = DEVICE_ID_ANY,
+        .src_id = config_get_id(),
+        .dst_id = CONFIG_ID_ANY,
         .buffer_type = RING_LINK_PAYLOAD_TYPE_ESP_NETIF,
         .len = len,
     };

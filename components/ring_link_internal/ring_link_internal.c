@@ -28,7 +28,7 @@ static esp_err_t ring_link_process(ring_link_payload_t *p)
     if (ring_link_payload_is_heartbeat(p)){
         return ESP_OK;
     }
-    printf("call on_sibling_message(%s, %i)\n", p->buffer, p->len);
+    printf("call on_sibling_message(%s, %i) from %i\n", p->buffer, p->len, p->src_id);
     return ESP_OK;
 }
 
@@ -36,8 +36,8 @@ static esp_err_t ring_link_broadcast(const void *buffer, uint16_t len, ring_link
     ring_link_payload_t p = {
         .id = 0,
         .ttl = RING_LINK_PAYLOAD_TTL,
-        .src_device_id = device_config_get_id(),
-        .dst_device_id = DEVICE_ID_ALL,
+        .src_id = config_get_id(),
+        .dst_id = CONFIG_ID_ALL,
         .buffer_type = buffer_type,
         .len = len,
     };
@@ -85,7 +85,7 @@ static esp_err_t ring_link_broadcast_handler(ring_link_payload_t *p)
     if (ring_link_payload_is_from_device(p))
     {
         xQueueSend(s_broadcast_queue, (void *) &(p->id), ( TickType_t ) 0 );
-        ESP_LOGI(TAG, "Broadcast complete for packet id '%i'.", p->id);
+        ESP_LOGD(TAG, "Broadcast complete for packet id '%i'.", p->id);
         return ESP_OK;
     }
     else
