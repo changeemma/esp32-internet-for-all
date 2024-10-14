@@ -1,12 +1,11 @@
 #include "heartbeat.h"
 
+static const char *TAG = "==> heartbeat";
 
+static bool node_online = false;
 static int heartbeat_id = 0;
 static int failure_count = 0;
 
-static bool node_online = false;
-
-static const char *TAG = "==> heartbeat";
 
 static void online_board_callback(){
     ESP_LOGI(TAG, "online_board_callback invoked.");
