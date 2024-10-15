@@ -36,6 +36,6 @@ esp_err_t ring_link_lowlevel_forward_payload(ring_link_payload_t *p)
         return ESP_OK;
     }
     p->ttl--;
-    ESP_LOGI(TAG, "Forwarding packet id '%i' with dest '%i' (TTL=%i).", p->id, p->dst_device_id, p->ttl);
+    ESP_LOGD(TAG, "Forwarding packet id '%i' with dest '%i' (TTL=%i).", p->id, p->dst_id, p->ttl);
     return ring_link_lowlevel_transmit_payload(p);
 }

@@ -2,33 +2,68 @@
 
 #include "esp_log.h"
 #include "driver/gpio.h"
-#include "device.h"
+#include "esp_netif_ip_addr.h"
+#include "esp_netif_types.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define DEVICE_CONFIG_PIN_0 22 // the lowest bit
-#define DEVICE_CONFIG_PIN_1 21
-#define DEVICE_CONFIG_PIN_2 16 // the highest bit
-#define DEVICE_CONFIG_PIN_MASK  ((1ULL<<DEVICE_CONFIG_PIN_0) | (1ULL<<DEVICE_CONFIG_PIN_1) | (1ULL<<DEVICE_CONFIG_PIN_2))
+#define CONFIG_PIN_0 22 // the lowest bit
+#define CONFIG_PIN_1 21
+#define CONFIG_PIN_2 16 // the highest bit
+#define CONFIG_PIN_MASK  ((1ULL<<CONFIG_PIN_0) | (1ULL<<CONFIG_PIN_1) | (1ULL<<CONFIG_PIN_2))
+
+typedef enum {
+    CONFIG_ORIENTATION_NORTH = 0, // 000
+    CONFIG_ORIENTATION_SOUTH = 1, // 001
+    CONFIG_ORIENTATION_EAST  = 2, // 010
+    CONFIG_ORIENTATION_WEST  = 3, // 011
+    CONFIG_ORIENTATION_NONE  = 9,
+} config_orientation_t;
+
+typedef enum {
+    CONFIG_MODE_PEER_LINK    = 0, // 0**
+    CONFIG_MODE_ACCESS_POINT = 4, // 100 - Wi-Fi AccessPoint
+    CONFIG_MODE_ROOT         = 5, // 101
+    CONFIG_MODE_NONE         = 9,
+} config_mode_t;
+
+typedef enum {
+    CONFIG_ID_NORTH   = 0, // 000
+    CONFIG_ID_SOUTH   = 1, // 001
+    CONFIG_ID_EAST    = 2, // 010
+    CONFIG_ID_WEST    = 3, // 011
+    CONFIG_ID_CENTER  = 4, // 100
+    CONFIG_ID_NONE    = 9,
+    CONFIG_ID_ANY     = 10,
+    CONFIG_ID_ALL     = 11,
+} config_id_t;
 
 typedef struct {
-    device_id_t id;
-    device_mode_t mode;
-    device_orientation_t orientation;
-} device_config_t;
+    config_id_t id;
+    config_mode_t mode;
+    config_orientation_t orientation;
+    uint32_t rx_ip_addr;
+    uint32_t tx_ip_addr;
+} config_t;
 
 
-device_id_t device_config_get_id(void);
+void config_setup(void);
 
-device_mode_t device_config_get_mode(void);
+void config_print(void);
 
-device_orientation_t device_config_get_orientation(void);
+config_id_t config_get_id(void);
 
-void device_config_setup(void);
+esp_netif_ip_info_t config_get_rx_ip_info(void);
 
-void device_config_print(void);
+esp_netif_ip_info_t config_get_tx_ip_info(void);
+
+bool config_is_access_point(void);
+
+bool config_is_peer_link(void);
+
+bool config_is_root(void);
 
 #ifdef __cplusplus
 }

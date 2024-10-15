@@ -1,9 +1,8 @@
-#include <stdio.h>
 #include "route.h"
 
+static const char* TAG = "==> route";
 
-const char *ROUTE_TAG = "==> route";
-unsigned num_routes = 1;
+static unsigned num_routes = 1;
 
 unsigned get_num_routes(void){
     return num_routes;
@@ -11,12 +10,11 @@ unsigned get_num_routes(void){
 
 esp_ip4_addr_t get_ip_gateway(gateway_t gw){
     esp_ip4_addr_t ip_addr;
-    if(gw==SPI_GATEWAY){
-        uint32_t addr = get_ring_link_tx_ip_v4_gateway_by_orientation();
-        ip_addr.addr = addr;
-        return ip_addr;
+    if (gw == SPI_GATEWAY) {
+        ip_addr = get_spi_tx_ip_interface_address();
+    } else {
+        ip_addr = get_wifi_ip_interface_address();
     }
-    ip_addr = get_wifi_ip_interface_address();
     return ip_addr;
 }
 
@@ -79,15 +77,15 @@ esp_err_t add_route(char * ip, gateway_t gw, char * netmask, char * key)
     new_route = esp_netif_new(&netif_config);
 
     if (new_route == NULL) {
-        ESP_LOGE(ROUTE_TAG, "esp_netif_new failed!");
+        ESP_LOGE(TAG, "esp_netif_new failed!");
         return ESP_ERR_INVALID_STATE;
     }
     uint8_t mac[6] = {0x11, 0x11, 0x22, 0x33, 0x44, 0x01};
     mac[5] = num_routes & 0xFF;
     esp_netif_set_mac(new_route, mac);
     esp_netif_action_start(new_route, NULL, 0, NULL);
-    num_routes = num_routes + 1;
-    ESP_LOGE(ROUTE_TAG, "Se agrega una ruta\n");
+    num_routes++;
+    ESP_LOGI(TAG, "New route added");
     return ESP_OK;
 }
 
@@ -97,27 +95,24 @@ esp_err_t rm_route(char * ip, char * netmask){
     esp_netif_t *route_netif;
     esp_ip4_addr_t ip_addr;
     esp_ip4_addr_t mask_addr;
-    esp_err_t status = ESP_OK;
 
     esp_netif_str_to_ip4(ip, &ip_addr);
     esp_netif_str_to_ip4(netmask, &mask_addr);
     for (netif = netif_list; netif != NULL; netif = netif->next) {
         if(ip4_addr_cmp(&ip_addr, netif_ip4_addr(netif)) && ip4_addr_cmp(&mask_addr, netif_ip4_netmask(netif)))
         {
-            ESP_LOGE(ROUTE_TAG, "Se elimina una ruta\n");
-
             route_netif = esp_netif_get_handle_from_netif_impl(netif);
             if(!route_netif){
-                printf("Error\n");
-                status = ESP_ERR_NOT_FOUND;
                 break;
             }
             esp_netif_action_stop(route_netif, NULL, 0, NULL);
             esp_netif_destroy(route_netif);
-            num_routes = num_routes -1;
+            num_routes--;
+            ESP_LOGI(TAG, "Route removed");
             return ESP_OK;
         }
     }
+    ESP_LOGW(TAG, "Could not remove route");
     return ESP_ERR_NOT_FOUND;
 }
 

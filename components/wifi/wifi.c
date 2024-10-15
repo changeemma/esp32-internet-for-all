@@ -26,8 +26,6 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
         ESP_LOGI(WIFI_TAG, "station " MACSTR " leave, AID=%d", MAC2STR(event_d->mac), event_d->aid);
         break;
     case WIFI_EVENT_AP_START:
-        const esp_ip_addr_t wifi_ip6_addr = ESP_IP6ADDR_INIT(0xfe800000, 0x00000000, 0xb2a1a2ff, 0xfea3a4a5);
-        esp_netif_set_ip6_linklocal(wifi_netif, wifi_ip6_addr);
         break;
     default:
         break;
@@ -50,13 +48,13 @@ esp_err_t wifi_netif_init(void)
                                                         &wifi_event_handler,
                                                         NULL,
                                                         NULL));
-#ifdef CONFIG_ESP_WIFI_TEST_MODE
+#ifdef CONFIG_WIFI_TEST_MODE
     ESP_LOGI(WIFI_TAG, "TEST_MODE: wifi_netif_init: I'm AP! Configuring as AP.");
     wifi_ap_netif_init();
 #endif
 
-#ifdef CONFIG_ESP_WIFI_NORMAL_MODE
-    if (device_config_get_mode() == DEVICE_MODE_ACCESS_POINT) {
+#ifdef CONFIG_WIFI_NORMAL_MODE
+    if (config_is_access_point()) {
         ESP_LOGI(WIFI_TAG, "wifi_netif_init: I'm AP! Configuring as AP.");
         wifi_ap_netif_init();
     } else {

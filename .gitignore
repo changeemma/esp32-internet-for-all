@@ -13,3 +13,5 @@ _deps
 build
 sdkconfig
 .vscode
+.idea
+cmake-build-debug/*

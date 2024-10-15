@@ -27,18 +27,18 @@ void app_main(void)
     ESP_ERROR_CHECK(init_nvs());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     ESP_ERROR_CHECK(esp_netif_init());
-    device_config_setup();
-    device_config_print();
+    config_setup();
+    config_print();
 
     ESP_ERROR_CHECK(ring_link_init());
     test_spi_run_all();
 
     #ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_PHYSIM
-    printf("CONFIG_RING_LINK_LOWLEVEL_IMPL_PHYSIM\n");
+    ESP_LOGI(TAG, "CONFIG_RING_LINK_LOWLEVEL_IMPL_PHYSIM\n");
     #endif
 
     #ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI
-    printf("CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI\n");
+    ESP_LOGI(TAG, "CONFIG_RING_LINK_LOWLEVEL_IMPL_SPI\n");
     ESP_ERROR_CHECK(wifi_init());
     ESP_ERROR_CHECK(wifi_netif_init());
     #endif

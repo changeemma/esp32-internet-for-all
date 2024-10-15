@@ -14,8 +14,10 @@
 extern "C" {
 #endif
 
-#define HEARTBEAT_INTERVAL_SEC 30
-#define MAX_FAILURES 5  // Number of consecutive failures before considering a board as "out"
+#define HEARTBEAT_PAYLOAD "HEARTBEAT..."
+#define HEARTBEAT_INTERVAL_SEC 5
+#define HEARTBEAT_INTERVAL_USEC (HEARTBEAT_INTERVAL_SEC*1000000)
+#define HEARTBEAT_MAX_FAILURES 3  // Number of consecutive failures before considering a board as "out"
 
 
 void init_heartbeat(void);

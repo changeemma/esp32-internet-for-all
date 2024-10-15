@@ -1,34 +1,35 @@
 menu "Wi-Fi Configuration"
-    choice ESP_WIFI_MODE
+    choice WIFI_MODE
         prompt "Wi-Fi Mode"
-        default ESP_WIFI_NORMAL_MODE
+        default WIFI_NORMAL_MODE
 
-    config ESP_WIFI_NORMAL_MODE
+    config WIFI_NORMAL_MODE
         bool "NORMAL"
 
-    config ESP_WIFI_TEST_MODE
+    config WIFI_TEST_MODE
         bool "TEST"
 
     endchoice
-    config ESP_WIFI_SSID
+    
+    config WIFI_SSID
         string "WiFi SSID"
         default "myssid"
         help
             SSID (network name) for the example to connect to.
 
-    config ESP_WIFI_PASSWORD
+    config WIFI_PASSWORD
         string "WiFi Password"
         default "mypassword"
         help
             WiFi password (WPA or WPA2) for the example to use.
-    config ESP_WIFI_CHANNEL
+    config WIFI_CHANNEL
         int "WiFi Channel"
         range 1 13
         default 1
         help
             WiFi channel (network channel) for the example to use.
 
-    config ESP_MAX_STA_CONN
+    config WIFI_MAX_STA_CONN
         int "Maximal STA connections"
         default 4
         help
