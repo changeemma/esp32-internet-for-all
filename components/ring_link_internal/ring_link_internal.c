@@ -3,6 +3,7 @@
 static const char* TAG = "==> ring_link_internal";
 static SemaphoreHandle_t s_broadcast_semaphore_handle = NULL;
 static QueueHandle_t s_broadcast_queue = NULL;
+static ring_link_payload_id_t s_id_counter = 0;
 
 esp_err_t ring_link_internal_init( void )
 {
@@ -34,7 +35,7 @@ static esp_err_t ring_link_process(ring_link_payload_t *p)
 
 static esp_err_t ring_link_broadcast(const void *buffer, uint16_t len, ring_link_payload_buffer_type_t buffer_type){
     ring_link_payload_t p = {
-        .id = 0,
+        .id = s_id_counter ++,
         .ttl = RING_LINK_PAYLOAD_TTL,
         .src_id = config_get_id(),
         .dst_id = CONFIG_ID_ALL,
@@ -85,7 +86,7 @@ static esp_err_t ring_link_broadcast_handler(ring_link_payload_t *p)
     if (ring_link_payload_is_from_device(p))
     {
         xQueueSend(s_broadcast_queue, (void *) &(p->id), ( TickType_t ) 0 );
-        ESP_LOGD(TAG, "Broadcast complete for packet id '%i'.", p->id);
+        ESP_LOGD(TAG, "Broadcast complete (src=%i,dest=%i,id=%i,ttl=%i).", p->src_id, p->dst_id, p->id, p->ttl);
         return ESP_OK;
     }
     else
