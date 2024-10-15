@@ -48,12 +48,12 @@ esp_err_t wifi_netif_init(void)
                                                         &wifi_event_handler,
                                                         NULL,
                                                         NULL));
-#ifdef CONFIG_ESP_WIFI_TEST_MODE
+#ifdef CONFIG_WIFI_TEST_MODE
     ESP_LOGI(WIFI_TAG, "TEST_MODE: wifi_netif_init: I'm AP! Configuring as AP.");
     wifi_ap_netif_init();
 #endif
 
-#ifdef CONFIG_ESP_WIFI_NORMAL_MODE
+#ifdef CONFIG_WIFI_NORMAL_MODE
     if (config_is_access_point()) {
         ESP_LOGI(WIFI_TAG, "wifi_netif_init: I'm AP! Configuring as AP.");
         wifi_ap_netif_init();
