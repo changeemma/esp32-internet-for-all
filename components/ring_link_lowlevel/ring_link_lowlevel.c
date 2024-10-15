@@ -32,10 +32,10 @@ esp_err_t ring_link_lowlevel_receive_payload(ring_link_payload_t *p)
 esp_err_t ring_link_lowlevel_forward_payload(ring_link_payload_t *p)
 {
     if (p->ttl <= 0) {
-        ESP_LOGW(TAG, "Discarding packet id '%i' ('%s') due to TTL. Won't forward.", p->id, p->buffer);
+        ESP_LOGW(TAG, "Discarding packet (src=%i,dest=%i,id=%i,ttl=%i) due to TTL. Won't forward.",p->src_id, p->dst_id, p->id, p->ttl);
         return ESP_OK;
     }
     p->ttl--;
-    ESP_LOGD(TAG, "Forwarding packet id '%i' with dest '%i' (TTL=%i).", p->id, p->dst_id, p->ttl);
+    ESP_LOGD(TAG, "Forwarding packet (src=%i,dest=%i,id=%i,ttl=%i).", p->src_id, p->dst_id, p->id, p->ttl);
     return ring_link_lowlevel_transmit_payload(p);
 }
