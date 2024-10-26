@@ -29,7 +29,7 @@ static esp_err_t ring_link_process(ring_link_payload_t *p)
     if (ring_link_payload_is_heartbeat(p)){
         return ESP_OK;
     }
-    printf("call on_sibling_message(%s, %i) from %i\n", p->buffer, p->len, p->src_id);
+    // printf("call on_sibling_message(%s, %i)\n", p->buffer, p->len);
     return ESP_OK;
 }
 

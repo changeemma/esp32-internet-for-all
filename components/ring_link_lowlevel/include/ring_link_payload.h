@@ -48,7 +48,7 @@ typedef struct
     config_id_t src_id;
     config_id_t dst_id;
     ring_link_payload_buffer_type_t buffer_type;
-    char buffer[ RING_LINK_PAYLOAD_BUFFER_SIZE ];
+    char buffer[ RING_LINK_PAYLOAD_BUFFER_SIZE + 40];
     uint8_t len;
 } ring_link_payload_t;
 
