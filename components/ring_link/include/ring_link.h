@@ -9,9 +9,10 @@ extern "C" {
 #endif
 
 #define RING_LINK_MEM_TASK 16384
-#define RING_LINK_QUEUE_SIZE 20
-
-static QueueHandle_t ring_link_queue = NULL;
+#define RING_LINK_NETIF_MEM_TASK 16384
+#define RING_LINK_INTERNAL_MEM_TASK 8192
+#define RING_LINK_READ_QUEUE_SIZE 20
+#define RING_LINK_NETIF_QUEUE_SIZE 20
 
 typedef struct {
     esp_err_t (*internal_handler)(ring_link_payload_t *p);
