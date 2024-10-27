@@ -14,7 +14,7 @@ esp_err_t ring_link_internal_init( void )
         return ESP_FAIL;
     }
 
-    s_broadcast_queue = xQueueCreate(RING_LINK_INTERNAL_QUEUE_SIZE, sizeof(ring_link_payload_id_t));
+    s_broadcast_queue = xQueueCreate(BROADCAST_QUEUE_SIZE, sizeof(ring_link_payload_id_t));
     if( s_broadcast_queue == NULL )
     {
         ESP_LOGE(TAG, "an error ocurred creating queue.");

@@ -51,7 +51,7 @@ def parse_results(results, test_id):
             'test_id': test_id,
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'bytes_transferred': receiver['bytes'],
-            'bandwidth_mbps': receiver['bits_per_second'] / 1_000_000,
+            'bandwidth_kbps': receiver['bits_per_second'] / 1_000,
             'jitter_ms': receiver.get('jitter_ms', 0),
             'lost_packets': receiver.get('lost_packets', 0),
             'lost_percent': receiver.get('lost_percent', 0),
@@ -82,7 +82,7 @@ def run_performance_tests(server_ip, num_tests=5, output_file='network_performan
     """
     Ejecuta múltiples pruebas y agrega los resultados al archivo CSV
     """
-    fieldnames = ['test_id', 'timestamp', 'bytes_transferred', 'bandwidth_mbps', 
+    fieldnames = ['test_id', 'timestamp', 'bytes_transferred', 'bandwidth_kbps', 
                  'jitter_ms', 'lost_packets', 'lost_percent', 'retransmits', 'direction']
     
     # Obtener el último test_id
@@ -132,13 +132,13 @@ def run_performance_tests(server_ip, num_tests=5, output_file='network_performan
     
     # Mostrar resumen de las nuevas pruebas
     print("\nResumen de resultados de esta sesión:")
-    up_bw = [r['bandwidth_mbps'] for r in results if r['direction'] == 'upload']
-    down_bw = [r['bandwidth_mbps'] for r in results if r['direction'] == 'download']
+    up_bw = [r['bandwidth_kbps'] for r in results if r['direction'] == 'upload']
+    down_bw = [r['bandwidth_kbps'] for r in results if r['direction'] == 'download']
     
     if up_bw:
-        print(f"Upload promedio: {sum(up_bw)/len(up_bw):.2f} Mbps")
+        print(f"Upload promedio: {sum(up_bw)/len(up_bw):.2f} Kbps")
     if down_bw:
-        print(f"Download promedio: {sum(down_bw)/len(down_bw):.2f} Mbps")
+        print(f"Download promedio: {sum(down_bw)/len(down_bw):.2f} Kbps")
 
 def show_historical_summary(filename='network_performance.csv'):
     """
@@ -152,24 +152,24 @@ def show_historical_summary(filename='network_performance.csv'):
         reader = csv.DictReader(csvfile)
         data = list(reader)
         
-    up_bw = [float(row['bandwidth_mbps']) for row in data if row['direction'] == 'upload']
-    down_bw = [float(row['bandwidth_mbps']) for row in data if row['direction'] == 'download']
+    up_bw = [float(row['bandwidth_kbps']) for row in data if row['direction'] == 'upload']
+    down_bw = [float(row['bandwidth_kbps']) for row in data if row['direction'] == 'download']
     
     print("\nResumen histórico:")
     print(f"Total de pruebas: {len(data)}")
     if up_bw:
-        print(f"Upload - Promedio: {sum(up_bw)/len(up_bw):.2f} Mbps")
-        print(f"Upload - Máximo: {max(up_bw):.2f} Mbps")
-        print(f"Upload - Mínimo: {min(up_bw):.2f} Mbps")
+        print(f"Upload - Promedio: {sum(up_bw)/len(up_bw):.2f} Kbps")
+        print(f"Upload - Máximo: {max(up_bw):.2f} Kbps")
+        print(f"Upload - Mínimo: {min(up_bw):.2f} Kbps")
     if down_bw:
-        print(f"Download - Promedio: {sum(down_bw)/len(down_bw):.2f} Mbps")
-        print(f"Download - Máximo: {max(down_bw):.2f} Mbps")
-        print(f"Download - Mínimo: {min(down_bw):.2f} Mbps")
+        print(f"Download - Promedio: {sum(down_bw)/len(down_bw):.2f} Kbps")
+        print(f"Download - Máximo: {max(down_bw):.2f} Kbps")
+        print(f"Download - Mínimo: {min(down_bw):.2f} Kbps")
 
 if __name__ == "__main__":
     # Configuración de la prueba
     SERVER_IP = "192.170.85.2"  # Cambiar a la IP de tu servidor iperf3
-    NUM_TESTS = 1  # Número de pruebas a realizar
+    NUM_TESTS = 2  # Número de pruebas a realizar
     OUTPUT_FILE = "network_performance.csv"
     
     # Ejecutar nuevas pruebas
