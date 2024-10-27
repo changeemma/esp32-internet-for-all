@@ -5,6 +5,7 @@ static const char* TAG = "==> ring_link_netif_rx";
 ESP_EVENT_DEFINE_BASE(RING_LINK_RX_EVENT);
 
 static esp_netif_t *ring_link_rx_netif = NULL;
+static ring_link_payload_id_t s_id_counter_rx = 0;
 
 static const struct esp_netif_netstack_config netif_netstack_config = {
     .lwip = {
@@ -47,33 +48,20 @@ esp_err_t ring_link_rx_netif_receive(ring_link_payload_t *p)
         ESP_LOGW(TAG, "Discarding non-IP payload.");
         return ESP_OK;
     }
-    // printf("protocol %i\n", IPH_PROTO(ip_header));
     q = pbuf_alloc(PBUF_TRANSPORT, lwip_ntohs(IPH_LEN(ip_header)), PBUF_POOL);
     if (q == NULL) {
         ESP_LOGW(TAG, "Failed to allocate pbuf.");
         return ESP_FAIL;
     }
     memcpy(q->payload, p->buffer, lwip_ntohs(IPH_LEN(ip_header)));
-
     q->next = NULL;
     q->len = lwip_ntohs(IPH_LEN(ip_header)); 
-    // q->len = lwip_ntohs(IPH_LEN((struct ip_hdr *) p->buffer));
-    // q->tot_len = p->len/8;
     q->tot_len = p->len;
-    // u8_t *payload_array = (u8_t *)(q->payload);
-    // printf("Printing payload\n");
-    // for (u16_t i = 0; i < ((u16_t) lwip_ntohs(IPH_LEN(ip_header))); i++)
-    // {
-    //     printf("%2x;", payload_array[i]);
-    // }
-    // printf("\n");
     error = esp_netif_receive(ring_link_rx_netif, q, q->tot_len, NULL);
     if (error != ESP_OK) {
         ESP_LOGW(TAG, "process_thread_receive failed:");
         pbuf_free(q);
     }
-    // pbuf_free(q);
-
     return error;
 }
 
@@ -172,7 +160,7 @@ static esp_err_t esp_netif_ring_link_driver_transmit(void *h, void *buffer, size
         return ESP_OK;
     }
     ring_link_payload_t p = {
-        .id = 0,
+        .id = s_id_counter_rx++,
         .ttl = RING_LINK_PAYLOAD_TTL,
         .src_id = config_get_id(),
         .dst_id = CONFIG_ID_ANY,

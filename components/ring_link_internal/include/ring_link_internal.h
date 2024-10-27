@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-#define RING_LINK_INTERNAL_QUEUE_SIZE 5
+#define BROADCAST_QUEUE_SIZE 5
 
 bool broadcast_to_siblings(const void *msg, uint16_t len);
 
