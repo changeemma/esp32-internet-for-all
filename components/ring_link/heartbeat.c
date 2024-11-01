@@ -17,7 +17,7 @@ static void offline_board_callback(){
 
 static void heartbeat_callback() {
     heartbeat_id++;
-    if (broadcast_to_siblings_heartbeat(HEARTBEAT_PAYLOAD, sizeof(HEARTBEAT_PAYLOAD))) 
+    if (send_heartbeat(HEARTBEAT_PAYLOAD, sizeof(HEARTBEAT_PAYLOAD))) 
     {
         failure_count = 0;
         ESP_LOGD(TAG, "Heartbeat %d succeded.", heartbeat_id);

@@ -21,5 +21,5 @@ bool ring_link_payload_is_broadcast(ring_link_payload_t *p)
 
 bool ring_link_payload_is_heartbeat(ring_link_payload_t *p)
 {
-    return IS_HEARTBEAT_PAYLOAD(p->buffer_type);
+    return p->buffer_type == RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT;
 }

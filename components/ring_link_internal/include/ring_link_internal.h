@@ -16,7 +16,7 @@ extern "C" {
 
 bool broadcast_to_siblings(const void *msg, uint16_t len);
 
-bool broadcast_to_siblings_heartbeat(const void *msg, uint16_t len);
+bool send_heartbeat(const void *msg, uint16_t len);
 
 esp_err_t ring_link_internal_init(void);
 

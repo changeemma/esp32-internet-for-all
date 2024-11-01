@@ -9,10 +9,6 @@ QueueHandle_t ring_link_queue = NULL;
 QueueHandle_t ring_link_netif_queue = NULL;
 QueueHandle_t ring_link_pre_internal_queue = NULL;
 
-ring_link_handlers_t ring_link_handlers = {
-    .internal_handler = ring_link_internal_handler,
-    .netif_handler = ring_link_netif_handler
-};
 
 esp_err_t process_ring_link_payload(ring_link_payload_t *p)
 {
@@ -55,7 +51,7 @@ static void ring_link_receive_task(void *pvParameters)
             continue;
         }
         
-        memset(payload, 0, sizeof(ring_link_payload_t));
+        memset(payload, NULL, sizeof(ring_link_payload_t));
         rc = ring_link_lowlevel_receive_payload(payload);
         ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
         if (rc == ESP_OK) {
@@ -78,6 +74,7 @@ static void ring_link_process_task(void *pvParameters)
         if (xQueueReceive(ring_link_queue, &payload, portMAX_DELAY) == pdTRUE) {
             rc = process_ring_link_payload(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
+            //free(payload);
         }
     }
 }
@@ -89,9 +86,9 @@ static void ring_link_internal_process_task(void *pvParameters)
     
     while (true) {
         if (xQueueReceive(ring_link_pre_internal_queue, &payload, portMAX_DELAY) == pdTRUE) {
-            rc = ring_link_handlers.internal_handler(payload);
+            rc =ring_link_internal_handler(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
-            free(payload);
+            memset(payload, NULL, sizeof(ring_link_payload_t));
         }
     }
 }
@@ -103,9 +100,9 @@ static void ring_link_netif_process_task(void *pvParameters)
     
     while (true) {
         if (xQueueReceive(ring_link_netif_queue, &payload, portMAX_DELAY) == pdTRUE) {
-            rc = ring_link_handlers.netif_handler(payload);
+            rc = ring_link_netif_handler(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
-            free(payload);
+            memset(payload, NULL, sizeof(ring_link_payload_t));
         }
     }
 }
