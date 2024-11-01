@@ -58,8 +58,11 @@ bool ring_link_payload_is_from_device(ring_link_payload_t *p);
 
 bool ring_link_payload_is_broadcast(ring_link_payload_t *p);
 
+bool ring_link_payload_is_internal(ring_link_payload_t *p);
+
 bool ring_link_payload_is_heartbeat(ring_link_payload_t *p);
 
+bool ring_link_payload_is_esp_netif(ring_link_payload_t *p);
 
 #ifdef __cplusplus
 }

@@ -19,7 +19,17 @@ bool ring_link_payload_is_broadcast(ring_link_payload_t *p)
     return p->dst_id == CONFIG_ID_ALL;
 }
 
+bool ring_link_payload_is_internal(ring_link_payload_t *p)
+{
+    return p->buffer_type == RING_LINK_PAYLOAD_TYPE_INTERNAL;
+}
+
 bool ring_link_payload_is_heartbeat(ring_link_payload_t *p)
 {
     return p->buffer_type == RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT;
+}
+
+bool ring_link_payload_is_esp_netif(ring_link_payload_t *p)
+{
+    return p->buffer_type == RING_LINK_PAYLOAD_TYPE_ESP_NETIF;
 }

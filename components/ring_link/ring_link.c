@@ -1,6 +1,3 @@
-#include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
-
 #include "ring_link.h"
 
 static const char *TAG = "==> ring_link";
@@ -12,31 +9,27 @@ QueueHandle_t ring_link_pre_internal_queue = NULL;
 
 esp_err_t process_ring_link_payload(ring_link_payload_t *p)
 {
-    esp_err_t rc = ESP_OK;
     QueueHandle_t specific_queue = NULL;
 
-    switch (p->buffer_type)
+    if (ring_link_payload_is_internal(p) || ring_link_payload_is_heartbeat(p))
     {
-    case RING_LINK_PAYLOAD_TYPE_INTERNAL:
-    case RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT:
         specific_queue = ring_link_pre_internal_queue;
-        break;
-    case RING_LINK_PAYLOAD_TYPE_ESP_NETIF:
+    }
+    else if (ring_link_payload_is_esp_netif(p))
+    {
         specific_queue = ring_link_netif_queue;
-        break;
-    default:
+    }
+    else
+    {
         ESP_LOGE(TAG, "Unknown payload type: '%i'", p->buffer_type);
-        rc = ESP_FAIL;
-        break;
+        return ESP_FAIL;
     }
 
-    if (rc == ESP_OK && specific_queue != NULL) {
-        if (xQueueSend(specific_queue, &p, pdMS_TO_TICKS(100)) != pdTRUE) {
-            ESP_LOGW(TAG, "Specific queue full, trying general queue");
-        }
+    if (xQueueSend(specific_queue, &p, pdMS_TO_TICKS(100)) != pdTRUE) {
+        ESP_LOGW(TAG, "Specific queue full, trying general queue");
+        return ESP_FAIL;
     }
-    
-    return rc;
+    return ESP_OK;
 }
 
 static void ring_link_receive_task(void *pvParameters)
@@ -74,8 +67,29 @@ static void ring_link_process_task(void *pvParameters)
         if (xQueueReceive(ring_link_queue, &payload, portMAX_DELAY) == pdTRUE) {
             rc = process_ring_link_payload(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
-            //free(payload);
+            memset(payload, NULL, sizeof(ring_link_payload_t));
         }
+    }
+}
+
+
+static esp_err_t ring_link_internal_handler(ring_link_payload_t *p)
+{
+    if (ring_link_payload_is_broadcast(p))  // broadcast
+    {
+        return ring_link_broadcast_handler(p);
+    }
+    else if (ring_link_payload_is_heartbeat(p))
+    {
+        return ring_link_heartbeat_handler(p);
+    }
+    else if (ring_link_payload_is_for_device(p))  // payload for me
+    {
+        return ring_link_process(p);
+    }
+    else  // not for me, forwarding
+    {
+        return ring_link_lowlevel_forward_payload(p);        
     }
 }
 
@@ -103,9 +117,9 @@ static void ring_link_netif_process_task(void *pvParameters)
             rc = ring_link_netif_handler(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
             memset(payload, NULL, sizeof(ring_link_payload_t));
-        }
-    }
-}
+        };
+    };
+};
 
 esp_err_t ring_link_init(void)
 {
