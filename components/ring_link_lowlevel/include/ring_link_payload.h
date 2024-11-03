@@ -12,7 +12,16 @@ extern "C" {
 #endif
 
 
+// TCP/IP Headers
+#define IP_HEADER_SIZE        20
+#define TCP_HEADER_SIZE       20
+#define MAX_PROTOCOL_HEADERS  (IP_HEADER_SIZE + TCP_HEADER_SIZE)  // 80 bytes
+
+#define PADDING_SIZE(x) ((4 - ((x) % 4)) % 4)
 #define RING_LINK_PAYLOAD_BUFFER_SIZE RING_LINK_LOWLEVEL_BUFFER_SIZE
+#define BUFFER_SIZE (RING_LINK_PAYLOAD_BUFFER_SIZE + MAX_PROTOCOL_HEADERS)
+#define BUFFER_PADDED_SIZE (BUFFER_SIZE + PADDING_SIZE(BUFFER_SIZE))
+
 #define RING_LINK_PAYLOAD_TTL 4
 
 /**
@@ -45,11 +54,13 @@ typedef struct
 {
     ring_link_payload_id_t id;
     uint8_t ttl;
+    uint8_t padding1[2];
     config_id_t src_id;
     config_id_t dst_id;
     ring_link_payload_buffer_type_t buffer_type;
-    char buffer[ RING_LINK_PAYLOAD_BUFFER_SIZE + 40];
     uint8_t len;
+    uint8_t padding2[2];
+    char buffer[BUFFER_PADDED_SIZE];
 } ring_link_payload_t;
 
 bool ring_link_payload_is_for_device(ring_link_payload_t *p);

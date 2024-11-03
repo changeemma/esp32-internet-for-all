@@ -14,7 +14,6 @@ esp_err_t ring_link_internal_init( void )
         ESP_LOGE(TAG, "an error ocurred creating mutex.");
         return ESP_FAIL;
     }
-
     return ESP_OK;
 }
 

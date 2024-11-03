@@ -103,7 +103,7 @@ static esp_err_t esp_netif_ring_link_driver_transmit(void *h, void *buffer, size
         .buffer_type = RING_LINK_PAYLOAD_TYPE_ESP_NETIF,
         .len = len,
     };
-    if (len > RING_LINK_PAYLOAD_BUFFER_SIZE + 30) {
+    if (len > RING_LINK_PAYLOAD_BUFFER_SIZE) {
         ESP_LOGE(TAG, "Buffer length exceeds maximum allowed size.");
         return ESP_ERR_INVALID_SIZE;
     }
