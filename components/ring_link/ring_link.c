@@ -16,7 +16,7 @@ esp_err_t process_ring_link_payload(ring_link_payload_t *p)
 
     if (ring_link_payload_is_internal(p) || ring_link_payload_is_heartbeat(p))
     {
-        specific_queue = ring_link_pre_internal_queue;
+        specific_queue = ring_link_internal_queue;
     }
     else if (ring_link_payload_is_esp_netif(p))
     {
@@ -103,7 +103,7 @@ static void ring_link_internal_process_task(void *pvParameters)
     
     while (true) {
         if (xQueueReceive(ring_link_internal_queue, &payload, portMAX_DELAY) == pdTRUE) {
-            rc = ring_link_handlers.internal_handler(payload);
+            rc = ring_link_internal_handler(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
             free(payload);
         }

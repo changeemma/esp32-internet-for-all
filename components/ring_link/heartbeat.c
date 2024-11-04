@@ -18,13 +18,13 @@ static bool send_heartbeat()
         .dst_id = config_get_id(),
         .buffer_type = RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT,
         .len = sizeof(HEARTBEAT_PAYLOAD),
+        .buffer = HEARTBEAT_PAYLOAD,
     };
-    memcpy(p.buffer, HEARTBEAT_PAYLOAD, sizeof(HEARTBEAT_PAYLOAD));
 
     s_heartbeat_task = xTaskGetCurrentTaskHandle();
     if (ring_link_lowlevel_transmit_payload(&p) == ESP_OK)
     {    
-        result = ulTaskNotifyTake( pdTRUE, ( TickType_t ) 100 ) == pdTRUE ? true : false;
+        result = ulTaskNotifyTake( pdTRUE, ( TickType_t ) 100 ) == pdTRUE ? false : true;
     }
     s_heartbeat_task = NULL;
     return result;
