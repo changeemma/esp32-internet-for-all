@@ -6,7 +6,7 @@ static QueueHandle_t *lowlevel_queue;
 static QueueHandle_t *internal_queue;
 static QueueHandle_t *esp_netif_queue;
 
-esp_err_t process_ring_link_payload(ring_link_payload_t *p)
+static esp_err_t process_payload(ring_link_payload_t *p)
 {
     QueueHandle_t *specific_queue;
 
@@ -38,7 +38,7 @@ static void ring_link_process_task(void *pvParameters)
     
     while (true) {
         if (xQueueReceive(*lowlevel_queue, &payload, portMAX_DELAY) == pdTRUE) {
-            rc = process_ring_link_payload(payload);
+            rc = process_payload(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
         }
     }

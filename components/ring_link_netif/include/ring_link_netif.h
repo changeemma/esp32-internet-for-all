@@ -13,8 +13,6 @@ extern "C" {
 
 esp_err_t ring_link_netif_init(QueueHandle_t **queue);
 
-esp_err_t ring_link_netif_handler(ring_link_payload_t *p);
-
 #ifdef __cplusplus
 }
 #endif

@@ -4,7 +4,7 @@ static const char* TAG = "==> ring_link_internal";
 static QueueHandle_t ring_link_internal_queue = NULL;
 
 
-esp_err_t ring_link_internal_handler(ring_link_payload_t *p)
+static esp_err_t ring_link_internal_handler(ring_link_payload_t *p)
 {
     if (ring_link_payload_is_broadcast(p))  // broadcast
     {
