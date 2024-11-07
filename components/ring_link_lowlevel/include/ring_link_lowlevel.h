@@ -16,7 +16,10 @@ extern "C" {
 #endif
 
 
-esp_err_t ring_link_lowlevel_init(void);
+#define RING_LINK_MEM_TASK 16384
+#define RING_LINK_READ_QUEUE_SIZE 40
+
+esp_err_t ring_link_lowlevel_init(QueueHandle_t **queue);
 
 esp_err_t ring_link_lowlevel_transmit_payload(ring_link_payload_t *p);
 
