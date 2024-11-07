@@ -24,22 +24,19 @@ esp_err_t ring_link_internal_init( void )
 }
 
 
-static esp_err_t ring_link_process(ring_link_payload_t *p)
+esp_err_t ring_link_process(ring_link_payload_t *p)
 {
-    if (ring_link_payload_is_heartbeat(p)){
-        return ESP_OK;
-    }
-    // printf("call on_sibling_message(%s, %i)\n", p->buffer, p->len);
+    ESP_LOGW(TAG, "call on_sibling_message(%s, %i)\n", p->buffer, p->len);
     return ESP_OK;
 }
 
-static esp_err_t ring_link_broadcast(const void *buffer, uint16_t len, ring_link_payload_buffer_type_t buffer_type){
+static esp_err_t ring_link_broadcast(const void *buffer, uint16_t len){
     ring_link_payload_t p = {
         .id = s_id_counter ++,
         .ttl = RING_LINK_PAYLOAD_TTL,
         .src_id = config_get_id(),
         .dst_id = CONFIG_ID_ALL,
-        .buffer_type = buffer_type,
+        .buffer_type = RING_LINK_PAYLOAD_TYPE_INTERNAL,
         .len = len,
     };
     if (len > RING_LINK_PAYLOAD_BUFFER_SIZE) {
@@ -50,11 +47,11 @@ static esp_err_t ring_link_broadcast(const void *buffer, uint16_t len, ring_link
     return ring_link_lowlevel_transmit_payload(&p);
 }
 
-bool broadcast_to_siblings_internal(const void *msg, uint16_t len, ring_link_payload_buffer_type_t buffer_type)
+bool broadcast_to_siblings(const void *msg, uint16_t len)
 {
     if( xSemaphoreTake( s_broadcast_semaphore_handle, ( TickType_t ) 100 ) == pdTRUE )
     {
-        esp_err_t rc = ring_link_broadcast(msg, len, buffer_type);
+        esp_err_t rc = ring_link_broadcast(msg, len);
         uint8_t id;
         bool result = false;
         if( xQueueReceive( s_broadcast_queue, &( id ), ( TickType_t ) 100 ) == pdPASS )
@@ -68,19 +65,7 @@ bool broadcast_to_siblings_internal(const void *msg, uint16_t len, ring_link_pay
     return false;
 }
 
-bool broadcast_to_siblings_heartbeat(const void *msg, uint16_t len){
-    
-    ring_link_payload_buffer_type_t buffer_type = RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT;
-    return broadcast_to_siblings_internal(msg, len, buffer_type);
-}
-
-bool broadcast_to_siblings(const void *msg, uint16_t len){
-    
-    ring_link_payload_buffer_type_t buffer_type = RING_LINK_PAYLOAD_TYPE_INTERNAL;
-    return broadcast_to_siblings_internal(msg, len, buffer_type);
-}
-
-static esp_err_t ring_link_broadcast_handler(ring_link_payload_t *p)
+esp_err_t ring_link_broadcast_handler(ring_link_payload_t *p)
 {
     // broadcast origin
     if (ring_link_payload_is_from_device(p))
@@ -93,21 +78,5 @@ static esp_err_t ring_link_broadcast_handler(ring_link_payload_t *p)
     {
         ESP_ERROR_CHECK(ring_link_process(p));
         return ring_link_lowlevel_forward_payload(p);
-    }
-}
-
-esp_err_t ring_link_internal_handler(ring_link_payload_t *p)
-{
-    if (ring_link_payload_is_broadcast(p))  // broadcast
-    {
-        return ring_link_broadcast_handler(p);
-    }
-    else if (ring_link_payload_is_for_device(p))  // payload for me
-    {
-        return ring_link_process(p);
-    }
-    else  // not for me, forwarding
-    {
-        return ring_link_lowlevel_forward_payload(p);        
     }
 }

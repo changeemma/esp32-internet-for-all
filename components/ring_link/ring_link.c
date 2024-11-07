@@ -9,38 +9,50 @@ QueueHandle_t ring_link_queue = NULL;
 QueueHandle_t ring_link_netif_queue = NULL;
 QueueHandle_t ring_link_internal_queue = NULL;
 
-ring_link_handlers_t ring_link_handlers = {
-    .internal_handler = ring_link_internal_handler,
-    .netif_handler = ring_link_netif_handler
-};
 
 esp_err_t process_ring_link_payload(ring_link_payload_t *p)
 {
-    esp_err_t rc = ESP_OK;
     QueueHandle_t specific_queue = NULL;
 
-    switch (p->buffer_type)
+    if (ring_link_payload_is_internal(p) || ring_link_payload_is_heartbeat(p))
     {
-    case RING_LINK_PAYLOAD_TYPE_INTERNAL:
-    case RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT:
         specific_queue = ring_link_internal_queue;
-        break;
-    case RING_LINK_PAYLOAD_TYPE_ESP_NETIF:
+    }
+    else if (ring_link_payload_is_esp_netif(p))
+    {
         specific_queue = ring_link_netif_queue;
-        break;
-    default:
+    }
+    else
+    {
         ESP_LOGE(TAG, "Unknown payload type: '%i'", p->buffer_type);
-        rc = ESP_FAIL;
-        break;
+        return ESP_FAIL;
     }
 
-    if (rc == ESP_OK && specific_queue != NULL) {
-        if (xQueueSend(specific_queue, &p, pdMS_TO_TICKS(100)) != pdTRUE) {
-            ESP_LOGW(TAG, "Queue full, payload dropped");
-        }
+    if (xQueueSend(specific_queue, &p, pdMS_TO_TICKS(100)) != pdTRUE) {
+        ESP_LOGW(TAG, "Queue full, payload dropped");
+        return ESP_FAIL;
     }
-    
-    return rc;
+    return ESP_OK;
+}
+
+static esp_err_t ring_link_internal_handler(ring_link_payload_t *p)
+{
+    if (ring_link_payload_is_broadcast(p))  // broadcast
+    {
+        return ring_link_broadcast_handler(p);
+    }
+    else if (ring_link_payload_is_heartbeat(p))
+    {
+        return ring_link_heartbeat_handler(p);
+    }
+    else if (ring_link_payload_is_for_device(p))  // payload for me
+    {
+        return ring_link_process(p);
+    }
+    else  // not for me, forwarding
+    {
+        return ring_link_lowlevel_forward_payload(p);        
+    }
 }
 
 static void ring_link_receive_task(void *pvParameters)
@@ -89,7 +101,7 @@ static void ring_link_internal_process_task(void *pvParameters)
     
     while (true) {
         if (xQueueReceive(ring_link_internal_queue, &payload, portMAX_DELAY) == pdTRUE) {
-            rc = ring_link_handlers.internal_handler(payload);
+            rc = ring_link_internal_handler(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
             free(payload);
         }
@@ -103,7 +115,7 @@ static void ring_link_netif_process_task(void *pvParameters)
     
     while (true) {
         if (xQueueReceive(ring_link_netif_queue, &payload, portMAX_DELAY) == pdTRUE) {
-            rc = ring_link_handlers.netif_handler(payload);
+            rc = ring_link_netif_handler(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
             free(payload);
         }

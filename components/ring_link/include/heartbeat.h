@@ -21,6 +21,7 @@ extern "C" {
 
 
 void init_heartbeat(void);
+esp_err_t ring_link_heartbeat_handler(ring_link_payload_t *);
 
 
 #ifdef __cplusplus
