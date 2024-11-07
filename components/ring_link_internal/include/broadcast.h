@@ -7,8 +7,9 @@ extern "C" {
 #endif
 
 esp_err_t broadcast_init( void );
+esp_err_t broadcast_handler(ring_link_payload_t *p);
+
 bool broadcast_to_siblings(const void *msg, uint16_t len);
-esp_err_t ring_link_broadcast_handler(ring_link_payload_t *p);
 
 #ifdef __cplusplus
 }

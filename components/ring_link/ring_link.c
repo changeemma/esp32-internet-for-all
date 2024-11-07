@@ -2,9 +2,9 @@
 
 static const char *TAG = "==> ring_link";
 
-static QueueHandle_t *ring_link_queue;
-static QueueHandle_t *ring_link_netif_queue;
-static QueueHandle_t *ring_link_internal_queue;
+static QueueHandle_t *lowlevel_queue;
+static QueueHandle_t *internal_queue;
+static QueueHandle_t *esp_netif_queue;
 
 esp_err_t process_ring_link_payload(ring_link_payload_t *p)
 {
@@ -12,11 +12,11 @@ esp_err_t process_ring_link_payload(ring_link_payload_t *p)
 
     if (ring_link_payload_is_internal(p) || ring_link_payload_is_heartbeat(p))
     {
-        specific_queue = ring_link_internal_queue;
+        specific_queue = internal_queue;
     }
     else if (ring_link_payload_is_esp_netif(p))
     {
-        specific_queue = ring_link_netif_queue;
+        specific_queue = esp_netif_queue;
     }
     else
     {
@@ -37,7 +37,7 @@ static void ring_link_process_task(void *pvParameters)
     esp_err_t rc;
     
     while (true) {
-        if (xQueueReceive(*ring_link_queue, &payload, portMAX_DELAY) == pdTRUE) {
+        if (xQueueReceive(*lowlevel_queue, &payload, portMAX_DELAY) == pdTRUE) {
             rc = process_ring_link_payload(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
         }
@@ -56,14 +56,14 @@ esp_err_t ring_link_init(void)
     #endif
 
 
-    ESP_ERROR_CHECK(ring_link_lowlevel_init(&ring_link_queue));
-    ESP_ERROR_CHECK(ring_link_internal_init(&ring_link_internal_queue));
-    ESP_ERROR_CHECK(ring_link_netif_init(&ring_link_netif_queue));
+    ESP_ERROR_CHECK(ring_link_lowlevel_init(&lowlevel_queue));
+    ESP_ERROR_CHECK(ring_link_internal_init(&internal_queue));
+    ESP_ERROR_CHECK(ring_link_netif_init(&esp_netif_queue));
 
     BaseType_t ret = xTaskCreate(
         ring_link_process_task,
         "ring_link_process",
-        RING_LINK_NETIF_MEM_TASK,
+        RING_LINK_MEM_TASK,
         NULL,
         (tskIDLE_PRIORITY + 4),
         NULL

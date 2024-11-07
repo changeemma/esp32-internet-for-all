@@ -52,7 +52,7 @@ bool broadcast_to_siblings(const void *msg, uint16_t len)
     return false;
 }
 
-esp_err_t ring_link_broadcast_handler(ring_link_payload_t *p)
+esp_err_t broadcast_handler(ring_link_payload_t *p)
 {
     // broadcast origin
     if (ring_link_payload_is_from_device(p))
@@ -63,7 +63,7 @@ esp_err_t ring_link_broadcast_handler(ring_link_payload_t *p)
     }
     else
     {
-        ESP_ERROR_CHECK(ring_link_process(p));
+        ESP_ERROR_CHECK(ring_link_internal_process(p));
         return ring_link_lowlevel_forward_payload(p);
     }
 }

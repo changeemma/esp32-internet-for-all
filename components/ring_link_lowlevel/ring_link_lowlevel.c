@@ -40,7 +40,7 @@ esp_err_t ring_link_lowlevel_init(QueueHandle_t **queue) {
     ret = xTaskCreate(
         ring_link_receive_task,
         "ring_link_receive",
-        RING_LINK_MEM_TASK,
+        RING_LINK_READ_MEM_TASK,
         NULL,
         (tskIDLE_PRIORITY + 4),
         NULL

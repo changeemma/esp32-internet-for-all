@@ -16,8 +16,8 @@ extern "C" {
 #define HEARTBEAT_MAX_FAILURES 3  // Number of consecutive failures before considering a board as "out"
 
 
-void init_heartbeat(void);
-esp_err_t ring_link_heartbeat_handler(ring_link_payload_t *);
+esp_err_t heartbeat_init(void);
+esp_err_t heartbeat_handler(ring_link_payload_t *);
 
 
 #ifdef __cplusplus

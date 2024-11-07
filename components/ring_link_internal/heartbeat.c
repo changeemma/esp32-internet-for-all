@@ -8,7 +8,7 @@ static int failure_count = 0;
 static TaskHandle_t s_heartbeat_task = NULL;
 
 
-static bool send_heartbeat()
+static bool heartbeat_send()
 {
     bool result = false;
     ring_link_payload_t p = {
@@ -30,7 +30,7 @@ static bool send_heartbeat()
     return result;
 }
 
-esp_err_t ring_link_heartbeat_handler(ring_link_payload_t *p)
+esp_err_t heartbeat_handler(ring_link_payload_t *p)
 {
     if (ring_link_payload_is_from_device(p))
     {
@@ -54,7 +54,7 @@ static void offline_board_callback(){
 
 static void heartbeat_callback() {
     heartbeat_id++;
-    if (send_heartbeat()) 
+    if (heartbeat_send()) 
     {
         failure_count = 0;
         ESP_LOGD(TAG, "Heartbeat %d succeded.", heartbeat_id);
@@ -76,7 +76,7 @@ static void heartbeat_callback() {
     }
 }
 
-void init_heartbeat(void) {
+esp_err_t heartbeat_init(void) {
     esp_timer_handle_t heartbeat;
 
     esp_timer_create_args_t heartbeat_args = {
@@ -85,4 +85,5 @@ void init_heartbeat(void) {
     };
     ESP_ERROR_CHECK(esp_timer_create(&heartbeat_args, &heartbeat));
     ESP_ERROR_CHECK(esp_timer_start_periodic(heartbeat, HEARTBEAT_INTERVAL_USEC));
+    return ESP_OK;
 }
