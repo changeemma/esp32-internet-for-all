@@ -3,8 +3,6 @@
 #include "ring_link_lowlevel.h"
 #include "ring_link_internal.h"
 #include "ring_link_netif.h"
-#include "heartbeat.h"
-#include "broadcast.h"
 
 #ifdef __cplusplus
 extern "C" {

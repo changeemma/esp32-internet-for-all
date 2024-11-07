@@ -31,26 +31,6 @@ esp_err_t process_ring_link_payload(ring_link_payload_t *p)
     return ESP_OK;
 }
 
-static esp_err_t ring_link_internal_handler(ring_link_payload_t *p)
-{
-    if (ring_link_payload_is_broadcast(p))  // broadcast
-    {
-        return ring_link_broadcast_handler(p);
-    }
-    else if (ring_link_payload_is_heartbeat(p))
-    {
-        return ring_link_heartbeat_handler(p);
-    }
-    else if (ring_link_payload_is_for_device(p))  // payload for me
-    {
-        return ring_link_process(p);
-    }
-    else  // not for me, forwarding
-    {
-        return ring_link_lowlevel_forward_payload(p);        
-    }
-}
-
 static void ring_link_process_task(void *pvParameters)
 {
     ring_link_payload_t *payload;
