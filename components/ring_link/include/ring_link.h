@@ -8,8 +8,6 @@
 extern "C" {
 #endif
 
-#define RING_LINK_INTERNAL_MEM_TASK 8192
-#define RING_LINK_INTERNAL_QUEUE_SIZE 5
 
 typedef struct {
     esp_err_t (*internal_handler)(ring_link_payload_t *p);

@@ -4,11 +4,11 @@ static const char *TAG = "==> ring_link";
 
 static QueueHandle_t *ring_link_queue;
 static QueueHandle_t *ring_link_netif_queue;
-static QueueHandle_t ring_link_internal_queue = NULL;
+static QueueHandle_t *ring_link_internal_queue;
 
 esp_err_t process_ring_link_payload(ring_link_payload_t *p)
 {
-    QueueHandle_t specific_queue = NULL;
+    QueueHandle_t *specific_queue;
 
     if (ring_link_payload_is_internal(p) || ring_link_payload_is_heartbeat(p))
     {
@@ -16,7 +16,7 @@ esp_err_t process_ring_link_payload(ring_link_payload_t *p)
     }
     else if (ring_link_payload_is_esp_netif(p))
     {
-        specific_queue = *ring_link_netif_queue;
+        specific_queue = ring_link_netif_queue;
     }
     else
     {
@@ -24,7 +24,7 @@ esp_err_t process_ring_link_payload(ring_link_payload_t *p)
         return ESP_FAIL;
     }
 
-    if (xQueueSend(specific_queue, &p, pdMS_TO_TICKS(100)) != pdTRUE) {
+    if (xQueueSend(*specific_queue, &p, pdMS_TO_TICKS(100)) != pdTRUE) {
         ESP_LOGW(TAG, "Queue full, payload dropped");
         return ESP_FAIL;
     }
@@ -44,19 +44,6 @@ static void ring_link_process_task(void *pvParameters)
     }
 }
 
-static void ring_link_internal_process_task(void *pvParameters)
-{
-    ring_link_payload_t *payload;
-    esp_err_t rc;
-    
-    while (true) {
-        if (xQueueReceive(ring_link_internal_queue, &payload, portMAX_DELAY) == pdTRUE) {
-            rc = ring_link_internal_handler(payload);
-            ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
-            free(payload);
-        }
-    }
-}
 
 esp_err_t ring_link_init(void)
 {
@@ -68,20 +55,12 @@ esp_err_t ring_link_init(void)
     printf("CONFIG_RING_LINK_LOWLEVEL_IMPL_UART\n");
     #endif
 
-    ring_link_internal_queue = xQueueCreate(RING_LINK_INTERNAL_QUEUE_SIZE, sizeof(ring_link_payload_t*));
-    
-    if (ring_link_internal_queue == NULL) {
-        ESP_LOGE(TAG, "Failed to create queues");
-        return ESP_FAIL;
-    }
 
     ESP_ERROR_CHECK(ring_link_lowlevel_init(&ring_link_queue));
-    ESP_ERROR_CHECK(ring_link_internal_init());
+    ESP_ERROR_CHECK(ring_link_internal_init(&ring_link_internal_queue));
     ESP_ERROR_CHECK(ring_link_netif_init(&ring_link_netif_queue));
-    broadcast_init();
-    BaseType_t ret;
 
-    ret = xTaskCreate(
+    BaseType_t ret = xTaskCreate(
         ring_link_process_task,
         "ring_link_process",
         RING_LINK_NETIF_MEM_TASK,
@@ -94,18 +73,6 @@ esp_err_t ring_link_init(void)
         return ESP_FAIL;
     }
 
-    ret = xTaskCreate(
-        ring_link_internal_process_task,
-        "ring_link_internal_process",
-        RING_LINK_INTERNAL_MEM_TASK,
-        NULL,
-        (tskIDLE_PRIORITY + 2),
-        NULL
-    );
-    if (ret != pdTRUE) {
-        ESP_LOGE(TAG, "Failed to create internal process task");
-        return ESP_FAIL;
-    }
 
     
     return ESP_OK;
