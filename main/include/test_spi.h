@@ -12,6 +12,7 @@
 #include "config.h"
 #include "ring_link_payload.h"
 #include "ring_link_internal.h"
+#include "broadcast.h"
 
 #ifdef __cplusplus
 extern "C" {

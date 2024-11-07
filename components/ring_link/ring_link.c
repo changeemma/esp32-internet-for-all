@@ -1,6 +1,3 @@
-#include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
-
 #include "ring_link.h"
 
 static const char *TAG = "==> ring_link";
@@ -144,7 +141,7 @@ esp_err_t ring_link_init(void)
     ESP_ERROR_CHECK(ring_link_lowlevel_init());
     ESP_ERROR_CHECK(ring_link_internal_init());
     ESP_ERROR_CHECK(ring_link_netif_init());
-
+    broadcast_init();
     BaseType_t ret;
     
     ret = xTaskCreate(
