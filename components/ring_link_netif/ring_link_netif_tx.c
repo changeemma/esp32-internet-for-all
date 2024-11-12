@@ -5,6 +5,7 @@ static const char* TAG = "==> ring_link_netif";
 ESP_EVENT_DEFINE_BASE(RING_LINK_TX_EVENT);
 
 static esp_netif_t *ring_link_tx_netif = NULL;
+static ring_link_payload_id_t s_id_counter_tx = 0;
 
 static const struct esp_netif_netstack_config netif_netstack_config = {
     .lwip = {
@@ -96,7 +97,7 @@ static esp_err_t esp_netif_ring_link_driver_transmit(void *h, void *buffer, size
         return ESP_OK;
     }
     ring_link_payload_t p = {
-        .id = 0,
+        .id = s_id_counter_tx ++,
         .ttl = RING_LINK_PAYLOAD_TTL,
         .src_id = config_get_id(),
         .dst_id = CONFIG_ID_ANY,

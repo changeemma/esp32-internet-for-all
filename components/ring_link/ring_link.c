@@ -1,3 +1,6 @@
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
+
 #include "ring_link.h"
 
 static const char *TAG = "==> ring_link";
@@ -23,7 +26,6 @@ static esp_err_t process_payload(ring_link_payload_t *p)
         ESP_LOGE(TAG, "Unknown payload type: '%i'", p->buffer_type);
         return ESP_FAIL;
     }
-
     if (xQueueSend(*specific_queue, &p, pdMS_TO_TICKS(100)) != pdTRUE) {
         ESP_LOGW(TAG, "Queue full, payload dropped");
         return ESP_FAIL;
@@ -63,13 +65,27 @@ esp_err_t ring_link_init(void)
     BaseType_t ret = xTaskCreate(
         ring_link_process_task,
         "ring_link_process",
-        RING_LINK_MEM_TASK,
+        RING_LINK_NETIF_MEM_TASK,
         NULL,
         (tskIDLE_PRIORITY + 4),
         NULL
     );
     if (ret != pdTRUE) {
         ESP_LOGE(TAG, "Failed to create process task");
+        return ESP_FAIL;
+    }
+
+    ret = xTaskCreate(
+        ring_link_internal_process_task,
+        "ring_link_internal_process",
+        RING_LINK_INTERNAL_MEM_TASK,
+        NULL,
+        (tskIDLE_PRIORITY + 4),
+        NULL
+    );
+
+    if (ret != pdTRUE) {
+        ESP_LOGE(TAG, "Failed to create netif process task");
         return ESP_FAIL;
     }
 
