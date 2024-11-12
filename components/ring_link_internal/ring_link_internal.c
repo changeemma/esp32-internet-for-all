@@ -14,7 +14,7 @@ esp_err_t ring_link_internal_init( void )
         return ESP_FAIL;
     }
 
-    s_broadcast_queue = xQueueCreate(RING_LINK_INTERNAL_QUEUE_SIZE, sizeof(ring_link_payload_id_t));
+    s_broadcast_queue = xQueueCreate(BROADCAST_QUEUE_SIZE, sizeof(ring_link_payload_id_t));
     if( s_broadcast_queue == NULL )
     {
         ESP_LOGE(TAG, "an error ocurred creating queue.");
@@ -29,7 +29,7 @@ static esp_err_t ring_link_process(ring_link_payload_t *p)
     if (ring_link_payload_is_heartbeat(p)){
         return ESP_OK;
     }
-    printf("call on_sibling_message(%s, %i) from %i\n", p->buffer, p->len, p->src_id);
+    // printf("call on_sibling_message(%s, %i)\n", p->buffer, p->len);
     return ESP_OK;
 }
 

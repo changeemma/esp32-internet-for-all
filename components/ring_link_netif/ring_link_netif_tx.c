@@ -5,6 +5,7 @@ static const char* TAG = "==> ring_link_netif";
 ESP_EVENT_DEFINE_BASE(RING_LINK_TX_EVENT);
 
 static esp_netif_t *ring_link_tx_netif = NULL;
+static ring_link_payload_id_t s_id_counter_tx = 0;
 
 static const struct esp_netif_netstack_config netif_netstack_config = {
     .lwip = {
@@ -38,9 +39,9 @@ esp_netif_t *get_ring_link_tx_netif(void){
 
 static err_t output_function(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)
 {
-    ESP_LOGI(TAG, "Calling output_function(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)");
-    printf("len %u\n", p->len);
-    printf("total len %u\n", p->tot_len);
+    // ESP_LOGI(TAG, "Calling output_function(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)");
+    // printf("len %u\n", p->len);
+    // printf("total len %u\n", p->tot_len);
     struct ip_hdr *iphdr = (struct ip_hdr *)p->payload;
     if((IPH_V(iphdr) == 4) || (IPH_V(iphdr) == 6)){
         netif->linkoutput(netif, p);
@@ -50,7 +51,7 @@ static err_t output_function(struct netif *netif, struct pbuf *p, const ip4_addr
 
 static err_t linkoutput_function(struct netif *netif, struct pbuf *p)
 {
-    ESP_LOGI(TAG, "Calling linkoutput_function(struct netif *netif, struct pbuf *p)");
+    // ESP_LOGI(TAG, "Calling linkoutput_function(struct netif *netif, struct pbuf *p)");
 
     struct pbuf *q = p;
     u16_t alloc_len = (u16_t)(p->tot_len);
@@ -65,7 +66,7 @@ static err_t linkoutput_function(struct netif *netif, struct pbuf *p)
     if (q->next == NULL) {
         ret = esp_netif_transmit(esp_netif, q->payload, q->len);
     } else {
-        LWIP_DEBUGF(PBUF_DEBUG, ("low_level_output: pbuf is a list, application may has bug"));
+        ESP_LOGE(TAG, "low_level_output: pbuf is a list, application may has bug");
         q = pbuf_alloc(PBUF_RAW_TX, p->tot_len, PBUF_RAM);
         if (q != NULL) {
             pbuf_copy(q, p);
@@ -89,14 +90,14 @@ static err_t linkoutput_function(struct netif *netif, struct pbuf *p)
 
 static esp_err_t esp_netif_ring_link_driver_transmit(void *h, void *buffer, size_t len)
 {
-    ESP_LOGI(TAG, "ring_link_netif_driver_transmit(void *h, void *buffer, size_t len) called");
+    // ESP_LOGI(TAG, "ring_link_netif_driver_transmit(void *h, void *buffer, size_t len) called");
     
     if (buffer==NULL) {
         ESP_LOGI(TAG, "buffer is null");
         return ESP_OK;
     }
     ring_link_payload_t p = {
-        .id = 0,
+        .id = s_id_counter_tx ++,
         .ttl = RING_LINK_PAYLOAD_TTL,
         .src_id = config_get_id(),
         .dst_id = CONFIG_ID_ANY,
