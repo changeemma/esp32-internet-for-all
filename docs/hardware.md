@@ -1,17 +1,20 @@
 # Hardware Technical Documentation
-## Mesh Network Node System
 
-### 1. System Overview
+## 1. System Overview
 The system consists of a base board that interconnects 5 ESP32 modules in a ring configuration, designed to be part of a larger mesh network. Each node can function as either a regular node or a root node and is intended to provide WiFi connectivity at a household level.
 
-### 2. Main Components
-#### 2.1 ESP32 Modules
+## 2. Main Components
+### 2.1 ESP32 Modules
 - Quantity: 5 modules per node
 - Roles: North, South, East, West, AP (Access Point)
 - Power Supply: 5V
 - Configuration: Through dedicated pins
 
-#### 2.2 Role Configuration System
+### 2.2 Pinout
+
+![alt text](./esp32-devkitC-v4-pinout.png)
+
+### 2.3 Role Configuration System
 **Configuration Pins:**
 - CONFIG_PIN_0: GPIO 22 (least significant bit)
 - CONFIG_PIN_1: GPIO 21
@@ -28,12 +31,20 @@ The system consists of a base board that interconnects 5 ESP32 modules in a ring
 | 1 | 0 | 0 | Access Point |
 | 1 | 0 | 1 | Root |
 
-### 3. SPI Interconnections
+**Circuit**
 
-#### 3.1 SPI Protocol Overview
+All GPIO pins feature internal pull-up resistors.
+
+For example to config West Board:
+
+![alt text](./arquitectura-pullup.svg)
+
+## 3. SPI Interconnections
+
+### 3.1 SPI Protocol Overview
 SPI (Serial Peripheral Interface) is a synchronous serial communication protocol that operates in full-duplex mode. It uses a master-slave architecture where the master device initiates the communication.
 
-##### Key Characteristics:
+#### Key Characteristics:
 - Full-duplex communication (simultaneous send and receive)
 - Synchronous protocol (uses a clock signal)
 - Master-slave architecture
@@ -41,7 +52,7 @@ SPI (Serial Peripheral Interface) is a synchronous serial communication protocol
 - No built-in acknowledgment mechanism
 - No built-in flow control
 
-#### 3.2 SPI Signal Lines
+### 3.2 SPI Signal Lines
 The SPI bus consists of four fundamental signals:
 
 1. **MOSI (Master Out Slave In)**:
@@ -68,12 +79,12 @@ The SPI bus consists of four fundamental signals:
    ```
    With CS:
    CS    ‾‾\_____/‾‾\_____/‾‾
-   SCLK  ‾‾█████‾‾‾‾█████‾‾‾
-   MOSI  ‾‾DATA1‾‾‾DATA2‾‾‾
+   SCLK  ‾‾‾█████‾‾‾‾█████‾‾‾
+   MOSI  ‾‾‾DATA1‾‾‾‾DATA2‾‾‾
    
    Without CS:
    SCLK  ‾‾██████████████‾‾‾
-   MOSI  ‾‾DATA1DATA2‾‾‾
+   MOSI  ‾‾DATA1DATA2****‾‾‾
    ```
    CS ensures proper message framing and synchronization
 
@@ -81,24 +92,25 @@ The SPI bus consists of four fundamental signals:
    - Data line from slave to master
    - Not used in our current implementation as we use unidirectional communication
 
-#### 3.3 Ring Configuration Implementation
+### 3.3 Ring Configuration Implementation
 In our system, the ring configuration means:
 ```
-North ESP32 → East ESP32 → South ESP32 → West ESP32 → AP ESP32 → North ESP32
+North ESP32 → East ESP32 → South ESP32 → AP ESP32 → West ESP32 → North ESP32
 ```
+![alt text](./arquitectura-conexiones-nodo.svg)
 
 Each ESP32 acts as:
 - Master for its clockwise neighbor
 - Slave for its counterclockwise neighbor
 
-#### 3.4 Timing Diagram
+### 3.4 Timing Diagram
 ```
 CS    ‾‾\_____________/‾‾
 SCLK  ‾‾\_/‾\_/‾\_/‾\_/‾‾
-MOSI  ‾‾\_DATA BITS_/‾‾‾‾
+MOSI  ‾‾\_DATA   BITS_/‾‾‾‾
 ```
 
-#### 3.5 Implementation Details
+### 3.5 Implementation Details
 **Pin Configuration:**
 ```
 Master Device          Slave Device
@@ -114,26 +126,14 @@ GPIO 5  (CS)    ────► GPIO 15 (CS)
 3. Data is transmitted on MOSI line synchronized with SCLK
 4. After data transfer, master pulls CS high
 
-#### 3.6 Advantages in Our Design
-1. **Speed**: Fast data transfer rates suitable for real-time communication
-2. **Simplicity**: Simple hardware implementation
-3. **Ring Topology**: Enables efficient data circulation among all ESP32s
-4. **Full Control**: Master controls all aspects of communication
-
-#### 3.7 Considerations
-- CS must be properly managed to avoid bus contention
-- Clock speed should be set according to the slowest device in the chain
-- Proper ground references must be maintained between devices
-- Signal integrity should be considered in PCB layout
-
-### 4. Electrical Specifications
-#### 4.1 Power Supply
+## 4. Electrical Specifications
+### 4.1 Power Supply
 - Input Voltage: 5V via USB or 5v source (PENDING: Add current)
 
-#### 4.2 Digital Signals
+### 4.2 Digital Signals
 
-### 5. Design Considerations
-#### 5.1 Software
+## 5. Design Considerations
+### 5.1 Software
 - Operating System: FreeRTOS
 - Programming: Via USB interface
 - Booting: Custom handling via FreeRTOS

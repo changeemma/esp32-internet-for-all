@@ -9,8 +9,13 @@ The system's unique feature is its dual-role approach: each board acts as a mast
 ## Compatible Hardware
 This project has been tested and verified to work with the following ESP32 boards:
 
-- Espressif ESP32-DevKitC v4 (https://docs.espressif.com/projects/esp-idf/en/release-v4.2/esp32/hw-reference/esp32/get-started-devkitc.html)
-- NodeMCU ESP32 WiFi + Bluetooth 4.2 IoT WROOM ESP32-S (https://docs.ai-thinker.com/_media/esp32/docs/nodemcu-32s_product_specification.pdf)
+- Espressif ESP32-DevKitC v4 (https://docs.espressif.com/projects/esp-idf/en/v5.1/esp32/hw-reference/esp32/get-started-devkitc.html#)
+
+### Pinout
+
+![alt text](./docs/esp32-devkitC-v4-pinout.png)
+
+
 
 While the project may work with other ESP32 boards that have similar specifications, compatibility cannot be guaranteed without testing.
 
@@ -47,8 +52,8 @@ For detailed installation instructions, visit [ESP-IDF Get Started Guide](https:
 
 1. Clone this repo and cd into it:
    ```bash
-   git clone [repository-url]
-   cd [project-directory]
+   git clone https://github.com/changeemma/esp32-internet-for-all.git
+   cd esp32-internet-for-all
    ```
 
 2. Set up the ESP-IDF environment:
@@ -98,10 +103,19 @@ Each ESP32 in the ring must be configured with its specific role using the confi
 ## GPIO - Connections for ESP32 - Physical ports ring connections
 
 ```
-MASTER_GPIO_MOSI 23 <-> SLAVE_GPIO_MOSI 13
-MASTER_GPIO_SCLK 18 <-> SLAVE_GPIO_SCLK 14
-MASTER_GPIO_CS 5 <-> SLAVE_GPIO_CS 15
+Master Device          Slave Device
+-------------         -------------
+GPIO 23 (MOSI)  ────► GPIO 13 (MOSI)
+GPIO 18 (SCLK)  ────► GPIO 14 (SCLK)
+GPIO 5  (CS)    ────► GPIO 15 (CS)
 ```
+
+#### Role Configuration System
+**Configuration Pins (Pull-Up):**
+- CONFIG_PIN_0: GPIO 22 (least significant bit)
+- CONFIG_PIN_1: GPIO 21
+- CONFIG_PIN_2: GPIO 16 (most significant bit)
+
 
 ## IDF configuration: sdkconfig file
 
