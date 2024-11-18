@@ -15,8 +15,19 @@
 
 ## Communication Protocols
 
-### 1. Internal Communication (SPI)
-Message format and payload structure:
+### Internal Communication
+
+Message format structure:
+
+**Header**: 6 bytes
+
+![alt text](./arquitectura-payload.svg)
+
+**Buffer**
+
+![alt text](./arquitectura-payload.buffer.svg)
+
+
 ```c
 typedef struct {
     ring_link_payload_id_t id;        // 8-bit message identifier
