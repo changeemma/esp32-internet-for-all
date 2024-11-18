@@ -11,6 +11,7 @@
 extern "C" {
 #endif
 
+
 #define PADDING_SIZE(x) (4 - ((x) % 4))
 #define RING_LINK_PAYLOAD_BUFFER_SIZE (RING_LINK_LOWLEVEL_BUFFER_SIZE + PADDING_SIZE(RING_LINK_LOWLEVEL_BUFFER_SIZE))
 #define RING_LINK_PAYLOAD_TTL 4
@@ -47,6 +48,7 @@ typedef struct
     ring_link_payload_buffer_type_t buffer_type;
     uint8_t len;
     uint8_t ttl;
+    uint8_t padding1[2];
     config_id_t src_id;
     config_id_t dst_id;
     char buffer[RING_LINK_PAYLOAD_BUFFER_SIZE];
@@ -58,7 +60,11 @@ bool ring_link_payload_is_from_device(ring_link_payload_t *p);
 
 bool ring_link_payload_is_broadcast(ring_link_payload_t *p);
 
+bool ring_link_payload_is_internal(ring_link_payload_t *p);
+
 bool ring_link_payload_is_heartbeat(ring_link_payload_t *p);
+
+bool ring_link_payload_is_esp_netif(ring_link_payload_t *p);
 
 
 #ifdef __cplusplus
