@@ -1,42 +1,126 @@
-This is a work in progress project to connect several ESP32 using SPI connection.
-Each board acts as a spi-master of the next board and as a spi-slave of the previous board, forming a sort of ring.
+# ESP32 SPI Ring Connection Project
 
-# Install repo
-Version required: ESP-IDF v5.1.2
-Clone this repo and cd into it to run:
-```bash
-get_idf
-idf.py build
-```
-It will take a while while it builds all the libraries
+## Project Overview
 
-# GPIO - Connections for 2 ESP32 - Physical ports ring connections
+This project implements a ring network topology using ESP32 microcontrollers connected via SPI (Serial Peripheral Interface). Each ESP32 board functions simultaneously as an SPI master and slave, creating a circular communication chain where data can flow bidirectionally through the network. This architecture enables efficient local communication within IoT nodes, supporting configurations from 2 to 5 boards in a single ring.
+
+The system's unique feature is its dual-role approach: each board acts as a master for the next board and a slave for the previous one, enabling seamless data transmission throughout the network. One of the boards serves as an Access Point (AP), allowing the node to communicate with external networks while maintaining internal ring communication.
+
+## Compatible Hardware
+This project has been tested and verified to work with the following ESP32 boards:
+
+- Espressif ESP32-DevKitC v4 (https://docs.espressif.com/projects/esp-idf/en/release-v4.2/esp32/hw-reference/esp32/get-started-devkitc.html)
+- NodeMCU ESP32 WiFi + Bluetooth 4.2 IoT WROOM ESP32-S (https://docs.ai-thinker.com/_media/esp32/docs/nodemcu-32s_product_specification.pdf)
+
+While the project may work with other ESP32 boards that have similar specifications, compatibility cannot be guaranteed without testing.
+
+## Prerequisites
+
+### ESP-IDF Installation
+Before starting with this project, you need to install ESP-IDF v5.1.2. Follow these steps:
+
+1. **Windows Installation**:
+   - Download the ESP-IDF Windows Installer from the official ESP-IDF Releases page
+   - Run the installer and follow the installation wizard
+   - The installer will download and install:
+     * ESP-IDF tools
+     * Git
+     * Python
+     * Required build tools
+
+2. **Linux/macOS Installation**:
+   ```bash
+   mkdir -p ~/esp
+   cd ~/esp
+   git clone -b v5.1.2 --recursive https://github.com/espressif/esp-idf.git
+   cd esp-idf
+   ./install.sh
+   ```
+
+3. **Set up ESP-IDF environment variables**:
+   - Windows: Run `C:\esp\esp-idf\export.bat`
+   - Linux/macOS: `. ~/esp/esp-idf/export.sh`
+
+For detailed installation instructions, visit [ESP-IDF Get Started Guide](https://docs.espressif.com/projects/esp-idf/en/v5.1.2/esp32/get-started/index.html)
+
+## Installing and Building the Project
+
+1. Clone this repo and cd into it:
+   ```bash
+   git clone [repository-url]
+   cd [project-directory]
+   ```
+
+2. Set up the ESP-IDF environment:
+   ```bash
+   get_idf
+   ```
+
+3. Build the project:
+   ```bash
+   idf.py build
+   ```
+   Note: Initial build will take some time while it compiles all required libraries.
+
+
+## Board Configuration Options
+
+The system supports between 2 to 5 ESP32 boards in a ring configuration:
+
+### Possible Setups:
+1. **2 boards**: Minimal configuration
+   - Each ESP32 acts as both master and slave
+   - Direct bidirectional communication
+
+2. **3-4 boards**: Intermediate configuration
+
+   Forms a ring where each board connects to its neighbors
+   Required boards:
+
+   One AP (Access Point) board
+   Two or three boards from: North, South, East, or West
+
+
+   Example (3 boards): AP + North + South
+   Example (4 boards): AP + North + South + East
+
+3. **5 boards**: Full configuration
+   - Complete board setup with all roles:
+     * North board
+     * South board
+     * East board
+     * West board
+     * AP (Access Point) board
+
+### Board Roles
+Each ESP32 in the ring must be configured with its specific role using the configuration pins (see GPIO Configuration section).
+
+## GPIO - Connections for ESP32 - Physical ports ring connections
 
 ```
 MASTER_GPIO_MOSI 23 <-> SLAVE_GPIO_MOSI 13
 MASTER_GPIO_SCLK 18 <-> SLAVE_GPIO_SCLK 14
 MASTER_GPIO_CS 5 <-> SLAVE_GPIO_CS 15
 ```
-And viceversa.
 
-# IDF configuration
+## IDF configuration: sdkconfig file
 
+```bash
+   get_idf menuconfig
+```
+
+Variables:
 ```
 CONFIG_LWIP_L2_TO_L3_COPY=y (Enable copy between Layer2 and Layer3 packets)
 CONFIG_LWIP_IP_FORWARD=y (Enable IP forwarding)
-CONFIG_LWIP_NETIF_LOOPBACK is not set (Support per-interface loopback - Replace default route, that's why it must be disabled)
-LWIP_IP_DEBUG=y
+LWIP_IP_DEBUG=y (Only for debug)
 ```
 
-# Own Architecture diagram
-https://drive.google.com/file/d/1VNsu5GcJccJ-3FP7wIq0gd38yYbneho3/view?usp=sharing
-
-
-# ESP32 Component Testing Guide
+## ESP32 Component Testing Guide
 
 This guide explains how to add unit tests to your ESP32 component and how to run them using the ESP-IDF unit testing framework.
 
-## Adding Tests to Your Component
+### Adding Tests to Your Component
 
 1. Create a `test` directory in your component folder:
 
@@ -71,7 +155,7 @@ This guide explains how to add unit tests to your ESP32 component and how to run
                           REQUIRES your_component unity)
    ```
 
-## Modifying the Unit Test App
+### Modifying the Unit Test App
 
 1. Navigate to the unit test app directory:
 
@@ -88,7 +172,7 @@ This guide explains how to add unit tests to your ESP32 component and how to run
    Replace `/path/to/your/components/directory` with the actual path to your components.
 
 
-## Running the Tests
+### Running the Tests
 
 
 1. Navigate to the unit test app directory:
