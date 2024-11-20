@@ -74,22 +74,6 @@ esp_err_t ring_link_init(void)
         ESP_LOGE(TAG, "Failed to create process task");
         return ESP_FAIL;
     }
-
-    ret = xTaskCreate(
-        ring_link_internal_process_task,
-        "ring_link_internal_process",
-        RING_LINK_INTERNAL_MEM_TASK,
-        NULL,
-        (tskIDLE_PRIORITY + 4),
-        NULL
-    );
-
-    if (ret != pdTRUE) {
-        ESP_LOGE(TAG, "Failed to create netif process task");
-        return ESP_FAIL;
-    }
-
-
     
     return ESP_OK;
 }

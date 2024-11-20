@@ -18,7 +18,7 @@ extern "C" {
 #endif
 
 esp_err_t ring_link_internal_init(QueueHandle_t **queue);
-esp_err_t ring_link_internal_process(ring_link_payload_t *p);`
+esp_err_t ring_link_internal_process(ring_link_payload_t *p);
 
 #ifdef __cplusplus
 }
