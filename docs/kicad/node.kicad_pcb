@@ -6224,19 +6224,6 @@
 			(justify left bottom)
 		)
 	)
-	(gr_text "WEST_CS"
-		(at 133.8125 126.8125 0)
-		(layer "F.Cu")
-		(uuid "6dc7c0a0-23a1-49e6-be75-8b825592d66d")
-		(effects
-			(font
-				(size 1.5 1.5)
-				(thickness 0.3)
-				(bold yes)
-			)
-			(justify right bottom)
-		)
-	)
 	(gr_text "WEST"
 		(at 63.3125 137.3125 90)
 		(layer "F.Cu")
