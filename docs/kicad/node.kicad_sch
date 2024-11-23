@@ -1070,6 +1070,16 @@
 	)
 	(wire
 		(pts
+			(xy 119.38 212.09) (xy 107.95 212.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "27f76488-2794-4fa6-89ae-e56b09be74d2")
+	)
+	(wire
+		(pts
 			(xy 105.41 64.77) (xy 104.14 64.77)
 		)
 		(stroke
@@ -1090,6 +1100,16 @@
 	)
 	(wire
 		(pts
+			(xy 123.19 224.79) (xy 107.95 224.79)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3d9e1c90-9fa2-4c0d-92cf-ffdf23115d69")
+	)
+	(wire
+		(pts
 			(xy 124.46 62.23) (xy 125.73 62.23)
 		)
 		(stroke
@@ -1097,6 +1117,16 @@
 			(type default)
 		)
 		(uuid "44c75c7e-b9c6-435b-a64c-c6f86f1b573c")
+	)
+	(wire
+		(pts
+			(xy 26.67 212.09) (xy 41.91 212.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "52db5525-6cbc-4ae5-81ab-9e3286b87045")
 	)
 	(wire
 		(pts
@@ -1127,6 +1157,26 @@
 			(type default)
 		)
 		(uuid "69f82b30-d9a7-49e6-b2fe-f59ee3303c22")
+	)
+	(wire
+		(pts
+			(xy 123.19 214.63) (xy 107.95 214.63)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6f4f7b6e-9d17-48f9-8510-72af6022011e")
+	)
+	(wire
+		(pts
+			(xy 29.21 217.17) (xy 41.91 217.17)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "71d74cc5-215b-4176-9bec-d5ea5cb80ab6")
 	)
 	(wire
 		(pts
@@ -1220,6 +1270,16 @@
 	)
 	(wire
 		(pts
+			(xy 26.67 214.63) (xy 41.91 214.63)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b040e468-5dad-43a5-aded-b27cfe5a3b44")
+	)
+	(wire
+		(pts
 			(xy 105.41 62.23) (xy 104.14 62.23)
 		)
 		(stroke
@@ -1308,6 +1368,16 @@
 		)
 		(uuid "0a583be4-7e6c-4858-abfb-49ad11f51277")
 	)
+	(text "By-pass AP"
+		(exclude_from_sim no)
+		(at 166.116 212.09 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "dc40eafd-8015-4dc5-937e-160f069e8388")
+	)
 	(label "B4_SCLK"
 		(at 158.75 161.29 180)
 		(fields_autoplaced yes)
@@ -1329,6 +1399,17 @@
 			(justify left bottom)
 		)
 		(uuid "19352a47-cf78-4b8c-b508-c3d6da9bdc92")
+	)
+	(label "GND"
+		(at 171.45 243.84 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "1aacd341-0c3d-4a37-b32e-eedc57caebb0")
 	)
 	(label "EAST_PIN_1"
 		(at 280.67 71.12 0)
@@ -1363,6 +1444,17 @@
 		)
 		(uuid "26c8cf95-3692-4b0d-9f27-2d0015e88307")
 	)
+	(label "CS_GPIO_15"
+		(at 29.21 217.17 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "2f6724ac-2137-4c15-9a25-695bb25e908f")
+	)
 	(label "B1_SCLK"
 		(at 105.41 64.77 0)
 		(fields_autoplaced yes)
@@ -1385,6 +1477,17 @@
 		)
 		(uuid "330f11f2-51f0-4935-8555-5aaff22bc646")
 	)
+	(label "GND"
+		(at 74.93 262.89 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3b07b4a5-0124-4148-9f05-bb03f4fc19dc")
+	)
 	(label "WEST_PIN_0"
 		(at 104.14 72.39 0)
 		(fields_autoplaced yes)
@@ -1406,6 +1509,16 @@
 			(justify right bottom)
 		)
 		(uuid "3cfd3140-0dde-44df-ac74-b38f9c728087")
+	)
+	(label "CS_GPIO_5"
+		(at 161.29 220.98 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "40aca744-eff7-497a-a639-ee26dc4375ca")
 	)
 	(label "VCC"
 		(at 344.17 44.45 90)
@@ -1473,6 +1586,27 @@
 		)
 		(uuid "486cfa3f-2d7e-4d4d-b54e-714276d951d8")
 	)
+	(label "MOSI_GPIO_13"
+		(at 171.45 236.22 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4f2d6abe-75bb-47c4-a4b0-0509093d82bf")
+	)
+	(label "MOSI_GPIO_23"
+		(at 123.19 224.79 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "514f7cc4-e2fd-4041-b903-14d96273fbfa")
+	)
 	(label "GND"
 		(at 76.2 133.35 0)
 		(fields_autoplaced yes)
@@ -1539,6 +1673,17 @@
 		)
 		(uuid "623b1b84-ee52-4ef1-a557-d23a9d7fceb4")
 	)
+	(label "MOSI_GPIO_13"
+		(at 26.67 212.09 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "68ae0523-933c-47c8-ab6a-6ee5e881fc79")
+	)
 	(label "SOUTH_PIN_0"
 		(at 340.36 133.35 180)
 		(fields_autoplaced yes)
@@ -1604,6 +1749,16 @@
 			(justify left bottom)
 		)
 		(uuid "758369a4-6c5c-4fe1-9eb6-959bf57b9f50")
+	)
+	(label "MOSI_GPIO_23"
+		(at 161.29 236.22 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "7a1eedc4-b858-4347-9bdc-3e032084f916")
 	)
 	(label "GND"
 		(at 76.2 137.16 0)
@@ -1682,6 +1837,16 @@
 		)
 		(uuid "9362a7ff-3f2d-49f7-9663-268a3d779af4")
 	)
+	(label "SCLK_GPIO_14"
+		(at 171.45 228.6 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "9d2f85bb-9c28-4e0a-bdad-597ae41ce214")
+	)
 	(label "GND"
 		(at 168.91 176.53 0)
 		(fields_autoplaced yes)
@@ -1693,6 +1858,17 @@
 		)
 		(uuid "9e3da17a-aab3-4126-8838-a62cc8e6d268")
 	)
+	(label "SCLK_GPIO_14"
+		(at 26.67 214.63 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a4ffda32-c057-4813-865d-59b7d03b461b")
+	)
 	(label "B3_CS"
 		(at 309.88 69.85 180)
 		(fields_autoplaced yes)
@@ -1703,6 +1879,17 @@
 			(justify right bottom)
 		)
 		(uuid "a754ea65-19c3-4410-84df-d05846a3b357")
+	)
+	(label "VCC"
+		(at 74.93 191.77 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "a78c28b7-1d53-4a2d-adca-e21ba047c95a")
 	)
 	(label "B4_MOSI"
 		(at 158.75 168.91 180)
@@ -1803,6 +1990,16 @@
 		)
 		(uuid "bfb28d3a-5e9c-40f3-971d-5d134823076a")
 	)
+	(label "CS_GPIO_15"
+		(at 171.45 220.98 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "cf37f6b9-589b-4167-bf38-32600254cf1b")
+	)
 	(label "B3_MOSI"
 		(at 309.88 64.77 180)
 		(fields_autoplaced yes)
@@ -1847,6 +2044,17 @@
 		)
 		(uuid "dc10998d-f470-436c-b2d9-c51519b3eb49")
 	)
+	(label "VCC"
+		(at 161.29 243.84 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "e105dabf-ccd5-4d10-8095-f824b7246ac4")
+	)
 	(label "B2_CS"
 		(at 193.04 62.23 0)
 		(fields_autoplaced yes)
@@ -1880,6 +2088,27 @@
 		)
 		(uuid "e78245d0-a717-4df8-b37c-d3a1e4186f80")
 	)
+	(label "SCLK_GPIO_18"
+		(at 161.29 228.6 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "ed13c148-ead0-44ad-ba78-50538dfe8ce1")
+	)
+	(label "CS_GPIO_5"
+		(at 119.38 212.09 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "edd194c7-95bf-4b2b-a41d-0bd71fd0e86d")
+	)
 	(label "VCC"
 		(at 81.28 166.37 180)
 		(fields_autoplaced yes)
@@ -1902,6 +2131,17 @@
 		)
 		(uuid "f4453aa3-7716-4000-a82a-e1238306de09")
 	)
+	(label "SCLK_GPIO_18"
+		(at 123.19 214.63 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "fbddbeaa-ddaf-4189-b648-dfba691ee000")
+	)
 	(label "B1_CS"
 		(at 105.41 62.23 0)
 		(fields_autoplaced yes)
@@ -1912,6 +2152,75 @@
 			(justify left bottom)
 		)
 		(uuid "feea1bc3-ea92-47f1-89e1-399f2b7738dc")
+	)
+	(symbol
+		(lib_id "Jumper:Jumper_2_Open")
+		(at 166.37 236.22 180)
+		(unit 1)
+		(exclude_from_sim yes)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "061b6d99-d85e-450d-ac2b-5b2b14c7a8df")
+		(property "Reference" "JP5"
+			(at 166.37 231.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Jumper_2_Open"
+			(at 166.37 233.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_PinSocket_1.00mm:PinSocket_1x02_P1.00mm_Vertical"
+			(at 168.9099 234.95 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 166.37 236.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Jumper, 2-pole, open"
+			(at 166.37 236.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "12e52109-b46f-40df-9dbe-e44e295776da")
+		)
+		(pin "1"
+			(uuid "8f7e28ba-d85b-4650-9606-0b6d04837632")
+		)
+		(instances
+			(project "node"
+				(path "/edfda3a5-48f3-494d-b8b7-17b5dc6cb08d"
+					(reference "JP5")
+					(unit 1)
+				)
+			)
+		)
 	)
 	(symbol
 		(lib_id "Jumper:Jumper_2_Open")
@@ -2046,6 +2355,75 @@
 			(project "mark_i"
 				(path "/edfda3a5-48f3-494d-b8b7-17b5dc6cb08d"
 					(reference "JP8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Jumper:Jumper_2_Open")
+		(at 166.37 220.98 180)
+		(unit 1)
+		(exclude_from_sim yes)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "65ad4b86-f836-45da-abf6-75382095ff44")
+		(property "Reference" "JP3"
+			(at 166.37 215.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Jumper_2_Open"
+			(at 166.37 218.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_PinSocket_1.00mm:PinSocket_1x02_P1.00mm_Vertical"
+			(at 168.9099 219.71 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 166.37 220.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Jumper, 2-pole, open"
+			(at 166.37 220.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "fc6078ec-b99c-4156-9ab2-f136d617c9c8")
+		)
+		(pin "1"
+			(uuid "f7a15706-275a-4972-ac4c-4e6c31911b59")
+		)
+		(instances
+			(project "node"
+				(path "/edfda3a5-48f3-494d-b8b7-17b5dc6cb08d"
+					(reference "JP3")
 					(unit 1)
 				)
 			)
@@ -2856,6 +3234,75 @@
 		)
 	)
 	(symbol
+		(lib_id "Jumper:Jumper_2_Open")
+		(at 166.37 243.84 180)
+		(unit 1)
+		(exclude_from_sim yes)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e2fe12f4-c8ee-497a-80a8-a58fcda9cec9")
+		(property "Reference" "JP6"
+			(at 166.37 238.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Jumper_2_Open"
+			(at 166.37 241.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_PinSocket_1.00mm:PinSocket_1x02_P1.00mm_Vertical"
+			(at 168.9099 242.57 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 166.37 243.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Jumper, 2-pole, open"
+			(at 166.37 243.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "0f8a18b6-889e-4ff2-a009-1d7696437a5a")
+		)
+		(pin "1"
+			(uuid "2129cf3c-1df0-4fa8-8942-71c7905ac360")
+		)
+		(instances
+			(project "node"
+				(path "/edfda3a5-48f3-494d-b8b7-17b5dc6cb08d"
+					(reference "JP6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "PCM_Espressif:ESP32-DevKitC")
 		(at 71.12 77.47 0)
 		(unit 1)
@@ -3027,6 +3474,252 @@
 			(project ""
 				(path "/edfda3a5-48f3-494d-b8b7-17b5dc6cb08d"
 					(reference "U1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Jumper:Jumper_2_Open")
+		(at 166.37 228.6 180)
+		(unit 1)
+		(exclude_from_sim yes)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f1fbc756-1794-4d1a-a4de-a462938a0afa")
+		(property "Reference" "JP4"
+			(at 166.37 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Jumper_2_Open"
+			(at 166.37 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Connector_PinSocket_1.00mm:PinSocket_1x02_P1.00mm_Vertical"
+			(at 168.9099 227.33 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 166.37 228.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Jumper, 2-pole, open"
+			(at 166.37 228.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "2aeb5a29-ab9d-4cf5-aa99-5d4ee73b898a")
+		)
+		(pin "1"
+			(uuid "6731d914-0568-4966-87cc-4c1613b9c944")
+		)
+		(instances
+			(project "node"
+				(path "/edfda3a5-48f3-494d-b8b7-17b5dc6cb08d"
+					(reference "JP4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_Espressif:ESP32-DevKitC")
+		(at 74.93 227.33 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f2da8c69-bea9-4599-9804-4c6827ae6f89")
+		(property "Reference" "U5"
+			(at 77.1241 262.89 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "ESP32-DevKitC"
+			(at 77.1241 265.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "PCM_Espressif:ESP32-DevKitC"
+			(at 74.93 270.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32/hw-reference/esp32/get-started-devkitc.html"
+			(at 74.93 273.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Development Kit"
+			(at 74.93 227.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "15"
+			(uuid "3b0352db-d2ef-4a75-ac2c-818cca166f5d")
+		)
+		(pin "16"
+			(uuid "7915af72-5ba9-48cf-8a6e-b288c4cf2766")
+		)
+		(pin "17"
+			(uuid "e57c0d71-9f00-4a17-a1cf-df33eb26183c")
+		)
+		(pin "18"
+			(uuid "fc494838-54d9-47fb-9df1-fbc6e1677766")
+		)
+		(pin "2"
+			(uuid "6aed5c9f-3ba8-4d8b-bdd5-371f538fba7c")
+		)
+		(pin "20"
+			(uuid "80908361-5f07-49d3-9def-c2b1bd9358a8")
+		)
+		(pin "21"
+			(uuid "e6fb3e60-5f30-4dc8-a033-8552339e8e90")
+		)
+		(pin "22"
+			(uuid "84a49deb-a515-40db-a2d2-cbfd00885d16")
+		)
+		(pin "23"
+			(uuid "22ec05e3-0522-4430-94e9-01de4cbfef43")
+		)
+		(pin "24"
+			(uuid "ab051788-06fc-4448-a35f-a3f35820b6f0")
+		)
+		(pin "25"
+			(uuid "b0044501-35ff-4ee4-8261-8854de41d93a")
+		)
+		(pin "26"
+			(uuid "a6b8f376-cf58-4230-969c-5828eb55a2d1")
+		)
+		(pin "27"
+			(uuid "26e3d785-09d8-437f-9e68-fc0e6303a34b")
+		)
+		(pin "28"
+			(uuid "3a38289c-c7d7-48f4-81b5-7a6c4ac010b6")
+		)
+		(pin "29"
+			(uuid "f7bf8795-ec9c-4ad7-8eee-b13c47d97695")
+		)
+		(pin "3"
+			(uuid "67eccf02-7bcb-48e0-aa3b-b3597e310b29")
+		)
+		(pin "30"
+			(uuid "5b55ad8a-d783-444a-a425-559515e3b83b")
+		)
+		(pin "31"
+			(uuid "6ce162fc-f32b-4a39-976c-a066f079c494")
+		)
+		(pin "32"
+			(uuid "c3a9d1d0-ad83-4fd8-9f3e-b2da2be81d20")
+		)
+		(pin "33"
+			(uuid "41bb0420-fa67-49f0-9ed2-f1f8f26b5794")
+		)
+		(pin "34"
+			(uuid "03a046f5-f502-4e51-889b-29733e5d62e3")
+		)
+		(pin "35"
+			(uuid "cd65c4c5-ae5d-4260-b398-abb60948df47")
+		)
+		(pin "36"
+			(uuid "290f256a-2b42-48ab-a353-0097eccd7c44")
+		)
+		(pin "37"
+			(uuid "07c5e63d-04e3-4860-86e2-4c456d543311")
+		)
+		(pin "38"
+			(uuid "00558033-bfce-41a8-8c01-0b8ee60c860e")
+		)
+		(pin "4"
+			(uuid "f8f68444-1119-4f6b-9563-fa5547bc2ddf")
+		)
+		(pin "5"
+			(uuid "1c99a536-baa3-458e-808f-ba9e68d0695f")
+		)
+		(pin "6"
+			(uuid "9eca18cb-be0d-419a-a185-f4f41393ac44")
+		)
+		(pin "7"
+			(uuid "fd24ccd1-9ab1-4bca-adb3-f6ec05b48343")
+		)
+		(pin "8"
+			(uuid "14491048-1059-49b4-b5e3-f99117454d25")
+		)
+		(pin "9"
+			(uuid "3b80a531-3f23-410d-9965-275155d291e3")
+		)
+		(pin "19"
+			(uuid "5f238553-2b3d-4288-b54f-6a368fa05367")
+		)
+		(pin "11"
+			(uuid "9bf86947-e2c7-4035-a100-7ff50e766c85")
+		)
+		(pin "1"
+			(uuid "3805a390-e47d-4058-ba67-8c1ce9874d3e")
+		)
+		(pin "10"
+			(uuid "9259293a-ab6b-46d7-8cfe-724e0b16ffc6")
+		)
+		(pin "13"
+			(uuid "57b541d1-0111-4bd6-8f45-f7f9b1ac6230")
+		)
+		(pin "12"
+			(uuid "bec79662-f767-496a-937d-a10a1c576651")
+		)
+		(pin "14"
+			(uuid "acfa6cd5-d82f-46f7-af50-cd16e50cd403")
+		)
+		(instances
+			(project "node"
+				(path "/edfda3a5-48f3-494d-b8b7-17b5dc6cb08d"
+					(reference "U5")
 					(unit 1)
 				)
 			)
