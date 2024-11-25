@@ -31,7 +31,7 @@ extern "C" {
  * - Used for payloads originating from or destined to external systems.
  * - Include types like ESP-NETIF messages.
  */
-typedef enum: uint8_t {
+typedef enum {
     RING_LINK_PAYLOAD_TYPE_INTERNAL = 0x11,
     RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT = 0x12,
     

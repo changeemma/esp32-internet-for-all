@@ -16,8 +16,8 @@ static void enable_config_pins(void)
         .pin_bit_mask = CONFIG_PIN_MASK,
         .intr_type    = GPIO_INTR_DISABLE,
         .mode         = GPIO_MODE_INPUT,
-        .pull_up_en   = GPIO_PULLUP_DISABLE,
-        .pull_down_en = GPIO_PULLDOWN_ENABLE,
+        .pull_up_en   = GPIO_PULLUP_ENABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
     };
     ESP_ERROR_CHECK(gpio_config(&io_conf));
 }
@@ -36,9 +36,9 @@ static char read_config_bits(void)
     char config_bits = 0b0;
 
     enable_config_pins();
-    config_bits |= gpio_get_level(CONFIG_PIN_0) << 0;
-    config_bits |= gpio_get_level(CONFIG_PIN_1) << 1;
-    config_bits |= gpio_get_level(CONFIG_PIN_2) << 2;
+    config_bits |= ~gpio_get_level(CONFIG_PIN_0) << 0;
+    config_bits |= ~gpio_get_level(CONFIG_PIN_1) << 1;
+    config_bits |= ~gpio_get_level(CONFIG_PIN_2) << 2;
     reset_config_pins();
 
     return config_bits;

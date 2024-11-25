@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 #include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
 
 #define PS_CHAN_CTRL 0xFFFF
 
