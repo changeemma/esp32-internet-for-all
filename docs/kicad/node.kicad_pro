@@ -445,7 +445,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "mark_i.kicad_pro",
+    "filename": "node.kicad_pro",
     "version": 1
   },
   "net_settings": {
@@ -592,6 +592,14 @@
     [
       "edfda3a5-48f3-494d-b8b7-17b5dc6cb08d",
       "Root"
+    ],
+    [
+      "98b2ba42-50c5-4328-b2b6-bd204588fed3",
+      "main"
+    ],
+    [
+      "4c067cb0-c7fc-4a9d-897e-f207a21c8bf4",
+      "ap"
     ]
   ],
   "text_variables": {}
