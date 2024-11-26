@@ -14,7 +14,7 @@ extern "C" {
 #define CONFIG_PIN_2 16 // the highest bit
 #define CONFIG_PIN_MASK  ((1ULL<<CONFIG_PIN_0) | (1ULL<<CONFIG_PIN_1) | (1ULL<<CONFIG_PIN_2))
 
-typedef enum {
+typedef enum __attribute__((__packed__)) {
     CONFIG_ORIENTATION_NORTH = 0, // 000
     CONFIG_ORIENTATION_SOUTH = 1, // 001
     CONFIG_ORIENTATION_EAST  = 2, // 010
@@ -22,14 +22,14 @@ typedef enum {
     CONFIG_ORIENTATION_NONE  = 9,
 } config_orientation_t;
 
-typedef enum {
+typedef enum __attribute__((__packed__)) {
     CONFIG_MODE_PEER_LINK    = 0, // 0**
     CONFIG_MODE_ACCESS_POINT = 4, // 100 - Wi-Fi AccessPoint
     CONFIG_MODE_ROOT         = 5, // 101
     CONFIG_MODE_NONE         = 9,
 } config_mode_t;
 
-typedef enum {
+typedef enum __attribute__((__packed__)) {
     CONFIG_ID_NORTH   = 0, // 000
     CONFIG_ID_SOUTH   = 1, // 001
     CONFIG_ID_EAST    = 2, // 010
