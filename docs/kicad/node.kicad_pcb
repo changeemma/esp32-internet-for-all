@@ -8813,7 +8813,7 @@
 			(justify left bottom)
 		)
 	)
-	(gr_text "SOUTH_CS"
+	(gr_text "EAST_CS"
 		(at 124.67 109.5 0)
 		(layer "F.Cu")
 		(uuid "9338b399-16d5-469d-825f-0c5654815b51")
@@ -8839,7 +8839,7 @@
 			(justify left bottom)
 		)
 	)
-	(gr_text "VCC\nGND\nSOUTH_MOSI\nSOUTH_SCLK\nAP_MOSI\nAP_SCLK\nAP_CS\nSOUTH_CS"
+	(gr_text "VCC\nGND\nEAST_MOSI\nEAST_SCLK\nAP_MOSI\nAP_SCLK\nAP_CS\nEAST_CS"
 		(at 49.5 154 0)
 		(layer "F.Cu")
 		(uuid "adb3f1ca-768c-414b-bd27-fc19f860529a")
@@ -8852,7 +8852,7 @@
 			(justify right bottom)
 		)
 	)
-	(gr_text "SOUTH_SCLK"
+	(gr_text "EAST_SCLK"
 		(at 124.67 114.5 0)
 		(layer "F.Cu")
 		(uuid "bf2424d6-c60a-46b0-a694-29ece34542d8")
@@ -8904,7 +8904,7 @@
 			(justify left bottom)
 		)
 	)
-	(gr_text "SOUTH_MOSI"
+	(gr_text "EAST_MOSI"
 		(at 124.67 119.5 0)
 		(layer "F.Cu")
 		(uuid "fe27a878-c063-43a2-8567-75116cd14f67")
