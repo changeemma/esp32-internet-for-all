@@ -1,4 +1,4 @@
-menu "Wi-Fi Configuration"
+menu "Internet for all: Wi-Fi Configuration"
     choice WIFI_MODE
         prompt "Wi-Fi Mode"
         default WIFI_NORMAL_MODE
