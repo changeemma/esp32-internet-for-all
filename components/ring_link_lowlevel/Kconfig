@@ -1,5 +1,5 @@
 
-menu "Ring Link Lowlevel Configuration"
+menu "Internet for all: Ring Link Lowlevel Configuration"
     choice RING_LINK_LOWLEVEL_IMPL
         prompt "Lowlevel Implementation"
         default RING_LINK_LOWLEVEL_IMPL_SPI
