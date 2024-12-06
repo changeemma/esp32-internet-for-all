@@ -47,7 +47,6 @@ typedef struct
     ring_link_payload_buffer_type_t buffer_type;
     uint8_t len;
     uint8_t ttl;
-    uint8_t padding1[2];
     config_id_t src_id;
     config_id_t dst_id;
     char buffer[RING_LINK_PAYLOAD_BUFFER_SIZE];
