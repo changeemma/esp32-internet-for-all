@@ -15,7 +15,7 @@ extern "C" {
 #endif
 
 #define SPI_BUFFER_SIZE CONFIG_SPI_BUFFER_SIZE
-#define SPI_QUEUE_SIZE 5
+#define SPI_QUEUE_SIZE 40
 
 #define SPI_SENDER_GPIO_MOSI 23
 #define SPI_SENDER_GPIO_SCLK 18

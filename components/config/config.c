@@ -30,15 +30,19 @@ static void reset_config_pins(void)
 }
 
 // Set the corresponding bits in config_bits based on GPIO pin values
-static char read_config_bits(void)
+static uint8_t read_config_bits(void)
 {
     // Initialize config_bits with all zeros
-    char config_bits = 0b0;
+    uint8_t config_bits = 0b0;
 
     enable_config_pins();
     config_bits |= ((~gpio_get_level(CONFIG_PIN_0)) & 0b00000001) << 0;
     config_bits |= ((~gpio_get_level(CONFIG_PIN_1)) & 0b00000001) << 1;
     config_bits |= ((~gpio_get_level(CONFIG_PIN_2)) & 0b00000001) << 2;
+    ESP_LOGI(TAG, "Raw pin values: %d %d %d", 
+         gpio_get_level(CONFIG_PIN_0),
+         gpio_get_level(CONFIG_PIN_1),
+         gpio_get_level(CONFIG_PIN_2));
     reset_config_pins();
 
     return config_bits;
@@ -47,11 +51,15 @@ static char read_config_bits(void)
 // Set device config based on config_bits values
 void config_setup(void)
 {
-    char config_bits = read_config_bits();
-
+    uint8_t config_bits = read_config_bits();
+    ESP_LOGI(TAG, "config_bits: %d (binario: %d%d%d)", 
+         config_bits,
+         (config_bits >> 2) & 1,
+         (config_bits >> 1) & 1,
+         config_bits & 1);
     s_config.id = (config_id_t) config_bits;
 
-    if (config_bits >> 2 == 0) {
+    if ((config_bits >> 2) == 0) {
         s_config.mode = CONFIG_MODE_PEER_LINK;
         s_config.orientation = (config_orientation_t) config_bits;
     } else {

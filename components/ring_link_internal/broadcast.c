@@ -36,13 +36,13 @@ static esp_err_t send_broadcast(const void *buffer, uint16_t len){
 
 bool broadcast_to_siblings(const void *msg, uint16_t len)
 {
-    if( xSemaphoreTake( s_broadcast_mutex, ( TickType_t ) 100 ) == pdTRUE )
+    if( xSemaphoreTake( s_broadcast_mutex, ( TickType_t ) 400 ) == pdTRUE )
     {
         bool result = false;
         s_broadcast_task = xTaskGetCurrentTaskHandle();
         if (send_broadcast(msg, len) == ESP_OK)
         {    
-            result = ulTaskNotifyTake( pdTRUE, ( TickType_t ) 100 ) == pdTRUE ? true : false;
+            result = ulTaskNotifyTake( pdTRUE, ( TickType_t ) 400 ) == pdTRUE ? true : false;
         }
         s_broadcast_task = NULL;
         xSemaphoreGive( s_broadcast_mutex );

@@ -42,9 +42,12 @@ static err_t output_function(struct netif *netif, struct pbuf *p, const ip4_addr
     // ESP_LOGI(TAG, "Calling output_function(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)");
     // printf("len %u\n", p->len);
     // printf("total len %u\n", p->tot_len);
+    ESP_LOGI(TAG, "Output function - len: %zu, tot_len: %zu", p->len, p->tot_len);
     struct ip_hdr *iphdr = (struct ip_hdr *)p->payload;
     if((IPH_V(iphdr) == 4) || (IPH_V(iphdr) == 6)){
         netif->linkoutput(netif, p);
+    }else {
+        ESP_LOGW(TAG, "Non-IP packet received!");
     }
     return ESP_OK;
 }
@@ -91,7 +94,9 @@ static err_t linkoutput_function(struct netif *netif, struct pbuf *p)
 static esp_err_t esp_netif_ring_link_driver_transmit(void *h, void *buffer, size_t len)
 {
     // ESP_LOGI(TAG, "ring_link_netif_driver_transmit(void *h, void *buffer, size_t len) called");
-    
+    static uint32_t packet_count = 0;
+    packet_count++;
+    ESP_LOGI(TAG, "[%" PRIu32 "] TX Packet - len: %zu", packet_count, len);
     if (buffer==NULL) {
         ESP_LOGI(TAG, "buffer is null");
         return ESP_OK;
@@ -109,6 +114,8 @@ static esp_err_t esp_netif_ring_link_driver_transmit(void *h, void *buffer, size
         return ESP_ERR_INVALID_SIZE;
     }
     memcpy(p.buffer, buffer, len);
+    ESP_LOGI(TAG, "[%" PRIu32 "] Transmitting payload - id: %d, src: %d, dst: %d", 
+             packet_count, p.id, p.src_id, p.dst_id);
     return ring_link_lowlevel_transmit_payload(&p);
 }
 
