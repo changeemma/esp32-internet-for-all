@@ -36,9 +36,9 @@ static char read_config_bits(void)
     char config_bits = 0b0;
 
     enable_config_pins();
-    config_bits |= ~gpio_get_level(CONFIG_PIN_0) << 0;
-    config_bits |= ~gpio_get_level(CONFIG_PIN_1) << 1;
-    config_bits |= ~gpio_get_level(CONFIG_PIN_2) << 2;
+    config_bits |= ((~gpio_get_level(CONFIG_PIN_0)) & 0b00000001) << 0;
+    config_bits |= ((~gpio_get_level(CONFIG_PIN_1)) & 0b00000001) << 1;
+    config_bits |= ((~gpio_get_level(CONFIG_PIN_2)) & 0b00000001) << 2;
     reset_config_pins();
 
     return config_bits;
