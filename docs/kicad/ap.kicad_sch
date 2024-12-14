@@ -1302,7 +1302,7 @@
 		)
 		(uuid "69bbc150-44a3-4e94-b35a-46128927c27e")
 	)
-	(text "VCC GND SOUTH_MOSI SOUTH_SCLK AP_MOSI AP_SCLK AP_CS SOUTH_CS"
+	(text "GND VCC SOUTH_MOSI SOUTH_SCLK AP_MOSI AP_SCLK AP_CS SOUTH_CS"
 		(exclude_from_sim no)
 		(at 137.16 80.772 0)
 		(effects
@@ -1322,17 +1322,6 @@
 			(justify right bottom)
 		)
 		(uuid "05307639-0a9d-4f8a-9665-ff40aa951a2b")
-	)
-	(label "GND"
-		(at 124.46 68.58 270)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "0aa3a2da-fdf7-4c19-98af-044c3e9d2d00")
 	)
 	(label "B4_SCLK"
 		(at 129.54 68.58 270)
@@ -1355,6 +1344,17 @@
 			(justify left bottom)
 		)
 		(uuid "1a308a2c-a3d5-477c-941f-d8c5288b395a")
+	)
+	(label "VCC"
+		(at 124.46 68.58 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "24ede4c3-988f-44bf-9e5d-9d46fb22233e")
 	)
 	(label "B5_SCLK"
 		(at 134.62 68.58 270)
@@ -1388,17 +1388,6 @@
 			(justify left bottom)
 		)
 		(uuid "5215c71a-1609-49fc-bf44-595ee0aadebf")
-	)
-	(label "VCC"
-		(at 121.92 68.58 270)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "539ecd1b-c4c1-4e98-adac-fb40e56947ee")
 	)
 	(label "GND"
 		(at 57.15 100.33 270)
@@ -1465,6 +1454,17 @@
 			(justify right bottom)
 		)
 		(uuid "83d27353-6669-43c1-9557-9b1932041d32")
+	)
+	(label "GND"
+		(at 121.92 68.58 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "91e351fb-0c00-499f-8363-729ba8c257b2")
 	)
 	(label "AP_PIN_2"
 		(at 90.17 92.71 0)
@@ -1724,7 +1724,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_PinHeader_1.27mm:PinHeader_1x08_P1.27mm_Vertical"
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical"
 			(at 129.54 63.5 0)
 			(effects
 				(font
