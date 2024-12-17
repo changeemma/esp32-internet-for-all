@@ -1494,17 +1494,6 @@
 		)
 		(uuid "1c11ae5a-3e8f-47e3-b4a1-3105e1a5be6e")
 	)
-	(label "GND"
-		(at 204.47 196.85 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "21902e43-ecae-4c64-bbc8-b7d752797287")
-	)
 	(label "B1_MOSI"
 		(at 106.68 115.57 0)
 		(fields_autoplaced yes)
@@ -1549,8 +1538,8 @@
 		)
 		(uuid "423e1dac-799b-4845-b773-bd9d92a8b0c5")
 	)
-	(label "B5_SCLK"
-		(at 245.11 191.77 0)
+	(label "B4_CS"
+		(at 204.47 189.23 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1558,7 +1547,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "47001bf1-0281-4c06-be03-cd5427406c0c")
+		(uuid "4a73d5d4-e1ca-4158-9b52-747ff087d43e")
 	)
 	(label "GND"
 		(at 349.25 171.45 0)
@@ -1604,6 +1593,17 @@
 		)
 		(uuid "51620df0-8a3f-4947-9b6e-c8da329920c3")
 	)
+	(label "B4_SCLK"
+		(at 204.47 191.77 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "58a08675-9175-4f9e-950b-61e373f9f507")
+	)
 	(label "EAST_PIN_1"
 		(at 378.46 113.03 0)
 		(fields_autoplaced yes)
@@ -1625,6 +1625,17 @@
 			(justify left bottom)
 		)
 		(uuid "5992c6bc-bab8-457c-a2b8-0d0515695c1a")
+	)
+	(label "VCC"
+		(at 245.11 196.85 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "5c8e0278-5ddd-4622-b8ec-8b188b82018d")
 	)
 	(label "GND"
 		(at 72.39 153.67 270)
@@ -1648,8 +1659,8 @@
 		)
 		(uuid "5f9107a1-2426-4ca4-81a9-6a8e37b3a89a")
 	)
-	(label "B5_MOSI"
-		(at 245.11 194.31 0)
+	(label "B5_SCLK"
+		(at 245.11 191.77 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1657,7 +1668,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "7331765e-aa38-4cd1-a8b2-9bdf070fc7e6")
+		(uuid "602b85de-ce50-41e5-b369-01e9fe6df7e7")
 	)
 	(label "B5_SCLK"
 		(at 38.1 105.41 180)
@@ -1669,17 +1680,6 @@
 			(justify right bottom)
 		)
 		(uuid "7c7a3852-5fcb-4467-acc0-eb64b0f962ec")
-	)
-	(label "B5_CS"
-		(at 245.11 189.23 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "7d73d849-63cf-4a27-b412-2c9ec653b384")
 	)
 	(label "VCC"
 		(at 345.44 85.09 90)
@@ -1736,6 +1736,17 @@
 		)
 		(uuid "8bcb59fd-eed2-4bea-a5ba-0fe1c4b90886")
 	)
+	(label "B5_CS"
+		(at 245.11 189.23 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8bfa328f-911c-44bb-9667-1542aace32b3")
+	)
 	(label "B2_SCLK"
 		(at 194.31 105.41 0)
 		(fields_autoplaced yes)
@@ -1769,8 +1780,8 @@
 		)
 		(uuid "9cf56b80-1314-4efb-8944-68090cda134a")
 	)
-	(label "B4_MOSI"
-		(at 204.47 194.31 0)
+	(label "GND"
+		(at 204.47 196.85 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1778,7 +1789,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "9f3f5f70-aa92-4a45-af4a-fb184e14b5b7")
+		(uuid "9d7e9693-82e9-4746-a510-8461251cdb16")
 	)
 	(label "B3_SCLK"
 		(at 311.15 107.95 180)
@@ -1879,17 +1890,6 @@
 		)
 		(uuid "c378fd5d-1111-4b26-83b2-b9fbeba84c5c")
 	)
-	(label "B4_CS"
-		(at 204.47 189.23 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "c58e2e15-ce77-453d-8498-92281234a6e9")
-	)
 	(label "WEST_PIN_0"
 		(at 193.04 113.03 0)
 		(fields_autoplaced yes)
@@ -1934,17 +1934,6 @@
 		)
 		(uuid "d902d949-c743-493e-b56d-2513337d455c")
 	)
-	(label "VCC"
-		(at 245.11 196.85 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "dc15cf5c-279c-475a-9491-c0f63effa194")
-	)
 	(label "SOUTH_PIN_0"
 		(at 105.41 113.03 0)
 		(fields_autoplaced yes)
@@ -1967,8 +1956,8 @@
 		)
 		(uuid "e5accaf4-1cc4-4b31-92e0-07be80dc2d47")
 	)
-	(label "B4_SCLK"
-		(at 204.47 191.77 0)
+	(label "B5_MOSI"
+		(at 245.11 194.31 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1976,7 +1965,18 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "fc381a92-3580-4df7-9cda-dbefadb65ad8")
+		(uuid "eabd5c21-068d-4a4b-97e1-b537b8495381")
+	)
+	(label "B4_MOSI"
+		(at 204.47 194.31 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f65f90c8-06d7-4192-a8e6-bb146e0c0fa1")
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x04_Pin")
