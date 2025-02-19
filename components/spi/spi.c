@@ -1,7 +1,10 @@
 #include "spi.h"
+#include "esp_log.h"
+#include "ring_link_payload.h"
 
 
 static spi_device_handle_t s_spi_device_handle = {0};
+static const char* TAG = "==> SPI";
 
 
 static esp_err_t spi_rx_init() {
@@ -48,7 +51,8 @@ static esp_err_t spi_tx_init() {
         .duty_cycle_pos=128,        //50% duty cycle
         .mode=0,
         .spics_io_num=SPI_SENDER_GPIO_CS,
-        .cs_ena_posttrans=3,        //Keep the CS low 3 cycles after transaction, to stop slave from missing the last bit when CS has less propagation delay than CLK
+        .cs_ena_pretrans = 3,   
+        .cs_ena_posttrans = 10,        //Keep the CS low 3 cycles after transaction, to stop slave from missing the last bit when CS has less propagation delay than CLK
         .queue_size=SPI_QUEUE_SIZE
     };
 
@@ -65,6 +69,10 @@ esp_err_t spi_init(void) {
 }
 
 esp_err_t spi_transmit(void *p, size_t len) {
+    ring_link_payload_t* payload = (ring_link_payload_t*)p;
+    ESP_LOGI(TAG, "Pre-transmit payload - Type: 0x%02x, ID: %d, TTL: %d", 
+             payload->buffer_type, payload->id, payload->ttl);
+             
     spi_transaction_t t = {
         .length = len * 8,
         .tx_buffer = p,
@@ -78,5 +86,14 @@ esp_err_t spi_receive(void *p, size_t len)
         .rx_buffer = p,
         .length = len * 8,
     };
-    return spi_slave_transmit(SPI_RECEIVER_HOST, &t, portMAX_DELAY);
+    esp_err_t ret = spi_slave_transmit(SPI_RECEIVER_HOST, &t, portMAX_DELAY);
+    
+    if (ret == ESP_OK) {
+        // Verificar que realmente recibimos la cantidad correcta de datos
+        ESP_LOGI(TAG, "SPI transaction complete - Received %d bits", t.trans_len);
+        if (t.trans_len != len * 8) {
+            ESP_LOGW(TAG, "Incomplete transaction! Expected %d bits", len * 8);
+        }
+    }
+    return ret;
 }

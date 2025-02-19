@@ -12,7 +12,7 @@ static void ring_link_receive_task(void *pvParameters)
     ring_link_payload_t *payload;
     
     while (true) {
-        payload = heap_caps_malloc(sizeof(ring_link_payload_t), MALLOC_CAP_DEFAULT);
+        payload = heap_caps_malloc(sizeof(ring_link_payload_t), MALLOC_CAP_DMA);
         if (payload == NULL) {
             ESP_LOGE(TAG, "Failed to allocate memory for payload");
             continue;
