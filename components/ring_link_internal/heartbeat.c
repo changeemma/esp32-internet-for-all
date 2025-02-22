@@ -5,8 +5,6 @@ static const char *TAG = "==> heartbeat";
 static bool node_online = false;
 static int heartbeat_id = 0;
 static int failure_count = 0;
-static TaskHandle_t s_heartbeat_task = NULL;
-
 
 static void online_board_callback(){
     ESP_LOGI(TAG, "online_board_callback invoked.");
