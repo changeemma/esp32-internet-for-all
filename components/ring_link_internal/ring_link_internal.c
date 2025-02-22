@@ -10,10 +10,6 @@ static esp_err_t ring_link_internal_handler(ring_link_payload_t *p)
     {
         return broadcast_handler(p);
     }
-    else if (ring_link_payload_is_heartbeat(p))
-    {
-        return heartbeat_handler(p);
-    }
     else if (ring_link_payload_is_for_device(p))  // payload for me
     {
         return ring_link_internal_process(p);
