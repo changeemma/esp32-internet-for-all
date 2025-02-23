@@ -23,14 +23,11 @@ static esp_err_t process_payload(ring_link_payload_t *p)
     ESP_LOGI(TAG, "  is_internal: %d (expect 0x%02x)", 
              ring_link_payload_is_internal(p), 
              RING_LINK_PAYLOAD_TYPE_INTERNAL);
-    ESP_LOGI(TAG, "  is_heartbeat: %d (expect 0x%02x)", 
-             ring_link_payload_is_heartbeat(p), 
-             RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT);
     ESP_LOGI(TAG, "  is_esp_netif: %d (expect 0x%02x)", 
              ring_link_payload_is_esp_netif(p), 
              RING_LINK_PAYLOAD_TYPE_ESP_NETIF);
 
-    if (ring_link_payload_is_internal(p) || ring_link_payload_is_heartbeat(p))
+    if (ring_link_payload_is_internal(p))
     {
         ESP_LOGI(TAG, "Processing as internal/heartbeat payload");
         specific_queue = internal_queue;
@@ -43,9 +40,8 @@ static esp_err_t process_payload(ring_link_payload_t *p)
     else
     {
         ESP_LOGE(TAG, "Unknown payload type: '0x%02x'", p->buffer_type);
-        ESP_LOGE(TAG, "Expected types: INTERNAL=0x%02x, HEARTBEAT=0x%02x, ESP_NETIF=0x%02x",
+        ESP_LOGE(TAG, "Expected types: INTERNAL=0x%02x, ESP_NETIF=0x%02x",
                  RING_LINK_PAYLOAD_TYPE_INTERNAL,
-                 RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT,
                  RING_LINK_PAYLOAD_TYPE_ESP_NETIF);
         free(p);
         return ESP_FAIL;

@@ -7,8 +7,9 @@
 
 #include "ring_link_payload.h"
 #include "ring_link_lowlevel.h"
-#include "heartbeat.h"
+
 #include "broadcast.h"
+#include "heartbeat.h"
 
 #define RING_LINK_INTERNAL_MEM_TASK 8192
 #define RING_LINK_INTERNAL_QUEUE_SIZE 5

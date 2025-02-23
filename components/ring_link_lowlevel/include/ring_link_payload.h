@@ -33,11 +33,8 @@ extern "C" {
  */
 typedef enum __attribute__((__packed__)) {
     RING_LINK_PAYLOAD_TYPE_INTERNAL = 0x11,
-    RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT = 0x12,
     RING_LINK_PAYLOAD_TYPE_ESP_NETIF = 0x80,
 } ring_link_payload_buffer_type_t;
-
-#define IS_HEARTBEAT_PAYLOAD(type) ((type) == RING_LINK_PAYLOAD_TYPE_INTERNAL_HEARTBEAT)
 
 typedef uint8_t ring_link_payload_id_t;
 
@@ -59,8 +56,6 @@ bool ring_link_payload_is_from_device(ring_link_payload_t *p);
 bool ring_link_payload_is_broadcast(ring_link_payload_t *p);
 
 bool ring_link_payload_is_internal(ring_link_payload_t *p);
-
-bool ring_link_payload_is_heartbeat(ring_link_payload_t *p);
 
 bool ring_link_payload_is_esp_netif(ring_link_payload_t *p);
 

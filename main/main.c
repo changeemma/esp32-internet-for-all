@@ -8,7 +8,6 @@
 // Private components
 #include "config.h"
 #include "ring_link.h"
-#include "heartbeat.h"
 #include "wifi.h"
 #include "route.h"
 
