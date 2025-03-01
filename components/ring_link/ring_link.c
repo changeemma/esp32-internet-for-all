@@ -29,7 +29,7 @@ static esp_err_t process_payload(ring_link_payload_t *p)
 
     if (ring_link_payload_is_internal(p))
     {
-        ESP_LOGI(TAG, "Processing as internal/heartbeat payload");
+        ESP_LOGI(TAG, "Processing as internal payload");
         specific_queue = internal_queue;
     }
     else if (ring_link_payload_is_esp_netif(p))
