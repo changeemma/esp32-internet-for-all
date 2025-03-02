@@ -15,7 +15,6 @@ static void offline_board_callback(){
 }
 
 static void heartbeat_callback() {
-    heartbeat_id++;
     if (broadcast_to_siblings(HEARTBEAT_PAYLOAD, sizeof(HEARTBEAT_PAYLOAD))) 
     {
         failure_count = 0;
@@ -23,6 +22,7 @@ static void heartbeat_callback() {
         if (!node_online) {
             ESP_LOGI(TAG, "Node is ONLINE.");
             node_online = true;
+            heartbeat_id = 0;
             online_board_callback();
         }
     } 
@@ -36,6 +36,7 @@ static void heartbeat_callback() {
             offline_board_callback();
         }
     }
+    heartbeat_id++;
 }
 
 esp_err_t heartbeat_init(void) {
