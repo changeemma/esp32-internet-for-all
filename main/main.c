@@ -10,6 +10,7 @@
 #include "ring_link.h"
 #include "wifi.h"
 #include "route.h"
+#include "heartbeat.h"
 
 #include "nvs.h"
 

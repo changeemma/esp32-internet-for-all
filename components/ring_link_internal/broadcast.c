@@ -42,7 +42,7 @@ bool broadcast_to_siblings(const void *msg, uint16_t len)
         s_broadcast_task = xTaskGetCurrentTaskHandle();
         if (send_broadcast(msg, len) == ESP_OK)
         {    
-            result = ulTaskNotifyTake( pdTRUE, ( TickType_t ) 400 ) == pdTRUE ? true : false;
+            result = ulTaskNotifyTake( pdTRUE, BROADCAST_TIMEOUT_MS / portTICK_PERIOD_MS ) == pdTRUE ? true : false;
         }
         s_broadcast_task = NULL;
         xSemaphoreGive( s_broadcast_mutex );

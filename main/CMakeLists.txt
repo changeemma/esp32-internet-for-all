@@ -12,6 +12,7 @@ set(MAIN_REQUIRES
     config
     utils
     ring_link
+    heartbeat
     wifi
     route
     nvs_flash

@@ -6,6 +6,9 @@
 extern "C" {
 #endif
 
+#define BROADCAST_TIMEOUT_MS 500
+
+
 esp_err_t broadcast_init( void );
 esp_err_t broadcast_handler(ring_link_payload_t *p);
 
