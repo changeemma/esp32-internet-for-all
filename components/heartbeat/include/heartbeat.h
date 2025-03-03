@@ -11,8 +11,9 @@ extern "C" {
 #endif
 
 #define HEARTBEAT_PAYLOAD "HEARTBEAT..."
-#define HEARTBEAT_INTERVAL_SEC 5
-#define HEARTBEAT_INTERVAL_USEC (HEARTBEAT_INTERVAL_SEC*1000000)
+#define HEARTBEAT_TIMER_NAME "heartbeat"
+#define HEARTBEAT_PERIOD_IN_SEC 5
+#define HEARTBEAT_PERIOD (HEARTBEAT_PERIOD_IN_SEC*1000000)
 #define HEARTBEAT_MAX_FAILURES 3  // Number of consecutive failures before considering a board as "out"
 
 
