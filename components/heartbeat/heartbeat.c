@@ -8,8 +8,8 @@ static int s_failure_count = 0;
 
 static void online_board_callback(){
     ESP_LOGI(TAG, "Node is ONLINE.");
-    s_node_online = true;
     s_heartbeat_id = 0;
+    s_node_online = true;
 }
 
 static void offline_board_callback(){
@@ -19,7 +19,7 @@ static void offline_board_callback(){
 
 static void heartbeat_callback() {
     bool succeded = broadcast_to_siblings(HEARTBEAT_PAYLOAD, sizeof(HEARTBEAT_PAYLOAD));
-    
+
     if (succeded) {
         s_failure_count = 0;  // reset counter after each success
         ESP_LOGD(TAG, "Heartbeat %d succeded.", s_heartbeat_id);
