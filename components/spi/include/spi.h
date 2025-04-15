@@ -50,9 +50,15 @@ extern "C" {
 #define SPI_FREQ SPI_MASTER_FREQ_80M
 #endif
 
-esp_err_t spi_init(void);
+esp_err_t spi_init(QueueHandle_t **queue);
 esp_err_t spi_transmit(void *p, size_t len);
 esp_err_t spi_receive(void *p, size_t len);
+esp_err_t get_spi_msg(void);
+// esp_err_t init_spi_with_callbacks(QueueHandle_t **queue);
+esp_err_t spi_receiver_init(QueueHandle_t **queue);
+
+// esp_err_t spi_enqueue(void *p, size_t len);
+
 
 
 #ifdef __cplusplus
