@@ -1,4 +1,5 @@
 #include "ring_link_netif_rx.h"
+#include "esp_timer.h"
 
 static const char* TAG = "==> ring_link_netif_rx";
 
@@ -34,9 +35,11 @@ static const esp_netif_config_t netif_config = {
 
 esp_err_t ring_link_rx_netif_receive(ring_link_payload_t *p)
 {
+    int64_t transaction_start_time_ = esp_timer_get_time();
+
     struct pbuf *q;
     struct ip_hdr *ip_header;
-    esp_err_t error;
+    esp_err_t status;
 
     if (p->len <= 0 || p->len < IP_HLEN) {
         ESP_LOGW(TAG, "Discarding invalid payload.");
@@ -109,13 +112,15 @@ esp_err_t ring_link_rx_netif_receive(ring_link_payload_t *p)
     ip4_debug_print(q);
 
     // Pass pbuf to esp_netif
-    error = esp_netif_receive(ring_link_rx_netif, q, q->tot_len, NULL);
-    if (error != ESP_OK) {
+    status = esp_netif_receive(ring_link_rx_netif, q, q->tot_len, NULL);
+    if (status != ESP_OK) {
         ESP_LOGW(TAG, "process_thread_receive failed.");
         pbuf_free(q);
     }
-
-    return error;
+    int64_t end_time = esp_timer_get_time();
+    int64_t duration = end_time - transaction_start_time_;
+    ESP_LOGW(TAG, "Mensaje ring_link_rx_netif_receive: en %lld μs", duration);
+    return status;
     }
 
 static err_t output_function(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)

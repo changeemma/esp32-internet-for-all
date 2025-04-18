@@ -2,6 +2,7 @@
 
 static const char* TAG = "==> ring_link_internal";
 static QueueHandle_t ring_link_internal_queue = NULL;
+#include "esp_timer.h"
 
 
 static esp_err_t ring_link_internal_handler(ring_link_payload_t *p)
@@ -27,8 +28,12 @@ static void ring_link_internal_process_task(void *pvParameters)
     
     while (true) {
         if (xQueueReceive(ring_link_internal_queue, &payload, portMAX_DELAY) == pdTRUE) {
+            int64_t transaction_start_time_ = esp_timer_get_time();
             rc = ring_link_internal_handler(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
+            int64_t end_time = esp_timer_get_time();
+            int64_t duration = end_time - transaction_start_time_;
+            ESP_LOGW(TAG, "Mensaje ring_link_internal_process_task: en %lld μs", duration);
             free(payload);
         }
     }

@@ -1,4 +1,5 @@
 #include "ring_link_netif_tx.h"
+#include "esp_timer.h"
 
 static const char* TAG = "==> ring_link_netif";
 
@@ -55,10 +56,10 @@ static err_t output_function(struct netif *netif, struct pbuf *p, const ip4_addr
 static err_t linkoutput_function(struct netif *netif, struct pbuf *p)
 {
     // ESP_LOGI(TAG, "Calling linkoutput_function(struct netif *netif, struct pbuf *p)");
-
+    int64_t transaction_start_time_ = esp_timer_get_time();
     struct pbuf *q = p;
     u16_t alloc_len = (u16_t)(p->tot_len);
-    ip4_debug_print(q);
+    // ip4_debug_print(q);
     esp_netif_t *esp_netif = esp_netif_get_handle_from_netif_impl(netif);
     esp_err_t ret = ESP_FAIL;
 
@@ -81,6 +82,9 @@ static err_t linkoutput_function(struct netif *netif, struct pbuf *p)
         pbuf_free(q);
     }
     /* Check error */
+    int64_t end_time = esp_timer_get_time();
+    int64_t duration = end_time - transaction_start_time_;
+    ESP_LOGW(TAG, "Mensaje linkoutput_function: en %lld μs", duration);
     if (likely(ret == ESP_OK)) {
         return ERR_OK;
     }
@@ -93,6 +97,7 @@ static err_t linkoutput_function(struct netif *netif, struct pbuf *p)
 
 static esp_err_t esp_netif_ring_link_driver_transmit(void *h, void *buffer, size_t len)
 {
+    int64_t transaction_start_time_ = esp_timer_get_time();
     // ESP_LOGI(TAG, "ring_link_netif_driver_transmit(void *h, void *buffer, size_t len) called");
     static uint32_t packet_count = 0;
     packet_count++;
@@ -116,6 +121,9 @@ static esp_err_t esp_netif_ring_link_driver_transmit(void *h, void *buffer, size
     memcpy(p.buffer, buffer, len);
     ESP_LOGI(TAG, "[%" PRIu32 "] Transmitting payload - id: %d, src: %d, dst: %d", 
              packet_count, p.id, p.src_id, p.dst_id);
+    int64_t end_time = esp_timer_get_time();
+    int64_t duration = end_time - transaction_start_time_;
+    ESP_LOGW(TAG, "Mensaje esp_netif_ring_link_driver_transmit: en %lld μs", duration);
     return ring_link_lowlevel_transmit_payload(&p);
 }
 
