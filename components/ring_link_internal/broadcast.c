@@ -5,9 +5,20 @@ static SemaphoreHandle_t s_broadcast_mutex = NULL;
 static TaskHandle_t s_broadcast_task = NULL;
 static ring_link_payload_id_t s_id_counter = 0;
 
-
 static int64_t start_time;
 static int64_t end_time;
+
+static void start_timer() {
+    start_time = esp_timer_get_time();
+}
+
+static void end_timer() {
+    end_time = esp_timer_get_time();
+}
+
+static void log_duration(char *name) {
+    ESP_LOGI(TAG, "%s duration: %lld μs", name, end_time - start_time);
+}
 
 esp_err_t broadcast_init( void )
 {
@@ -44,15 +55,15 @@ bool broadcast_to_siblings(const void *msg, uint16_t len)
     {
         bool result = false;
         s_broadcast_task = xTaskGetCurrentTaskHandle();
-        start_time = esp_timer_get_time();
+        start_timer();
         if (send_broadcast(msg, len) == ESP_OK)
         {    
             result = ulTaskNotifyTake( pdTRUE, BROADCAST_TIMEOUT_MS / portTICK_PERIOD_MS ) == pdTRUE ? true : false;
         }
-        end_time = esp_timer_get_time();
+        end_timer();
         s_broadcast_task = NULL;
         xSemaphoreGive( s_broadcast_mutex );
-        ESP_LOGI(TAG, "BROADCAST TIME: %lld μs", end_time - start_time);   
+        log_duration("broadcast");
 
         return result;
     }

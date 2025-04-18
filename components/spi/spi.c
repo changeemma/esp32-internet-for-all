@@ -8,46 +8,62 @@ static spi_device_handle_t s_spi_device_handle = {0};
 static const char* TAG = "==> SPI";
 static QueueHandle_t s_rx_queue;
 static TaskHandle_t xTaskToNotify = NULL;
-int64_t rx_start_time;
-int64_t rx_end_time;
-int64_t rx_duration;
+
+static int64_t start_time;
+static int64_t end_time;
+
+static void start_timer() {
+    start_time = esp_timer_get_time();
+}
+
+static void end_timer() {
+    end_time = esp_timer_get_time();
+}
+
+static void log_duration(char *name) {
+    ESP_LOGI(TAG, "%s duration: %lld μs", name, end_time - start_time);
+}
 
 static void spi_queue_trans_task(void *arg) {
 
     while (true)
     {
-        static uint8_t rx_buffer[400];  // Example size, adjust as needed
-
-        spi_slave_transaction_t *trans = heap_caps_calloc(1, sizeof(spi_slave_transaction_t), MALLOC_CAP_INTERNAL);
-        if (!trans) {
-            ESP_LOGE(TAG, "Failed to allocate transaction");
-            vTaskDelay(pdMS_TO_TICKS(100));
+        ring_link_payload_t *payload = heap_caps_malloc(sizeof(ring_link_payload_t), MALLOC_CAP_DMA);
+        if (payload == NULL) {
+            ESP_LOGE(TAG, "not enough memory");
             continue;
         }
+        memset(payload, 0, sizeof(ring_link_payload_t));
 
-        trans->length = sizeof(rx_buffer) * 8;  // bits
-        trans->rx_buffer = rx_buffer;
-        
-
+        spi_slave_transaction_t trans = {
+            .rx_buffer = payload,
+            .length = sizeof(ring_link_payload_t) * 8,
+        };
         xTaskToNotify = xTaskGetCurrentTaskHandle();
-        spi_slave_queue_trans(SPI_RECEIVER_HOST, trans, portMAX_DELAY);
 
-        // Wait until post_trans_cb notifies us
+        esp_err_t ret = spi_slave_queue_trans(SPI_RECEIVER_HOST, &trans, portMAX_DELAY);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "Error al encolar nueva transacción: %d", ret);
+            free(payload);
+            continue;
+        }
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        rx_duration = rx_end_time - rx_start_time;
-        ESP_LOGI(TAG, "RECEPTION TIME: %lld μs", rx_duration);   
+        log_duration("spi reception");
+        
+        // Liberar el buffer anterior
+        free(payload);
     }
 }
 
 static void spi_post_trans_cb(spi_slave_transaction_t *trans) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    rx_start_time = esp_timer_get_time();
+    start_timer();
     if (trans->length >= SPI_BUFFER_SIZE) {
         if (xQueueSendFromISR(s_rx_queue, &trans->rx_buffer, &xHigherPriorityTaskWoken) != pdTRUE) {
             ESP_LOGW(TAG, "Queue full, payload dropped");
         }
     }
-    rx_end_time = esp_timer_get_time();
+    end_timer();
     vTaskNotifyGiveFromISR(xTaskToNotify, &xHigherPriorityTaskWoken);
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
