@@ -4,8 +4,53 @@
 
 
 static spi_device_handle_t s_spi_device_handle = {0};
-static const char* TAG = "==> SPI";
 
+static const char* TAG = "==> SPI";
+static QueueHandle_t s_rx_queue;
+static TaskHandle_t xTaskToNotify = NULL;
+int64_t rx_start_time;
+int64_t rx_end_time;
+int64_t rx_duration;
+
+static void spi_queue_trans_task(void *arg) {
+
+    while (true)
+    {
+        static uint8_t rx_buffer[400];  // Example size, adjust as needed
+
+        spi_slave_transaction_t *trans = heap_caps_calloc(1, sizeof(spi_slave_transaction_t), MALLOC_CAP_INTERNAL);
+        if (!trans) {
+            ESP_LOGE(TAG, "Failed to allocate transaction");
+            vTaskDelay(pdMS_TO_TICKS(100));
+            continue;
+        }
+
+        trans->length = sizeof(rx_buffer) * 8;  // bits
+        trans->rx_buffer = rx_buffer;
+        
+
+        xTaskToNotify = xTaskGetCurrentTaskHandle();
+        spi_slave_queue_trans(SPI_RECEIVER_HOST, trans, portMAX_DELAY);
+
+        // Wait until post_trans_cb notifies us
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        rx_duration = rx_end_time - rx_start_time;
+        ESP_LOGI(TAG, "RECEPTION TIME: %lld μs", rx_duration);   
+    }
+}
+
+static void spi_post_trans_cb(spi_slave_transaction_t *trans) {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    rx_start_time = esp_timer_get_time();
+    if (trans->length >= SPI_BUFFER_SIZE) {
+        if (xQueueSendFromISR(s_rx_queue, &trans->rx_buffer, &xHigherPriorityTaskWoken) != pdTRUE) {
+            ESP_LOGW(TAG, "Queue full, payload dropped");
+        }
+    }
+    rx_end_time = esp_timer_get_time();
+    vTaskNotifyGiveFromISR(xTaskToNotify, &xHigherPriorityTaskWoken);
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+}
 
 static esp_err_t spi_rx_init() {
     //Configuration for the SPI bus
@@ -24,13 +69,29 @@ static esp_err_t spi_rx_init() {
         .queue_size=SPI_QUEUE_SIZE,
         .flags=0,
         //.post_setup_cb=spi_post_setup_cb,
-        //.post_trans_cb=spi_post_trans_cb
+        .post_trans_cb=spi_post_trans_cb
     };
 
     //Initialize SPI slave interface
     ESP_ERROR_CHECK(spi_slave_initialize(SPI_RECEIVER_HOST, &buscfg, &slvcfg, SPI_DMA_CH_AUTO));
+
+    BaseType_t ret;
+    
+    ret = xTaskCreate(
+        spi_queue_trans_task,
+        "spi_queue_trans_task",
+        16384 * 2,
+        NULL,
+        (tskIDLE_PRIORITY + 2),
+        NULL
+    );
+    if (ret != pdTRUE) {
+        ESP_LOGE(TAG, "Failed to create receive task");
+        return ESP_FAIL;
+    }
     return ESP_OK;
 }
+
 
 static esp_err_t spi_tx_init() {
     //Configuration for the SPI bus
@@ -62,16 +123,17 @@ static esp_err_t spi_tx_init() {
     return ESP_OK;
 }
 
-esp_err_t spi_init(void) {
+esp_err_t spi_init(QueueHandle_t *rx_queue) {
+    s_rx_queue = *rx_queue;
     ESP_ERROR_CHECK(spi_rx_init());
     ESP_ERROR_CHECK(spi_tx_init());
     return ESP_OK;
 }
 
 esp_err_t spi_transmit(void *p, size_t len) {
-    ring_link_payload_t* payload = (ring_link_payload_t*)p;
-    ESP_LOGI(TAG, "Pre-transmit payload - Type: 0x%02x, ID: %d, TTL: %d", 
-             payload->buffer_type, payload->id, payload->ttl);
+    // ring_link_payload_t* payload = (ring_link_payload_t*)p;
+    // ESP_LOGI(TAG, "Pre-transmit payload - Type: 0x%02x, ID: %d, TTL: %d", 
+    //          payload->buffer_type, payload->id, payload->ttl);
              
     spi_transaction_t t = {
         .length = len * 8,

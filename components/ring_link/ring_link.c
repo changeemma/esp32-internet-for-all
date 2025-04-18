@@ -13,28 +13,28 @@ static esp_err_t process_payload(ring_link_payload_t *p)
 {
     QueueHandle_t *specific_queue;
 
-    ESP_LOGI(TAG, "Received payload:");
-    ESP_LOGI(TAG, "  buffer_type: 0x%02x", p->buffer_type);
-    ESP_LOGI(TAG, "  id: %d", p->id);
-    ESP_LOGI(TAG, "  src_id: %d", p->src_id);
-    ESP_LOGI(TAG, "  dst_id: %d", p->dst_id);
+    // ESP_LOGI(TAG, "Received payload:");
+    // ESP_LOGI(TAG, "  buffer_type: 0x%02x", p->buffer_type);
+    // ESP_LOGI(TAG, "  id: %d", p->id);
+    // ESP_LOGI(TAG, "  src_id: %d", p->src_id);
+    // ESP_LOGI(TAG, "  dst_id: %d", p->dst_id);
     
-    ESP_LOGI(TAG, "Checks:");
-    ESP_LOGI(TAG, "  is_internal: %d (expect 0x%02x)", 
-             ring_link_payload_is_internal(p), 
-             RING_LINK_PAYLOAD_TYPE_INTERNAL);
-    ESP_LOGI(TAG, "  is_esp_netif: %d (expect 0x%02x)", 
-             ring_link_payload_is_esp_netif(p), 
-             RING_LINK_PAYLOAD_TYPE_ESP_NETIF);
+    // ESP_LOGI(TAG, "Checks:");
+    // ESP_LOGI(TAG, "  is_internal: %d (expect 0x%02x)", 
+    //          ring_link_payload_is_internal(p), 
+    //          RING_LINK_PAYLOAD_TYPE_INTERNAL);
+    // ESP_LOGI(TAG, "  is_esp_netif: %d (expect 0x%02x)", 
+    //          ring_link_payload_is_esp_netif(p), 
+    //          RING_LINK_PAYLOAD_TYPE_ESP_NETIF);
 
     if (ring_link_payload_is_internal(p))
     {
-        ESP_LOGI(TAG, "Processing as internal payload");
+        ESP_LOGD(TAG, "Processing as internal payload");
         specific_queue = internal_queue;
     }
     else if (ring_link_payload_is_esp_netif(p))
     {
-        ESP_LOGI(TAG, "Processing as esp_netif payload");
+        ESP_LOGD(TAG, "Processing as esp_netif payload");
         specific_queue = esp_netif_queue;
     }
     else

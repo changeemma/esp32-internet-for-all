@@ -29,7 +29,7 @@ static void ring_link_internal_process_task(void *pvParameters)
         if (xQueueReceive(ring_link_internal_queue, &payload, portMAX_DELAY) == pdTRUE) {
             rc = ring_link_internal_handler(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
-            free(payload);
+            //free(payload);
         }
     }
 }
@@ -64,6 +64,6 @@ esp_err_t ring_link_internal_init(QueueHandle_t **queue)
 
 esp_err_t ring_link_internal_process(ring_link_payload_t *p)
 {
-    ESP_LOGW(TAG, "call on_sibling_message(%s, %i)\n", p->buffer, p->len);
+    ESP_LOGD(TAG, "call on_sibling_message(%s, %i)\n", p->buffer, p->len);
     return ESP_OK;
 }

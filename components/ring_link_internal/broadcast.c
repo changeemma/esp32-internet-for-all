@@ -5,6 +5,10 @@ static SemaphoreHandle_t s_broadcast_mutex = NULL;
 static TaskHandle_t s_broadcast_task = NULL;
 static ring_link_payload_id_t s_id_counter = 0;
 
+
+static int64_t start_time;
+static int64_t end_time;
+
 esp_err_t broadcast_init( void )
 {
     s_broadcast_mutex = xSemaphoreCreateMutex();
@@ -36,16 +40,20 @@ static esp_err_t send_broadcast(const void *buffer, uint16_t len){
 
 bool broadcast_to_siblings(const void *msg, uint16_t len)
 {
-    if( xSemaphoreTake( s_broadcast_mutex, ( TickType_t ) 400 ) == pdTRUE )
+    if( xSemaphoreTake( s_broadcast_mutex, BROADCAST_TIMEOUT_MS / portTICK_PERIOD_MS ) == pdTRUE )
     {
         bool result = false;
         s_broadcast_task = xTaskGetCurrentTaskHandle();
+        start_time = esp_timer_get_time();
         if (send_broadcast(msg, len) == ESP_OK)
         {    
             result = ulTaskNotifyTake( pdTRUE, BROADCAST_TIMEOUT_MS / portTICK_PERIOD_MS ) == pdTRUE ? true : false;
         }
+        end_time = esp_timer_get_time();
         s_broadcast_task = NULL;
         xSemaphoreGive( s_broadcast_mutex );
+        ESP_LOGI(TAG, "BROADCAST TIME: %lld μs", end_time - start_time);   
+
         return result;
     }
     ESP_LOGE(TAG, "Could not adquire Mutex...");
