@@ -29,6 +29,21 @@ static esp_err_t spi_rx_init() {
 
     //Initialize SPI slave interface
     ESP_ERROR_CHECK(spi_slave_initialize(SPI_RECEIVER_HOST, &buscfg, &slvcfg, SPI_DMA_CH_AUTO));
+
+    BaseType_t ret;
+    
+    ret = xTaskCreate(
+        spi_queue_trans_task,
+        "spi_queue_trans_task",
+        16384 * 2,
+        NULL,
+        (tskIDLE_PRIORITY + 5),
+        NULL
+    );
+    if (ret != pdTRUE) {
+        ESP_LOGE(TAG, "Failed to create receive task");
+        return ESP_FAIL;
+    }
     return ESP_OK;
 }
 
@@ -69,10 +84,6 @@ esp_err_t spi_init(void) {
 }
 
 esp_err_t spi_transmit(void *p, size_t len) {
-    ring_link_payload_t* payload = (ring_link_payload_t*)p;
-    ESP_LOGI(TAG, "Pre-transmit payload - Type: 0x%02x, ID: %d, TTL: %d", 
-             payload->buffer_type, payload->id, payload->ttl);
-             
     spi_transaction_t t = {
         .length = len * 8,
         .tx_buffer = p,
@@ -82,7 +93,7 @@ esp_err_t spi_transmit(void *p, size_t len) {
 
 esp_err_t spi_receive(void *p, size_t len)
 {
-    spi_slave_transaction_t t = {
+        spi_slave_transaction_t t = {
         .rx_buffer = p,
         .length = len * 8,
     };

@@ -2,7 +2,7 @@
 
 static const char* TAG = "==> ring_link_lowlevel";
 
-static SemaphoreHandle_t s_tx_semaphore_handle = NULL;
+// static SemaphoreHandle_t s_tx_semaphore_handle = NULL;
 static QueueHandle_t ring_link_queue = NULL;
 
 
@@ -56,6 +56,8 @@ esp_err_t ring_link_lowlevel_init(QueueHandle_t **queue) {
         ESP_LOGE(TAG, "Failed to create queue");
         return ESP_FAIL;
     }
+    ESP_ERROR_CHECK(RING_LINK_LOWLEVEL_IMPL_INIT(*queue));
+    // s_tx_semaphore_handle = xSemaphoreCreateMutex();
 
     return ESP_OK;
 }
@@ -70,14 +72,17 @@ esp_err_t ring_link_lowlevel_transmit_payload(ring_link_payload_t *p)
     ESP_LOGD(TAG, "  len: %d", p->len);
     ESP_LOGD(TAG, "  src_id: %d", p->src_id);
     ESP_LOGD(TAG, "  dst_id: %d\n", p->dst_id);
-    if( xSemaphoreTake( s_tx_semaphore_handle, ( TickType_t ) 10 ) == pdTRUE )
-    {
-        rc = RING_LINK_LOWLEVEL_IMPL_TRANSMIT(p, sizeof(ring_link_payload_t));
-        xSemaphoreGive( s_tx_semaphore_handle );
-        return rc;
-    }
-    ESP_LOGE(TAG, "Could not adquire Mutex...");
-    return ESP_FAIL;
+    rc = RING_LINK_LOWLEVEL_IMPL_TRANSMIT(p, sizeof(ring_link_payload_t));
+    return rc;
+    
+    // if( xSemaphoreTake( s_tx_semaphore_handle, ( TickType_t ) 10 ) == pdTRUE )
+    // {
+    //     rc = RING_LINK_LOWLEVEL_IMPL_TRANSMIT(p, sizeof(ring_link_payload_t));
+    //     xSemaphoreGive( s_tx_semaphore_handle );
+    //     return rc;
+    // }
+    // ESP_LOGE(TAG, "Could not adquire Mutex...");
+    // return ESP_FAIL;
 }
 
 esp_err_t ring_link_lowlevel_receive_payload(ring_link_payload_t *p)

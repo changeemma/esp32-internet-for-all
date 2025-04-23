@@ -11,4 +11,4 @@ project(main)
 add_custom_command(OUTPUT SYMBOLIC qemu_flash_image.bin
                    COMMAND esptool.py "--chip" "esp32" "merge_bin" "--fill-flash-size" "4MB" "-o" "qemu_flash_image.bin" "@flash_args"
                    DEPENDS main)
-add_custom_target(qemu_flash_image ALL DEPENDS qemu_flash_image.bin)
+# add_custom_target(qemu_flash_image ALL DEPENDS qemu_flash_image.bin)
