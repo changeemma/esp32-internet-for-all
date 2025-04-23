@@ -32,18 +32,18 @@ static esp_err_t spi_rx_init() {
 
     BaseType_t ret;
     
-    ret = xTaskCreate(
-        spi_queue_trans_task,
-        "spi_queue_trans_task",
-        16384 * 2,
-        NULL,
-        (tskIDLE_PRIORITY + 5),
-        NULL
-    );
-    if (ret != pdTRUE) {
-        ESP_LOGE(TAG, "Failed to create receive task");
-        return ESP_FAIL;
-    }
+    // ret = xTaskCreate(
+    //     spi_queue_trans_task,
+    //     "spi_queue_trans_task",
+    //     16384 * 2,
+    //     NULL,
+    //     (tskIDLE_PRIORITY + 5),
+    //     NULL
+    // );
+    // if (ret != pdTRUE) {
+    //     ESP_LOGE(TAG, "Failed to create receive task");
+    //     return ESP_FAIL;
+    // }
     return ESP_OK;
 }
 

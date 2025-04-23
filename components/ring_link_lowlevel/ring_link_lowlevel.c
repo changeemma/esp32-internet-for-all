@@ -34,30 +34,30 @@ static void ring_link_receive_task(void *pvParameters)
 
 esp_err_t ring_link_lowlevel_init(QueueHandle_t **queue) {
     ESP_ERROR_CHECK(RING_LINK_LOWLEVEL_IMPL_INIT());
-    s_tx_semaphore_handle = xSemaphoreCreateMutex();
-    BaseType_t ret;
-    
-    ret = xTaskCreate(
-        ring_link_receive_task,
-        "ring_link_receive",
-        RING_LINK_READ_MEM_TASK,
-        NULL,
-        (tskIDLE_PRIORITY + 4),
-        NULL
-    );
-    if (ret != pdTRUE) {
-        ESP_LOGE(TAG, "Failed to create receive task");
-        return ESP_FAIL;
-    }
-
-    ring_link_queue = xQueueCreate(RING_LINK_READ_QUEUE_SIZE, sizeof(ring_link_payload_t*));
-    *queue = &ring_link_queue;
-    if (ring_link_queue == NULL) {
-        ESP_LOGE(TAG, "Failed to create queue");
-        return ESP_FAIL;
-    }
-    ESP_ERROR_CHECK(RING_LINK_LOWLEVEL_IMPL_INIT(*queue));
     // s_tx_semaphore_handle = xSemaphoreCreateMutex();
+    // BaseType_t ret;
+    
+    // ret = xTaskCreate(
+    //     ring_link_receive_task,
+    //     "ring_link_receive",
+    //     RING_LINK_READ_MEM_TASK,
+    //     NULL,
+    //     (tskIDLE_PRIORITY + 4),
+    //     NULL
+    // );
+    // if (ret != pdTRUE) {
+    //     ESP_LOGE(TAG, "Failed to create receive task");
+    //     return ESP_FAIL;
+    // }
+
+    // ring_link_queue = xQueueCreate(RING_LINK_READ_QUEUE_SIZE, sizeof(ring_link_payload_t*));
+    // *queue = &ring_link_queue;
+    // if (ring_link_queue == NULL) {
+    //     ESP_LOGE(TAG, "Failed to create queue");
+    //     return ESP_FAIL;
+    // }
+    // ESP_ERROR_CHECK(RING_LINK_LOWLEVEL_IMPL_INIT(*queue));
+    // // s_tx_semaphore_handle = xSemaphoreCreateMutex();
 
     return ESP_OK;
 }
