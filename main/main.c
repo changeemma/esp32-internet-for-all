@@ -56,6 +56,45 @@ static const char *TAG = "==> main";
 #define SPI_QUEUE_SIZE 40
 
 #define MAX_MSG_SIZE sizeof(ring_link_payload_t)
+#define MAX_BROADCASTS_IN_FLIGHT 8
+
+static SemaphoreHandle_t spi_mutex = NULL;
+
+
+typedef struct {
+    ring_link_payload_id_t id;
+    TaskHandle_t task;
+    bool active;
+} broadcast_entry_t;
+
+static broadcast_entry_t broadcast_registry[MAX_BROADCASTS_IN_FLIGHT];
+
+
+esp_err_t register_broadcast(ring_link_payload_id_t id, TaskHandle_t task) {
+    for (int i = 0; i < MAX_BROADCASTS_IN_FLIGHT; i++) {
+        if (!(broadcast_registry[i].active)) {
+            broadcast_registry[i].id = id;
+            broadcast_registry[i].task = task;
+            broadcast_registry[i].active = true;
+            return ESP_OK;
+        }
+    }
+    // broadcast_registry[0].id = id;
+    // broadcast_registry[0].task = task;
+    // broadcast_registry[0].active = true;
+    return ESP_OK;
+
+    ESP_LOGW(TAG, "No hay espacio para registrar nuevo broadcast en vuelo");
+    return ESP_ERR_NO_MEM;
+}
+void init_broadcast_registry() {
+    for (int i = 0; i < MAX_BROADCASTS_IN_FLIGHT; i++) {
+        broadcast_registry[i].active = false;
+        broadcast_registry[i].id = 0;
+        broadcast_registry[i].task = NULL;
+    }
+}
+
 
 // === Cola ===
 typedef struct {
@@ -67,18 +106,27 @@ static QueueHandle_t rx_queue = NULL;
 static spi_slave_transaction_t transactions[SPI_QUEUE_SIZE];
 static ring_link_payload_t *payload_buffers[SPI_QUEUE_SIZE];
 
+
+
 QueueHandle_t internal_queue;
 QueueHandle_t esp_netif_queue;
 static spi_device_handle_t spi_handle = NULL;
 
 esp_err_t send_payload(ring_link_payload_t *p) {
+    if (xSemaphoreTake(spi_mutex, pdMS_TO_TICKS(1000)) != pdTRUE) {
+        ESP_LOGE(TAG, "No se pudo tomar el mutex del SPI");
+        return ESP_ERR_TIMEOUT;
+    }
+
     spi_transaction_t t = {
         .length = sizeof(ring_link_payload_t) * 8,
         .tx_buffer = p
     };
-    return spi_device_transmit(spi_handle, &t);
-}
+    esp_err_t ret = spi_device_transmit(spi_handle, &t);
 
+    xSemaphoreGive(spi_mutex);
+    return ret;
+}
 
 // === netif TX ===
 #include "ring_link_netif_tx.h"
@@ -640,9 +688,37 @@ void process_task(void *arg) {
 static esp_err_t ring_link_internal_handler(ring_link_payload_t *p)
 {
     if (ring_link_payload_is_broadcast(p)) {
-        ESP_LOGI(TAG, "[INTERNAL] Broadcast recibido, sin acción.");
+
+        if (ring_link_payload_is_from_device(p)){
+
+            ESP_LOGI(TAG, "[INTERNAL] Broadcast retornado al origen (id=%d)", p->id);
+
+            for (int i = 0; i < MAX_BROADCASTS_IN_FLIGHT; i++) {
+                if (broadcast_registry[i].active && broadcast_registry[i].id == p->id) {
+                    if (broadcast_registry[i].task) {
+                        xTaskNotifyGive(broadcast_registry[i].task);
+                    }
+                    broadcast_registry[i].active = false;  // Limpiar entrada
+                    break;
+                }
+            }
+
+        }else{
+        ESP_LOGI(TAG, "[INTERNAL] Broadcast reenviado.");
+
+        return send_payload(p);  // Reenvía al siguiente nodo
+
+        }
+
         return ESP_OK;
     }
+    if (ring_link_payload_is_broadcast(p)) {
+        ESP_LOGI(TAG, "[INTERNAL] Broadcast recibido, sin acción.");
+        return send_payload(p);  // Reenvía al siguiente nodo
+
+        return ESP_OK;
+    }
+
     else if (ring_link_payload_is_for_device(p)) {
         ESP_LOGI(TAG, "[INTERNAL] Payload dirigido a mí, sin acción.");
         return ESP_OK;
@@ -763,6 +839,42 @@ esp_err_t send_custom_payload(
     return send_payload(&payload);  // usa la función que ya tenés definida
 }
 
+void periodic_broadcast_task(void *arg) {
+    const char *msg = (const char *)arg;
+    while (true) {
+        ring_link_payload_id_t msg_id = esp_random();
+        TaskHandle_t self = xTaskGetCurrentTaskHandle();
+
+        if (register_broadcast(msg_id, self) != ESP_OK) {
+            ESP_LOGE(TAG, "No se pudo registrar el broadcast. Lo omitimos.");
+            vTaskDelay(pdMS_TO_TICKS(5000));  // Esperar igual para no saturar
+            continue;
+        }
+
+        send_custom_payload(
+            RING_LINK_PAYLOAD_TYPE_INTERNAL,
+            msg,
+            strlen(msg),
+            msg_id,
+            config_get_id(),
+            CONFIG_ID_ALL,
+            10  // TTL
+        );
+
+        ESP_LOGI(TAG, "Broadcast con id=%d enviado. Esperando retorno...", msg_id);
+
+        bool received = ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(5000));
+        if (received) {
+            ESP_LOGI(TAG, "Broadcast %d retornado exitosamente", msg_id);
+        } else {
+            ESP_LOGW(TAG, "Timeout esperando retorno de broadcast %d", msg_id);
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(10000));  // Esperar 10 segundos antes de enviar otro
+    }
+}
+
+
 void example_sender_task(void *arg) {
     const char *mensaje_interno = "ping";
     const char *mensaje_netif = "paquete IP simulado";
@@ -814,15 +926,24 @@ void app_main(void) {
     ESP_ERROR_CHECK(ring_link_rx_netif_init_());
     ESP_ERROR_CHECK(ring_link_tx_netif_init_());
 
-    xTaskCreate(spi_slave_task, "spi_slave_task", 4096, NULL, 10, NULL);
+    xTaskCreate(spi_slave_task, "spi_slave_task", 4096, NULL, 9, NULL);
     xTaskCreate(process_task, "process_task", 4096, NULL, 9, NULL);
-    // xTaskCreate(example_sender_task, "sender_task", 2048, NULL, 8, NULL);
-    xTaskCreate(internal_queue_task, "internal_queue_task", 2048, NULL, 8, NULL);
+    xTaskCreate(internal_queue_task, "internal_queue_task", 2048, NULL, 9, NULL);
     xTaskCreate(esp_netif_queue_task, "esp_netif_queue_task", 4096, NULL, 9, NULL);
 
     ESP_ERROR_CHECK(wifi_init());
     ESP_ERROR_CHECK(wifi_netif_init());
     print_route_table();
+
+    init_broadcast_registry();
+
+    spi_mutex = xSemaphoreCreateMutex();
+    assert(spi_mutex != NULL);
+
+    // xTaskCreate(periodic_broadcast_task, "sender_task", 2048, NULL, 8, NULL);
+    xTaskCreate(periodic_broadcast_task, "broadcast_1", 2048, "mensaje A", 8, NULL);
+    xTaskCreate(periodic_broadcast_task, "broadcast_2", 2048, "mensaje B", 8, NULL);
+    xTaskCreate(periodic_broadcast_task, "broadcast_3", 2048, "mensaje C", 8, NULL);
 
 
 }
