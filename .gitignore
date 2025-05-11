@@ -11,7 +11,6 @@ CTestTestfile.cmake
 _deps
 
 build
-sdkconfig
 .vscode
 .idea
 cmake-build-debug/*
