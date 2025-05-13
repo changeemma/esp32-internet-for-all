@@ -21,12 +21,16 @@ static void ring_link_netif_process_task(void *pvParameters)
 {
     ring_link_payload_t *payload;
     esp_err_t rc;
+    int batch_counter = 0;
     
     while (true) {
         if (xQueueReceive(ring_link_netif_queue, &payload, portMAX_DELAY) == pdTRUE) {
             rc = ring_link_netif_handler(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
-            free(payload);
+            if (++batch_counter >= 10) {
+                batch_counter = 0;
+                vTaskDelay(50);  // Cede tiempo al esp_timer (beacons)
+            }
         }
     }
 }

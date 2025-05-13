@@ -1,4 +1,5 @@
 #include "ring_link_netif_rx.h"
+#include "lwip/priv/tcpip_priv.h"
 
 static const char* TAG = "==> ring_link_netif_rx";
 
@@ -6,6 +7,11 @@ ESP_EVENT_DEFINE_BASE(RING_LINK_RX_EVENT);
 
 static esp_netif_t *ring_link_rx_netif = NULL;
 static ring_link_payload_id_t s_id_counter_rx = 0;
+struct ring_link_rx_args {
+    esp_netif_t *netif;
+    struct pbuf *p;
+    u16_t tot_len;
+};
 
 static const struct esp_netif_netstack_config netif_netstack_config = {
     .lwip = {
@@ -31,6 +37,15 @@ static const esp_netif_config_t netif_config = {
     .driver = NULL,
     .stack = &netif_netstack_config,
 };
+
+static void ring_link_rx_api_call_cb(void *arg) {
+    struct ring_link_rx_args *args = (struct ring_link_rx_args *)arg;
+    esp_err_t err = esp_netif_receive(args->netif, args->p, args->tot_len, NULL);
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "esp_netif_receive failed: %d", err);
+        pbuf_free(args->p);  // Importante liberar si falla
+    }
+}
 
 esp_err_t ring_link_rx_netif_receive(ring_link_payload_t *p)
 {
@@ -108,14 +123,29 @@ esp_err_t ring_link_rx_netif_receive(ring_link_payload_t *p)
     q->tot_len = iphdr_len;
     ip4_debug_print(q);
 
-    // Pass pbuf to esp_netif
-    error = esp_netif_receive(ring_link_rx_netif, q, q->tot_len, NULL);
-    if (error != ESP_OK) {
-        ESP_LOGW(TAG, "process_thread_receive failed.");
-        pbuf_free(q);
+
+    struct ring_link_rx_args rx_args = {
+        .netif = ring_link_rx_netif,
+        .p = q,
+        .tot_len = q->tot_len,
+    };
+
+    err_t lwip_err = tcpip_callback_with_block(ring_link_rx_api_call_cb, &rx_args, 1);
+
+    if (lwip_err != ERR_OK) {
+        ESP_LOGW(TAG, "tcpip_callback_with_block failed: %d", lwip_err);
+        pbuf_free(q);  // Liberar si falla
     }
 
-    return error;
+    return (lwip_err == ERR_OK) ? ESP_OK : ESP_FAIL;
+    // Pass pbuf to esp_netif
+    // error = esp_netif_receive(ring_link_rx_netif, q, q->tot_len, NULL);
+    // if (error != ESP_OK) {
+    //     ESP_LOGW(TAG, "process_thread_receive failed.");
+    //     pbuf_free(q);
+    // }
+
+    // return error;
     }
 
 static err_t output_function(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)

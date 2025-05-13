@@ -15,7 +15,7 @@ extern "C" {
 #endif
 
 #define SPI_BUFFER_SIZE CONFIG_SPI_BUFFER_SIZE
-#define SPI_QUEUE_SIZE 40
+#define SPI_QUEUE_SIZE 80
 
 #define SPI_SENDER_GPIO_MOSI 23
 #define SPI_SENDER_GPIO_SCLK 18
@@ -50,10 +50,12 @@ extern "C" {
 #define SPI_FREQ SPI_MASTER_FREQ_80M
 #endif
 
-esp_err_t spi_init(void);
+esp_err_t spi_init(QueueHandle_t *);
 esp_err_t spi_transmit(void *p, size_t len);
-esp_err_t spi_receive(void *p, size_t len);
-
+typedef struct {
+    void *payload;
+    spi_slave_transaction_t *trans;
+} payload_msg_t;
 
 #ifdef __cplusplus
 }

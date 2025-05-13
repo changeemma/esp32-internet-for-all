@@ -1,0 +1,437 @@
+=== ESP32 Flash Results Log - Tue May 13 11:07:47 AM -03 2025 ===
+
+Iniciando operaciones para /dev/ttyUSB0...
+Iniciando operaciones para /dev/ttyUSB1...
+Iniciando operaciones para /dev/ttyUSB2...
+Iniciando operaciones para /dev/ttyUSB3...
+Iniciando operaciones para /dev/ttyUSB4...
+
+===== RESULTADOS PARA /dev/ttyUSB0 =====
+zsh:1: command not found: get_idf
+
+get_idf terminó con código: 0
+/home/juan/esp/esp-idf/tools/idf.py:368: DeprecationWarning: 'MultiCommand' is deprecated and will be removed in Click 9.0. Use 'Group' instead.
+  class CLI(click.MultiCommand):
+Executing action: flash
+Running ninja in directory /home/juan/Documents/fiuba/esp32-internet-for-all/build
+Executing "ninja flash"...
+[1/5] cd /home/juan/Documents/fiuba/esp32-internet-for-all/build/esp-idf/esptool_py && /home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python /home/juan/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/juan/Documents/fiuba/esp32-internet-for-all/build/partition_table/partition-table.bin /home/juan/Documents/fiuba/esp32-internet-for-all/build/main.bin
+main.bin binary size 0xbe390 bytes. Smallest app partition is 0x100000 bytes. 0x41c70 bytes (26%) free.
+[2/5] Performing build step for 'bootloader'
+[1/1] cd /home/juan/Documents/fiuba/esp32-internet-for-all/build/bootloader/esp-idf/esptool_py && /home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python /home/juan/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x1000 /home/juan/Documents/fiuba/esp32-internet-for-all/build/bootloader/bootloader.bin
+Bootloader binary size 0x6580 bytes. 0xa80 bytes (9%) free.
+[3/5] No install step for 'bootloader'
+[4/5] Completed 'bootloader'
+[4/5] cd /home/juan/esp/esp-idf/components/esptool_py && /usr/bin/cmake -D IDF_PATH=/home/juan/esp/esp-idf -D "SERIAL_TOOL=/home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python;;/home/juan/esp/esp-idf/components/esptool_py/esptool/esptool.py;--chip;esp32" -D "SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args" -D WORKING_DIRECTORY=/home/juan/Documents/fiuba/esp32-internet-for-all/build -P /home/juan/esp/esp-idf/components/esptool_py/run_serial_tool.cmake
+esptool.py --chip esp32 -p /dev/ttyUSB0 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 40m --flash_size 2MB 0x1000 bootloader/bootloader.bin 0x10000 main.bin 0x8000 partition_table/partition-table.bin
+esptool.py v4.8.1
+Serial port /dev/ttyUSB0
+Connecting.....
+Chip is ESP32-D0WD-V3 (revision v3.1)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+Crystal is 40MHz
+MAC: 40:22:d8:3d:84:88
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00001000 to 0x00007fff...
+Flash will be erased from 0x00010000 to 0x000cefff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+SHA digest in image updated
+Compressed 25984 bytes to 16380...
+Writing at 0x00001000... (100 %)
+Wrote 25984 bytes (16380 compressed) at 0x00001000 in 0.9 seconds (effective 236.4 kbit/s)...
+Hash of data verified.
+Compressed 779152 bytes to 493103...
+Writing at 0x00010000... (3 %)
+Writing at 0x0001cf84... (6 %)
+Writing at 0x00025b85... (9 %)
+Writing at 0x0002f8b8... (12 %)
+Writing at 0x000351b2... (16 %)
+Writing at 0x0003b356... (19 %)
+Writing at 0x00041037... (22 %)
+Writing at 0x00046b9b... (25 %)
+Writing at 0x0004c998... (29 %)
+Writing at 0x00052895... (32 %)
+Writing at 0x00058c9e... (35 %)
+Writing at 0x0005de1f... (38 %)
+Writing at 0x00063149... (41 %)
+Writing at 0x000688ce... (45 %)
+Writing at 0x0006e0c9... (48 %)
+Writing at 0x000733e2... (51 %)
+Writing at 0x00078947... (54 %)
+Writing at 0x0007e69e... (58 %)
+Writing at 0x00084062... (61 %)
+Writing at 0x00089de6... (64 %)
+Writing at 0x0008f8b4... (67 %)
+Writing at 0x0009507c... (70 %)
+Writing at 0x0009e403... (74 %)
+Writing at 0x000a5c37... (77 %)
+Writing at 0x000ab6ea... (80 %)
+Writing at 0x000b1369... (83 %)
+Writing at 0x000b6d88... (87 %)
+Writing at 0x000bce14... (90 %)
+Writing at 0x000c2c87... (93 %)
+Writing at 0x000c83db... (96 %)
+Writing at 0x000cd7ea... (100 %)
+Wrote 779152 bytes (493103 compressed) at 0x00010000 in 11.1 seconds (effective 559.3 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 103...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (103 compressed) at 0x00008000 in 0.1 seconds (effective 447.9 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+Done
+
+idf.py flash terminó con código: 0
+
+
+
+===== RESULTADOS PARA /dev/ttyUSB1 =====
+zsh:1: command not found: get_idf
+
+get_idf terminó con código: 0
+/home/juan/esp/esp-idf/tools/idf.py:368: DeprecationWarning: 'MultiCommand' is deprecated and will be removed in Click 9.0. Use 'Group' instead.
+  class CLI(click.MultiCommand):
+Executing action: flash
+Running ninja in directory /home/juan/Documents/fiuba/esp32-internet-for-all/build
+Executing "ninja flash"...
+[1/5] cd /home/juan/Documents/fiuba/esp32-internet-for-all/build/esp-idf/esptool_py && /home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python /home/juan/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/juan/Documents/fiuba/esp32-internet-for-all/build/partition_table/partition-table.bin /home/juan/Documents/fiuba/esp32-internet-for-all/build/main.bin
+main.bin binary size 0xbe390 bytes. Smallest app partition is 0x100000 bytes. 0x41c70 bytes (26%) free.
+[2/5] Performing build step for 'bootloader'
+[1/1] cd /home/juan/Documents/fiuba/esp32-internet-for-all/build/bootloader/esp-idf/esptool_py && /home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python /home/juan/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x1000 /home/juan/Documents/fiuba/esp32-internet-for-all/build/bootloader/bootloader.bin
+Bootloader binary size 0x6580 bytes. 0xa80 bytes (9%) free.
+[3/5] No install step for 'bootloader'
+[4/5] Completed 'bootloader'
+[4/5] cd /home/juan/esp/esp-idf/components/esptool_py && /usr/bin/cmake -D IDF_PATH=/home/juan/esp/esp-idf -D "SERIAL_TOOL=/home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python;;/home/juan/esp/esp-idf/components/esptool_py/esptool/esptool.py;--chip;esp32" -D "SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args" -D WORKING_DIRECTORY=/home/juan/Documents/fiuba/esp32-internet-for-all/build -P /home/juan/esp/esp-idf/components/esptool_py/run_serial_tool.cmake
+esptool.py --chip esp32 -p /dev/ttyUSB1 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 40m --flash_size 2MB 0x1000 bootloader/bootloader.bin 0x10000 main.bin 0x8000 partition_table/partition-table.bin
+esptool.py v4.8.1
+Serial port /dev/ttyUSB1
+Connecting.....
+Chip is ESP32-D0WD-V3 (revision v3.0)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+Crystal is 40MHz
+MAC: e0:5a:1b:6c:43:4c
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00001000 to 0x00007fff...
+Flash will be erased from 0x00010000 to 0x000cefff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+SHA digest in image updated
+Compressed 25984 bytes to 16380...
+Writing at 0x00001000... (100 %)
+Wrote 25984 bytes (16380 compressed) at 0x00001000 in 0.8 seconds (effective 271.3 kbit/s)...
+Hash of data verified.
+Compressed 779152 bytes to 493103...
+Writing at 0x00010000... (3 %)
+Writing at 0x0001cf84... (6 %)
+Writing at 0x00025b85... (9 %)
+Writing at 0x0002f8b8... (12 %)
+Writing at 0x000351b2... (16 %)
+Writing at 0x0003b356... (19 %)
+Writing at 0x00041037... (22 %)
+Writing at 0x00046b9b... (25 %)
+Writing at 0x0004c998... (29 %)
+Writing at 0x00052895... (32 %)
+Writing at 0x00058c9e... (35 %)
+Writing at 0x0005de1f... (38 %)
+Writing at 0x00063149... (41 %)
+Writing at 0x000688ce... (45 %)
+Writing at 0x0006e0c9... (48 %)
+Writing at 0x000733e2... (51 %)
+Writing at 0x00078947... (54 %)
+Writing at 0x0007e69e... (58 %)
+Writing at 0x00084062... (61 %)
+Writing at 0x00089de6... (64 %)
+Writing at 0x0008f8b4... (67 %)
+Writing at 0x0009507c... (70 %)
+Writing at 0x0009e403... (74 %)
+Writing at 0x000a5c37... (77 %)
+Writing at 0x000ab6ea... (80 %)
+Writing at 0x000b1369... (83 %)
+Writing at 0x000b6d88... (87 %)
+Writing at 0x000bce14... (90 %)
+Writing at 0x000c2c87... (93 %)
+Writing at 0x000c83db... (96 %)
+Writing at 0x000cd7ea... (100 %)
+Wrote 779152 bytes (493103 compressed) at 0x00010000 in 11.1 seconds (effective 562.3 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 103...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (103 compressed) at 0x00008000 in 0.1 seconds (effective 438.4 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+Done
+
+idf.py flash terminó con código: 0
+
+
+
+===== RESULTADOS PARA /dev/ttyUSB2 =====
+zsh:1: command not found: get_idf
+
+get_idf terminó con código: 0
+/home/juan/esp/esp-idf/tools/idf.py:368: DeprecationWarning: 'MultiCommand' is deprecated and will be removed in Click 9.0. Use 'Group' instead.
+  class CLI(click.MultiCommand):
+Executing action: flash
+Running ninja in directory /home/juan/Documents/fiuba/esp32-internet-for-all/build
+Executing "ninja flash"...
+[1/5] cd /home/juan/Documents/fiuba/esp32-internet-for-all/build/esp-idf/esptool_py && /home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python /home/juan/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/juan/Documents/fiuba/esp32-internet-for-all/build/partition_table/partition-table.bin /home/juan/Documents/fiuba/esp32-internet-for-all/build/main.bin
+main.bin binary size 0xbe390 bytes. Smallest app partition is 0x100000 bytes. 0x41c70 bytes (26%) free.
+[2/5] Performing build step for 'bootloader'
+[1/1] cd /home/juan/Documents/fiuba/esp32-internet-for-all/build/bootloader/esp-idf/esptool_py && /home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python /home/juan/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x1000 /home/juan/Documents/fiuba/esp32-internet-for-all/build/bootloader/bootloader.bin
+Bootloader binary size 0x6580 bytes. 0xa80 bytes (9%) free.
+[3/5] No install step for 'bootloader'
+[4/5] Completed 'bootloader'
+[4/5] cd /home/juan/esp/esp-idf/components/esptool_py && /usr/bin/cmake -D IDF_PATH=/home/juan/esp/esp-idf -D "SERIAL_TOOL=/home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python;;/home/juan/esp/esp-idf/components/esptool_py/esptool/esptool.py;--chip;esp32" -D "SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args" -D WORKING_DIRECTORY=/home/juan/Documents/fiuba/esp32-internet-for-all/build -P /home/juan/esp/esp-idf/components/esptool_py/run_serial_tool.cmake
+esptool.py --chip esp32 -p /dev/ttyUSB2 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 40m --flash_size 2MB 0x1000 bootloader/bootloader.bin 0x10000 main.bin 0x8000 partition_table/partition-table.bin
+esptool.py v4.8.1
+Serial port /dev/ttyUSB2
+Connecting......
+Chip is ESP32-D0WD-V3 (revision v3.0)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+Crystal is 40MHz
+MAC: c8:f0:9e:ec:10:58
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00001000 to 0x00007fff...
+Flash will be erased from 0x00010000 to 0x000cefff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+SHA digest in image updated
+Compressed 25984 bytes to 16380...
+Writing at 0x00001000... (100 %)
+Wrote 25984 bytes (16380 compressed) at 0x00001000 in 0.7 seconds (effective 278.2 kbit/s)...
+Hash of data verified.
+Compressed 779152 bytes to 493103...
+Writing at 0x00010000... (3 %)
+Writing at 0x0001cf84... (6 %)
+Writing at 0x00025b85... (9 %)
+Writing at 0x0002f8b8... (12 %)
+Writing at 0x000351b2... (16 %)
+Writing at 0x0003b356... (19 %)
+Writing at 0x00041037... (22 %)
+Writing at 0x00046b9b... (25 %)
+Writing at 0x0004c998... (29 %)
+Writing at 0x00052895... (32 %)
+Writing at 0x00058c9e... (35 %)
+Writing at 0x0005de1f... (38 %)
+Writing at 0x00063149... (41 %)
+Writing at 0x000688ce... (45 %)
+Writing at 0x0006e0c9... (48 %)
+Writing at 0x000733e2... (51 %)
+Writing at 0x00078947... (54 %)
+Writing at 0x0007e69e... (58 %)
+Writing at 0x00084062... (61 %)
+Writing at 0x00089de6... (64 %)
+Writing at 0x0008f8b4... (67 %)
+Writing at 0x0009507c... (70 %)
+Writing at 0x0009e403... (74 %)
+Writing at 0x000a5c37... (77 %)
+Writing at 0x000ab6ea... (80 %)
+Writing at 0x000b1369... (83 %)
+Writing at 0x000b6d88... (87 %)
+Writing at 0x000bce14... (90 %)
+Writing at 0x000c2c87... (93 %)
+Writing at 0x000c83db... (96 %)
+Writing at 0x000cd7ea... (100 %)
+Wrote 779152 bytes (493103 compressed) at 0x00010000 in 11.1 seconds (effective 562.9 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 103...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (103 compressed) at 0x00008000 in 0.1 seconds (effective 446.1 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+Done
+
+idf.py flash terminó con código: 0
+
+
+
+===== RESULTADOS PARA /dev/ttyUSB3 =====
+zsh:1: command not found: get_idf
+
+get_idf terminó con código: 0
+/home/juan/esp/esp-idf/tools/idf.py:368: DeprecationWarning: 'MultiCommand' is deprecated and will be removed in Click 9.0. Use 'Group' instead.
+  class CLI(click.MultiCommand):
+Executing action: flash
+Running ninja in directory /home/juan/Documents/fiuba/esp32-internet-for-all/build
+Executing "ninja flash"...
+[1/5] cd /home/juan/Documents/fiuba/esp32-internet-for-all/build/esp-idf/esptool_py && /home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python /home/juan/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/juan/Documents/fiuba/esp32-internet-for-all/build/partition_table/partition-table.bin /home/juan/Documents/fiuba/esp32-internet-for-all/build/main.bin
+main.bin binary size 0xbe390 bytes. Smallest app partition is 0x100000 bytes. 0x41c70 bytes (26%) free.
+[2/5] Performing build step for 'bootloader'
+[1/1] cd /home/juan/Documents/fiuba/esp32-internet-for-all/build/bootloader/esp-idf/esptool_py && /home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python /home/juan/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x1000 /home/juan/Documents/fiuba/esp32-internet-for-all/build/bootloader/bootloader.bin
+Bootloader binary size 0x6580 bytes. 0xa80 bytes (9%) free.
+[3/5] No install step for 'bootloader'
+[4/5] Completed 'bootloader'
+[4/5] cd /home/juan/esp/esp-idf/components/esptool_py && /usr/bin/cmake -D IDF_PATH=/home/juan/esp/esp-idf -D "SERIAL_TOOL=/home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python;;/home/juan/esp/esp-idf/components/esptool_py/esptool/esptool.py;--chip;esp32" -D "SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args" -D WORKING_DIRECTORY=/home/juan/Documents/fiuba/esp32-internet-for-all/build -P /home/juan/esp/esp-idf/components/esptool_py/run_serial_tool.cmake
+esptool.py --chip esp32 -p /dev/ttyUSB3 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 40m --flash_size 2MB 0x1000 bootloader/bootloader.bin 0x10000 main.bin 0x8000 partition_table/partition-table.bin
+esptool.py v4.8.1
+Serial port /dev/ttyUSB3
+Connecting.....
+Chip is ESP32-D0WD-V3 (revision v3.1)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+Crystal is 40MHz
+MAC: 40:22:d8:3d:89:c4
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00001000 to 0x00007fff...
+Flash will be erased from 0x00010000 to 0x000cefff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+SHA digest in image updated
+Compressed 25984 bytes to 16380...
+Writing at 0x00001000... (100 %)
+Wrote 25984 bytes (16380 compressed) at 0x00001000 in 0.9 seconds (effective 237.0 kbit/s)...
+Hash of data verified.
+Compressed 779152 bytes to 493103...
+Writing at 0x00010000... (3 %)
+Writing at 0x0001cf84... (6 %)
+Writing at 0x00025b85... (9 %)
+Writing at 0x0002f8b8... (12 %)
+Writing at 0x000351b2... (16 %)
+Writing at 0x0003b356... (19 %)
+Writing at 0x00041037... (22 %)
+Writing at 0x00046b9b... (25 %)
+Writing at 0x0004c998... (29 %)
+Writing at 0x00052895... (32 %)
+Writing at 0x00058c9e... (35 %)
+Writing at 0x0005de1f... (38 %)
+Writing at 0x00063149... (41 %)
+Writing at 0x000688ce... (45 %)
+Writing at 0x0006e0c9... (48 %)
+Writing at 0x000733e2... (51 %)
+Writing at 0x00078947... (54 %)
+Writing at 0x0007e69e... (58 %)
+Writing at 0x00084062... (61 %)
+Writing at 0x00089de6... (64 %)
+Writing at 0x0008f8b4... (67 %)
+Writing at 0x0009507c... (70 %)
+Writing at 0x0009e403... (74 %)
+Writing at 0x000a5c37... (77 %)
+Writing at 0x000ab6ea... (80 %)
+Writing at 0x000b1369... (83 %)
+Writing at 0x000b6d88... (87 %)
+Writing at 0x000bce14... (90 %)
+Writing at 0x000c2c87... (93 %)
+Writing at 0x000c83db... (96 %)
+Writing at 0x000cd7ea... (100 %)
+Wrote 779152 bytes (493103 compressed) at 0x00010000 in 11.1 seconds (effective 561.9 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 103...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (103 compressed) at 0x00008000 in 0.1 seconds (effective 461.5 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+Done
+
+idf.py flash terminó con código: 0
+
+
+
+===== RESULTADOS PARA /dev/ttyUSB4 =====
+zsh:1: command not found: get_idf
+
+get_idf terminó con código: 0
+/home/juan/esp/esp-idf/tools/idf.py:368: DeprecationWarning: 'MultiCommand' is deprecated and will be removed in Click 9.0. Use 'Group' instead.
+  class CLI(click.MultiCommand):
+Executing action: flash
+Running ninja in directory /home/juan/Documents/fiuba/esp32-internet-for-all/build
+Executing "ninja flash"...
+[1/5] cd /home/juan/Documents/fiuba/esp32-internet-for-all/build/esp-idf/esptool_py && /home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python /home/juan/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /home/juan/Documents/fiuba/esp32-internet-for-all/build/partition_table/partition-table.bin /home/juan/Documents/fiuba/esp32-internet-for-all/build/main.bin
+main.bin binary size 0xbe390 bytes. Smallest app partition is 0x100000 bytes. 0x41c70 bytes (26%) free.
+[2/5] Performing build step for 'bootloader'
+[1/1] cd /home/juan/Documents/fiuba/esp32-internet-for-all/build/bootloader/esp-idf/esptool_py && /home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python /home/juan/esp/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x1000 /home/juan/Documents/fiuba/esp32-internet-for-all/build/bootloader/bootloader.bin
+Bootloader binary size 0x6580 bytes. 0xa80 bytes (9%) free.
+[3/5] No install step for 'bootloader'
+[4/5] Completed 'bootloader'
+[4/5] cd /home/juan/esp/esp-idf/components/esptool_py && /usr/bin/cmake -D IDF_PATH=/home/juan/esp/esp-idf -D "SERIAL_TOOL=/home/juan/required_idf_tools_path/python_env/idf5.4_py3.12_env/bin/python;;/home/juan/esp/esp-idf/components/esptool_py/esptool/esptool.py;--chip;esp32" -D "SERIAL_TOOL_ARGS=--before=default_reset;--after=hard_reset;write_flash;@flash_args" -D WORKING_DIRECTORY=/home/juan/Documents/fiuba/esp32-internet-for-all/build -P /home/juan/esp/esp-idf/components/esptool_py/run_serial_tool.cmake
+esptool.py --chip esp32 -p /dev/ttyUSB4 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 40m --flash_size 2MB 0x1000 bootloader/bootloader.bin 0x10000 main.bin 0x8000 partition_table/partition-table.bin
+esptool.py v4.8.1
+Serial port /dev/ttyUSB4
+Connecting.....
+Chip is ESP32-D0WDQ6 (revision v1.0)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+Crystal is 40MHz
+MAC: c8:f0:9e:9e:6f:74
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00001000 to 0x00007fff...
+Flash will be erased from 0x00010000 to 0x000cefff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+SHA digest in image updated
+Compressed 25984 bytes to 16380...
+Writing at 0x00001000... (100 %)
+Wrote 25984 bytes (16380 compressed) at 0x00001000 in 0.7 seconds (effective 303.4 kbit/s)...
+Hash of data verified.
+Compressed 779152 bytes to 493103...
+Writing at 0x00010000... (3 %)
+Writing at 0x0001cf84... (6 %)
+Writing at 0x00025b85... (9 %)
+Writing at 0x0002f8b8... (12 %)
+Writing at 0x000351b2... (16 %)
+Writing at 0x0003b356... (19 %)
+Writing at 0x00041037... (22 %)
+Writing at 0x00046b9b... (25 %)
+Writing at 0x0004c998... (29 %)
+Writing at 0x00052895... (32 %)
+Writing at 0x00058c9e... (35 %)
+Writing at 0x0005de1f... (38 %)
+Writing at 0x00063149... (41 %)
+Writing at 0x000688ce... (45 %)
+Writing at 0x0006e0c9... (48 %)
+Writing at 0x000733e2... (51 %)
+Writing at 0x00078947... (54 %)
+Writing at 0x0007e69e... (58 %)
+Writing at 0x00084062... (61 %)
+Writing at 0x00089de6... (64 %)
+Writing at 0x0008f8b4... (67 %)
+Writing at 0x0009507c... (70 %)
+Writing at 0x0009e403... (74 %)
+Writing at 0x000a5c37... (77 %)
+Writing at 0x000ab6ea... (80 %)
+Writing at 0x000b1369... (83 %)
+Writing at 0x000b6d88... (87 %)
+Writing at 0x000bce14... (90 %)
+Writing at 0x000c2c87... (93 %)
+Writing at 0x000c83db... (96 %)
+Writing at 0x000cd7ea... (100 %)
+Wrote 779152 bytes (493103 compressed) at 0x00010000 in 11.1 seconds (effective 561.5 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 103...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (103 compressed) at 0x00008000 in 0.0 seconds (effective 561.9 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+Done
+
+idf.py flash terminó con código: 0
+
+
