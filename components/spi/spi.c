@@ -13,8 +13,6 @@ static ring_link_payload_t *payload_buffers[SPI_QUEUE_SIZE];
 static void spi_post_trans_cb(spi_slave_transaction_t *trans) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-    esp_rom_printf("spi_post_trans_cb trans=%p rx_buffer=%p trans_len=%d\n", trans, trans->rx_buffer, trans->trans_len);
-
     payload_msg_t msg = {
         .payload = (ring_link_payload_t *)trans->rx_buffer,
         .trans = trans

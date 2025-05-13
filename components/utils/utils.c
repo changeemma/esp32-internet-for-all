@@ -10,9 +10,9 @@ void print_route_table(void)
     {
         printf("------------------------\n");
         printf("IPv4 route table for %s:\n", netif->name);
-        printf("ip4: %s\n", ip4addr_ntoa((const ip4_addr_t *)&netif->ip_addr.addr));
-        printf("netmask: %s\n", ip4addr_ntoa((const ip4_addr_t *)&netif->netmask.addr));
-        printf("gw: %s\n", ip4addr_ntoa((const ip4_addr_t *)&netif->gw.addr));
+        printf("ip4: %s\n", ip4addr_ntoa((const ip4_addr_t *)&netif->ip_addr.u_addr));
+        printf("netmask: %s\n", ip4addr_ntoa((const ip4_addr_t *)&netif->netmask.u_addr));
+        printf("gw: %s\n", ip4addr_ntoa((const ip4_addr_t *)&netif->gw.u_addr));
     }
     printf("------------------------\n");
 }

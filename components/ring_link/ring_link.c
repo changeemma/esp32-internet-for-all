@@ -51,6 +51,7 @@ static esp_err_t process_payload(ring_link_payload_t *p)
         free(p);
         return ESP_FAIL;
     }
+    taskYIELD();
     return ESP_OK;
 }
 
@@ -67,7 +68,7 @@ static void ring_link_process_task(void *pvParameters)
             if (ret != ESP_OK) {
                 ESP_LOGW(TAG, "No se pudo reencolar la transacción SPI");
             }
-
+            taskYIELD();
         }
     }
 }
@@ -93,7 +94,7 @@ esp_err_t ring_link_init(void)
         "ring_link_process",
         RING_LINK_NETIF_MEM_TASK,
         NULL,
-        (tskIDLE_PRIORITY + 4),
+        (tskIDLE_PRIORITY + 5),
         NULL
     );
     if (ret != pdTRUE) {
