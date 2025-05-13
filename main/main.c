@@ -466,21 +466,16 @@ esp_err_t ring_link_rx_netif_receive(ring_link_payload_t *p)
     }
 
     // Allocate pbuf with required size
-    // q = pbuf_alloc(PBUF_TRANSPORT, iphdr_len, PBUF_POOL);
-    q = esp_pbuf_allocate(ring_link_rx_netif, p->buffer, iphdr_len, p->buffer);
+    q = pbuf_alloc(PBUF_TRANSPORT, iphdr_len, PBUF_POOL);
     if (q == NULL) {
-        esp_netif_free_rx_buffer(ring_link_rx_netif, p->buffer);
+        ESP_LOGW(TAG, "Failed to allocate pbuf.");
         return ESP_FAIL;
     }
-    // if (q == NULL) {
-    //     ESP_LOGW(TAG, "Failed to allocate pbuf.");
-    //     return ESP_FAIL;
-    // }
 
-    // memcpy(q->payload, p->buffer, iphdr_len);
-    // q->next = NULL;
-    // q->len = iphdr_len;
-    // q->tot_len = iphdr_len;
+    memcpy(q->payload, p->buffer, iphdr_len);
+    q->next = NULL;
+    q->len = iphdr_len;
+    q->tot_len = iphdr_len;
     // ip4_debug_print(q);
 
     // Pasar a esp_netif (como antes)

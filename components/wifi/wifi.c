@@ -98,7 +98,7 @@ uint8_t get_wifi_channel() {
         ESP_LOGE(WIFI_TAG, "Error getting MAC address");
         return ret;
     }
-    return (mac[5] % 11) + 1; // Canales de 1 a 11
+    return 7; // Canales de 1 a 11
 }
 
 esp_err_t get_wifi_ip_info(esp_netif_ip_info_t *ip_info) {
