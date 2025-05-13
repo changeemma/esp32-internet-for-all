@@ -56,13 +56,18 @@ static esp_err_t process_payload(ring_link_payload_t *p)
 
 static void ring_link_process_task(void *pvParameters)
 {
-    ring_link_payload_t *payload;
+    payload_msg_t msg;
     esp_err_t rc;
     
     while (true) {
-        if (xQueueReceive(*lowlevel_queue, &payload, portMAX_DELAY) == pdTRUE) {
-            rc = process_payload(payload);
+        if (xQueueReceive(*lowlevel_queue, &msg, portMAX_DELAY) == pdTRUE) {
+            rc = process_payload(msg.payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
+            esp_err_t ret = spi_slave_queue_trans(SPI_RECEIVER_HOST, msg.trans, 100);
+            if (ret != ESP_OK) {
+                ESP_LOGW(TAG, "No se pudo reencolar la transacción SPI");
+            }
+
         }
     }
 }
