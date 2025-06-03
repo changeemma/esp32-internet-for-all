@@ -80,6 +80,7 @@ esp_err_t ring_link_init(void)
 
 
     ESP_ERROR_CHECK(ring_link_lowlevel_init(&lowlevel_queue));
+    ESP_ERROR_CHECK(spi_receiver_init(&lowlevel_queue));
     ESP_ERROR_CHECK(ring_link_internal_init(&internal_queue));
     ESP_ERROR_CHECK(ring_link_netif_init(&esp_netif_queue));
 
@@ -88,7 +89,7 @@ esp_err_t ring_link_init(void)
         "ring_link_process",
         RING_LINK_NETIF_MEM_TASK,
         NULL,
-        (tskIDLE_PRIORITY + 4),
+        (tskIDLE_PRIORITY + 9),
         NULL
     );
     if (ret != pdTRUE) {
