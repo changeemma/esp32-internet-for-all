@@ -33,6 +33,7 @@ void app_main(void)
     ESP_ERROR_CHECK(ring_link_init());
     test_spi_run_all();
 
+
     #ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_PHYSIM
     ESP_LOGI(TAG, "CONFIG_RING_LINK_LOWLEVEL_IMPL_PHYSIM\n");
     #endif
@@ -42,8 +43,8 @@ void app_main(void)
     ESP_ERROR_CHECK(wifi_init());
     ESP_ERROR_CHECK(wifi_netif_init());
     #endif
-
+    
     print_route_table();
     
-    ESP_ERROR_CHECK(heartbeat_init());
+    // ESP_ERROR_CHECK(heartbeat_init());
 }
