@@ -25,7 +25,6 @@ static void spi_polling_task(void *pvParameters) {
         spi_slave_transaction_t t = { 0 };
         t.length = BUFFER_SIZE * 8;
         t.rx_buffer = payload;
-        t.user = (void *) payload;  // Pasar el puntero al callback
 
         esp_err_t ret = spi_slave_queue_trans(SPI_RECEIVER_HOST, &t, portMAX_DELAY);
         if (ret != ESP_OK) {
@@ -37,7 +36,7 @@ static void spi_polling_task(void *pvParameters) {
 }
 
 static void IRAM_ATTR spi_post_trans_cb(spi_slave_transaction_t *trans) {
-    ring_link_payload_t *payload = (ring_link_payload_t *)trans->user;
+    ring_link_payload_t *payload = (ring_link_payload_t *) trans->rx_buffer;
     payload->len = trans->trans_len / 8;
 
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
