@@ -32,6 +32,7 @@ static void spi_polling_task(void *pvParameters) {
             // Si hubo error, devolver el buffer al pool
             xQueueSend(free_buf_queue, &payload, 0);
         }
+        taskYIELD();
     }
 }
 

@@ -63,6 +63,7 @@ static void ring_link_process_task(void *pvParameters)
         if (xQueueReceive(*lowlevel_queue, &payload, portMAX_DELAY) == pdTRUE) {
             rc = process_payload(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
+            taskYIELD();
         }
     }
 }
