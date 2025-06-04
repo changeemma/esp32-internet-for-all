@@ -27,7 +27,7 @@ static void spi_polling_task(void *pvParameters) {
         t.rx_buffer = payload;
         t.user = (void *) payload;  // Pasar el puntero al callback
 
-        esp_err_t ret = ret = spi_slave_transmit(SPI_RECEIVER_HOST, &t, portMAX_DELAY);
+        esp_err_t ret = spi_slave_transmit(SPI_RECEIVER_HOST, &t, portMAX_DELAY);
         if (ret != ESP_OK) {
             // Si hubo error, devolver el buffer al pool
             xQueueSend(free_buf_queue, &payload, 0);
