@@ -142,24 +142,6 @@ esp_err_t spi_transmit(void *p, size_t len) {
     return spi_device_transmit(s_spi_device_handle, &t);
 }
 
-esp_err_t spi_receive(void *p, size_t len)
-{
-    spi_slave_transaction_t t = {
-        .rx_buffer = p,
-        .length = len * 8,
-    };
-    esp_err_t ret = spi_slave_transmit(SPI_RECEIVER_HOST, &t, portMAX_DELAY);
-    
-    if (ret == ESP_OK) {
-        // Verificar que realmente recibimos la cantidad correcta de datos
-        ESP_LOGI(TAG, "SPI transaction complete - Received %d bits", t.trans_len);
-        if (t.trans_len != len * 8) {
-            ESP_LOGW(TAG, "Incomplete transaction! Expected %d bits", len * 8);
-        }
-    }
-    return ret;
-}
-
 esp_err_t spi_free_rx_buffer(void *p)
 {
     xQueueSend(free_buf_queue, &p, 0);

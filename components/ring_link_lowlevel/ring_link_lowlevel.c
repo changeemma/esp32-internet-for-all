@@ -32,11 +32,6 @@ esp_err_t ring_link_lowlevel_transmit_payload(ring_link_payload_t *p)
     return ESP_FAIL;
 }
 
-esp_err_t ring_link_lowlevel_receive_payload(ring_link_payload_t *p)
-{
-    return RING_LINK_LOWLEVEL_IMPL_RECEIVE(p, sizeof(ring_link_payload_t));
-}
-
 esp_err_t ring_link_lowlevel_free_rx_buffer(void *p)
 {
     return RING_LINK_LOWLEVEL_IMPL_FREE_RX_BUFFER(p);

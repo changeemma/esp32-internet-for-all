@@ -52,7 +52,6 @@ extern "C" {
 
 esp_err_t spi_init(QueueHandle_t **rx_queue);
 esp_err_t spi_transmit(void *p, size_t len);
-esp_err_t spi_receive(void *p, size_t len);
 esp_err_t spi_free_rx_buffer(void *p);
 
 
