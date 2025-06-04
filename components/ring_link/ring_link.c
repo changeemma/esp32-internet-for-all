@@ -43,12 +43,12 @@ static esp_err_t process_payload(ring_link_payload_t *p)
         ESP_LOGE(TAG, "Expected types: INTERNAL=0x%02x, ESP_NETIF=0x%02x",
                  RING_LINK_PAYLOAD_TYPE_INTERNAL,
                  RING_LINK_PAYLOAD_TYPE_ESP_NETIF);
-        free(p);
+        ring_link_lowlevel_free_rx_buffer(p);
         return ESP_FAIL;
     }
     if (xQueueSend(*specific_queue, &p, pdMS_TO_TICKS(100)) != pdTRUE) {
         ESP_LOGW(TAG, "Queue full, payload dropped");
-        free(p);
+        ring_link_lowlevel_free_rx_buffer(p);
         return ESP_FAIL;
     }
     return ESP_OK;
