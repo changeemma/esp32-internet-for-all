@@ -27,6 +27,7 @@ esp_err_t ring_link_lowlevel_receive_payload(ring_link_payload_t *p);
 
 esp_err_t ring_link_lowlevel_forward_payload(ring_link_payload_t *p);
 
+esp_err_t ring_link_lowlevel_free_rx_buffer(void *p);
 
 #ifdef __cplusplus
 }

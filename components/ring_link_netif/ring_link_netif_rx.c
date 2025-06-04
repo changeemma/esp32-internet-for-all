@@ -250,7 +250,7 @@ static esp_err_t ring_link_rx_driver_post_attach(esp_netif_t * esp_netif, void *
     esp_netif_driver_ifconfig_t driver_ifconfig = {
         .handle = driver,
         .transmit = esp_netif_ring_link_driver_transmit,
-        .driver_free_rx_buffer = NULL,
+        .driver_free_rx_buffer = ring_link_lowlevel_free_rx_buffer,
     };
 
     ESP_ERROR_CHECK(esp_netif_set_driver_config(esp_netif, &driver_ifconfig));

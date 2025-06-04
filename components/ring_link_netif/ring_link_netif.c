@@ -26,7 +26,6 @@ static void ring_link_netif_process_task(void *pvParameters)
         if (xQueueReceive(ring_link_netif_queue, &payload, portMAX_DELAY) == pdTRUE) {
             rc = ring_link_netif_handler(payload);
             ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
-            free(payload);
         }
     }
 }
@@ -44,13 +43,14 @@ esp_err_t ring_link_netif_init(QueueHandle_t **queue)
     }
     *queue = &ring_link_netif_queue;
 
-    BaseType_t ret = xTaskCreate(
+    BaseType_t ret = xTaskCreatePinnedToCore(
         ring_link_netif_process_task,
         "ring_link_netif_process",
         RING_LINK_NETIF_MEM_TASK,
         NULL,
         (tskIDLE_PRIORITY + 4),
-        NULL
+        NULL,
+        1
     );
     if (ret != pdTRUE) {
         ESP_LOGE(TAG, "Failed to create netif process task");

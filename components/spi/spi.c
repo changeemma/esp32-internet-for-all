@@ -1,11 +1,52 @@
 #include "spi.h"
 #include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+
 #include "ring_link_payload.h"
 
 
 static spi_device_handle_t s_spi_device_handle = {0};
 static const char* TAG = "==> SPI";
 
+#define NUM_BUFFERS  8
+#define BUFFER_SIZE  128
+
+static ring_link_payload_t buffer_pool[NUM_BUFFERS];        // Buffers preasignados
+static QueueHandle_t free_buf_queue = NULL;       // Buffers libres
+static QueueHandle_t spi_rx_queue = NULL;         // Mensajes recibidos
+
+static void spi_polling_task(void *pvParameters) {
+    ring_link_payload_t *payload;
+
+    while (1) {
+        // Esperar un buffer libre del pool
+        if (xQueueReceive(free_buf_queue, &payload, portMAX_DELAY) != pdTRUE) continue;
+
+        spi_slave_transaction_t t = { 0 };
+        t.length = BUFFER_SIZE * 8;
+        t.rx_buffer = payload;
+        t.user = (void *) payload;  // Pasar el puntero al callback
+
+        esp_err_t ret = ret = spi_slave_transmit(SPI_RECEIVER_HOST, &t, portMAX_DELAY);
+        if (ret != ESP_OK) {
+            // Si hubo error, devolver el buffer al pool
+            xQueueSend(free_buf_queue, &payload, 0);
+        }
+    }
+}
+
+static void IRAM_ATTR spi_post_trans_cb(spi_slave_transaction_t *trans) {
+    ring_link_payload_t *payload = (ring_link_payload_t *)trans->user;
+    payload->len = trans->trans_len / 8;
+
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    if (xQueueSendFromISR(spi_rx_queue, &payload, &xHigherPriorityTaskWoken) != pdTRUE) {
+        // Cola llena, descartar el mensaje (¡devolver buffer!)
+        xQueueSendFromISR(free_buf_queue, &payload, &xHigherPriorityTaskWoken);
+    }
+
+    if (xHigherPriorityTaskWoken) portYIELD_FROM_ISR();
+}
 
 static esp_err_t spi_rx_init() {
     //Configuration for the SPI bus
@@ -24,7 +65,7 @@ static esp_err_t spi_rx_init() {
         .queue_size=SPI_QUEUE_SIZE,
         .flags=0,
         //.post_setup_cb=spi_post_setup_cb,
-        //.post_trans_cb=spi_post_trans_cb
+        .post_trans_cb=spi_post_trans_cb
     };
 
     //Initialize SPI slave interface
@@ -62,11 +103,31 @@ static esp_err_t spi_tx_init() {
     return ESP_OK;
 }
 
-esp_err_t spi_init(void) {
+esp_err_t spi_init(QueueHandle_t **rx_queue) {
+
     ESP_ERROR_CHECK(spi_rx_init());
     ESP_ERROR_CHECK(spi_tx_init());
+
+    // inicializo punteros a queues
+    free_buf_queue = xQueueCreate(NUM_BUFFERS, sizeof(ring_link_payload_t *));
+    spi_rx_queue = xQueueCreate(NUM_BUFFERS, sizeof(ring_link_payload_t *));
+    if (free_buf_queue == NULL || spi_rx_queue == NULL) {
+        ESP_LOGE(TAG, "Failed to create queue");
+        return ESP_FAIL;
+    }
+    *rx_queue = &spi_rx_queue;
+
+    // Inicializar pool de buffers
+    for (int i = 0; i < NUM_BUFFERS; i++) {
+        ring_link_payload_t *ptr = &buffer_pool[i];
+        xQueueSend(free_buf_queue, &ptr, 0);
+    }
+    // inicializo tarea de polling
+    xTaskCreatePinnedToCore(spi_polling_task, "spi_polling_task", 4096, NULL, 10, NULL, 1);
+
     return ESP_OK;
 }
+
 
 esp_err_t spi_transmit(void *p, size_t len) {
     ring_link_payload_t* payload = (ring_link_payload_t*)p;
@@ -96,4 +157,10 @@ esp_err_t spi_receive(void *p, size_t len)
         }
     }
     return ret;
+}
+
+esp_err_t spi_free_rx_buffer(void *p)
+{
+    xQueueSend(free_buf_queue, &p, 0);
+    return ESP_OK;
 }
