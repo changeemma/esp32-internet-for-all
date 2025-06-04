@@ -47,14 +47,13 @@ esp_err_t ring_link_internal_init(QueueHandle_t **queue)
     }
     *queue = &ring_link_internal_queue;
 
-    BaseType_t ret = xTaskCreatePinnedToCore(
+    BaseType_t ret = xTaskCreate(
         ring_link_internal_process_task,
         "ring_link_internal_process",
         RING_LINK_INTERNAL_MEM_TASK,
         NULL,
         (tskIDLE_PRIORITY + 2),
-        NULL,
-        1
+        NULL
     );
     if (ret != pdTRUE) {
         ESP_LOGE(TAG, "Failed to create internal process task");

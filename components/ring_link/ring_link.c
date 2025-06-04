@@ -84,14 +84,13 @@ esp_err_t ring_link_init(void)
     ESP_ERROR_CHECK(ring_link_internal_init(&internal_queue));
     ESP_ERROR_CHECK(ring_link_netif_init(&esp_netif_queue));
 
-    BaseType_t ret = xTaskCreatePinnedToCore(
+    BaseType_t ret = xTaskCreate(
         ring_link_process_task,
         "ring_link_process",
         RING_LINK_NETIF_MEM_TASK,
         NULL,
         (tskIDLE_PRIORITY + 4),
-        NULL,
-        1
+        NULL
     );
     if (ret != pdTRUE) {
         ESP_LOGE(TAG, "Failed to create process task");
