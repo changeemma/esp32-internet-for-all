@@ -9,7 +9,6 @@ static spi_device_handle_t s_spi_device_handle = {0};
 static const char* TAG = "==> SPI";
 
 #define NUM_BUFFERS  8
-#define BUFFER_SIZE  128
 
 static ring_link_payload_t buffer_pool[NUM_BUFFERS];        // Buffers preasignados
 static QueueHandle_t free_buf_queue = NULL;       // Buffers libres
@@ -23,10 +22,10 @@ static void spi_polling_task(void *pvParameters) {
         if (xQueueReceive(free_buf_queue, &payload, portMAX_DELAY) != pdTRUE) continue;
 
         spi_slave_transaction_t t = { 0 };
-        t.length = BUFFER_SIZE * 8;
+        t.length = SPI_BUFFER_SIZE * 8;
         t.rx_buffer = payload;
 
-        esp_err_t ret = spi_slave_queue_trans(SPI_RECEIVER_HOST, &t, portMAX_DELAY);
+        esp_err_t ret = spi_slave_transmit(SPI_RECEIVER_HOST, &t, portMAX_DELAY);
         if (ret != ESP_OK) {
             // Si hubo error, devolver el buffer al pool
             xQueueSend(free_buf_queue, &payload, 0);
@@ -37,7 +36,6 @@ static void spi_polling_task(void *pvParameters) {
 
 static void IRAM_ATTR spi_post_trans_cb(spi_slave_transaction_t *trans) {
     ring_link_payload_t *payload = (ring_link_payload_t *) trans->rx_buffer;
-    payload->len = trans->trans_len / 8;
 
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     if (xQueueSendFromISR(spi_rx_queue, &payload, &xHigherPriorityTaskWoken) != pdTRUE) {
