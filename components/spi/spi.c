@@ -25,7 +25,7 @@ static void spi_polling_task(void *pvParameters) {
         t.length = SPI_BUFFER_SIZE * 8;
         t.rx_buffer = payload;
 
-        esp_err_t ret = spi_slave_queue_trans(SPI_RECEIVER_HOST, &t, portMAX_DELAY);
+        esp_err_t ret = spi_slave_transmit(SPI_RECEIVER_HOST, &t, portMAX_DELAY);
         if (ret != ESP_OK) {
             // Si hubo error, devolver el buffer al pool
             ESP_LOGE(TAG, "Failed to spi_slave_queue_trans");
@@ -35,15 +35,13 @@ static void spi_polling_task(void *pvParameters) {
     }
 }
 
-static void IRAM_ATTR spi_post_trans_cb(spi_slave_transaction_t *trans) {
+void IRAM_ATTR spi_post_trans_cb(spi_slave_transaction_t *trans) {
     ring_link_payload_t *payload = (ring_link_payload_t *) trans->rx_buffer;
 
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    ESP_LOGI(TAG, "spi_post_trans_cb");
 
     if (xQueueSendFromISR(spi_rx_queue, &payload, &xHigherPriorityTaskWoken) != pdTRUE) {
         // Cola llena, descartar el mensaje (¡devolver buffer!)
-        ESP_LOGE(TAG, "Failed to xQueueSendFromISR");
         xQueueSendFromISR(free_buf_queue, &payload, &xHigherPriorityTaskWoken);
     }
 
