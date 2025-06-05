@@ -125,7 +125,7 @@ esp_err_t spi_init(QueueHandle_t **rx_queue) {
         xQueueSend(free_buf_queue, &ptr, 0);
     }
     // inicializo tarea de polling
-    xTaskCreate(spi_polling_task, "spi_polling_task", 4096, NULL, 10, NULL);
+    xTaskCreatePinnedToCore(spi_polling_task, "spi_polling_task", 4096, NULL, 10, NULL, 1);
 
     return ESP_OK;
 }
