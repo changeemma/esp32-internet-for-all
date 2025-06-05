@@ -13,36 +13,44 @@ static esp_err_t process_payload(ring_link_payload_t *p)
 {
     QueueHandle_t *specific_queue;
 
-    ESP_LOGI(TAG, "Received payload:");
-    ESP_LOGI(TAG, "  buffer_type: 0x%02x", p->buffer_type);
-    ESP_LOGI(TAG, "  id: %d", p->id);
-    ESP_LOGI(TAG, "  src_id: %d", p->src_id);
-    ESP_LOGI(TAG, "  dst_id: %d", p->dst_id);
+    ESP_LOGD(TAG, "Received payload:");
+    ESP_LOGD(TAG, "  buffer_type: 0x%02x", p->buffer_type);
+    ESP_LOGD(TAG, "  id: %d", p->id);
+    ESP_LOGD(TAG, "  src_id: %d", p->src_id);
+    ESP_LOGD(TAG, "  dst_id: %d", p->dst_id);
     
-    ESP_LOGI(TAG, "Checks:");
-    ESP_LOGI(TAG, "  is_internal: %d (expect 0x%02x)", 
+    ESP_LOGD(TAG, "Checks:");
+    ESP_LOGD(TAG, "  is_internal: %d (expect 0x%02x)", 
              ring_link_payload_is_internal(p), 
              RING_LINK_PAYLOAD_TYPE_INTERNAL);
-    ESP_LOGI(TAG, "  is_esp_netif: %d (expect 0x%02x)", 
+    ESP_LOGD(TAG, "  is_esp_netif: %d (expect 0x%02x)", 
              ring_link_payload_is_esp_netif(p), 
              RING_LINK_PAYLOAD_TYPE_ESP_NETIF);
 
     if (ring_link_payload_is_internal(p))
     {
-        ESP_LOGI(TAG, "Processing as internal payload");
+        ESP_LOGD(TAG, "Processing as internal payload");
         specific_queue = internal_queue;
     }
     else if (ring_link_payload_is_esp_netif(p))
     {
-        ESP_LOGI(TAG, "Processing as esp_netif payload");
+        ESP_LOGD(TAG, "Processing as esp_netif payload");
         specific_queue = esp_netif_queue;
     }
     else
     {
         ESP_LOGE(TAG, "Unknown payload type: '0x%02x'", p->buffer_type);
-        ESP_LOGE(TAG, "Expected types: INTERNAL=0x%02x, ESP_NETIF=0x%02x",
+        ESP_LOGD(TAG, "Expected types: INTERNAL=0x%02x, ESP_NETIF=0x%02x",
                  RING_LINK_PAYLOAD_TYPE_INTERNAL,
                  RING_LINK_PAYLOAD_TYPE_ESP_NETIF);
+        
+        ESP_LOGW(TAG, "Received payload:");
+        ESP_LOGW(TAG, "  id: %d", p->id);
+        ESP_LOGW(TAG, "  ttl: %d", p->ttl);
+        ESP_LOGW(TAG, "  src_id: %d", p->src_id);
+        ESP_LOGW(TAG, "  dst_id: %d", p->dst_id);
+        ESP_LOGW(TAG, "  len: %d", p->len);
+        
         ring_link_lowlevel_free_rx_buffer(p);
         return ESP_FAIL;
     }

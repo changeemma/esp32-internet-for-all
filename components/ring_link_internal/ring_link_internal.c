@@ -65,6 +65,6 @@ esp_err_t ring_link_internal_init(QueueHandle_t **queue)
 
 esp_err_t ring_link_internal_process(ring_link_payload_t *p)
 {
-    ESP_LOGW(TAG, "call on_sibling_message(%s, %i)\n", p->buffer, p->len);
+    ESP_LOGD(TAG, "call on_sibling_message(%s, %i)\n", p->buffer, p->len);
     return ESP_OK;
 }

@@ -61,7 +61,7 @@ esp_err_t ring_link_rx_netif_receive(ring_link_payload_t *p)
     uint8_t octet2_ = (addr_ >> 16) & 0xFF; // Second octet
 
     // Print IP address for debugging
-    ESP_LOGI(TAG, "SRC IP: %d.%d.%d.%d", 
+    ESP_LOGD(TAG, "SRC IP: %d.%d.%d.%d", 
         octet1_, octet2_, (int)((addr_ >> 8) & 0xFF), (int)(addr_ & 0xFF));
 
     // Print destination IP address
@@ -76,14 +76,14 @@ esp_err_t ring_link_rx_netif_receive(ring_link_payload_t *p)
     uint8_t octet2 = (addr >> 16) & 0xFF; // Second octet
 
     // Print IP address for debugging
-    ESP_LOGI(TAG, "Destination IP: %d.%d.%d.%d", 
+    ESP_LOGD(TAG, "Destination IP: %d.%d.%d.%d", 
         octet1, octet2, (int)((addr >> 8) & 0xFF), (int)(addr & 0xFF));
 
     // Filter by subnet 192.170.x.x
-    if (octet1 != 192 || octet2 != 170) {
-        ESP_LOGW(TAG, "Discarding packet not in 192.170.x.x subnet.");
-        return ESP_OK;
-    }
+    // if (octet1 != 192 || octet2 != 170) {
+    //     ESP_LOGW(TAG, "Discarding packet not in 192.170.x.x subnet.");
+    //     return ESP_OK;
+    // }
 
     // Total IP packet size from header
     u16_t iphdr_len = lwip_ntohs(IPH_LEN(ip_header));

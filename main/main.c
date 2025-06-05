@@ -43,7 +43,7 @@ void app_main(void)
     ESP_ERROR_CHECK(wifi_netif_init());
     #endif
 
-    print_route_table();
+    //print_route_table();
     
     ESP_ERROR_CHECK(heartbeat_init());
 }
