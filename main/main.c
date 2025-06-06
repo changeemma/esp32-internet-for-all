@@ -45,5 +45,5 @@ void app_main(void)
 
     print_route_table();
     
-    ESP_ERROR_CHECK(heartbeat_init());
+    // ESP_ERROR_CHECK(heartbeat_init());
 }
