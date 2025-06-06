@@ -53,7 +53,7 @@ esp_err_t wifi_netif_init(void)
         ESP_LOGI(WIFI_TAG, "TEST_MODE: wifi_netif_init: I'm AP! Configuring as AP.");
         wifi_ap_netif_init();
     } else {
-        ESP_LOGI(WIFI_TAG, "wifi_netif_init: I'm not root! I'm gonna be a STAr!");
+        ESP_LOGI(WIFI_TAG, "TEST_MODE: wifi_netif_init: I'm not root! I'm gonna be a STAr!");
         wifi_sta_netif_init();
     }
 #endif
