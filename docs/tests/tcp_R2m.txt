@@ -1,0 +1,20 @@
+Connecting to host 192.168.5.3, port 5201
+Reverse mode, remote host 192.168.5.3 is sending
+[  5] local 192.168.1.2 port 33330 connected to 192.168.5.3 port 5201
+[ ID] Interval           Transfer     Bitrate
+[  5]   0.00-1.00   sec  71.3 KBytes   584 Kbits/sec                  
+[  5]   1.00-2.00   sec  88.9 KBytes   728 Kbits/sec                  
+[  5]   2.00-3.00   sec  65.4 KBytes   536 Kbits/sec                  
+[  5]   3.00-4.00   sec  75.7 KBytes   620 Kbits/sec                  
+[  5]   4.00-5.00   sec  55.7 KBytes   456 Kbits/sec                  
+[  5]   5.00-6.00   sec  61.0 KBytes   500 Kbits/sec                  
+[  5]   6.00-7.00   sec  43.9 KBytes   360 Kbits/sec                  
+[  5]   7.00-8.00   sec  75.2 KBytes   616 Kbits/sec                  
+[  5]   8.00-9.00   sec  75.2 KBytes   616 Kbits/sec                  
+[  5]   9.00-10.00  sec  86.9 KBytes   712 Kbits/sec                  
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.08  sec   791 KBytes   643 Kbits/sec   52             sender
+[  5]   0.00-10.00  sec   699 KBytes   573 Kbits/sec                  receiver
+
+iperf Done.
