@@ -49,12 +49,17 @@ esp_err_t wifi_netif_init(void)
                                                         NULL,
                                                         NULL));
 #ifdef CONFIG_WIFI_TEST_MODE
-    ESP_LOGI(WIFI_TAG, "TEST_MODE: wifi_netif_init: I'm AP! Configuring as AP.");
-    wifi_ap_netif_init();
+    if (config_mode_is(CONFIG_MODE_ACCESS_POINT) || config_orientation_is(CONFIG_ORIENTATION_NORTH)) {
+        ESP_LOGI(WIFI_TAG, "TEST_MODE: wifi_netif_init: I'm AP! Configuring as AP.");
+        wifi_ap_netif_init();
+    } else {
+        ESP_LOGI(WIFI_TAG, "wifi_netif_init: I'm not root! I'm gonna be a STAr!");
+        wifi_sta_netif_init();
+    }
 #endif
 
 #ifdef CONFIG_WIFI_NORMAL_MODE
-    if (config_is_access_point()) {
+    if (config_mode_is(CONFIG_MODE_ACCESS_POINT)) {
         ESP_LOGI(WIFI_TAG, "wifi_netif_init: I'm AP! Configuring as AP.");
         wifi_ap_netif_init();
     } else {

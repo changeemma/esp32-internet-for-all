@@ -97,12 +97,19 @@ esp_netif_ip_info_t config_get_tx_ip_info(void)
 
 void config_print(void)
 {
+    ESP_LOGI(TAG, "=============== Board Config ===============");
     ESP_LOGI(TAG, "Board ID: '%i'", s_config.id);
     ESP_LOGI(TAG, "Board Mode: '%i'", s_config.mode);
     ESP_LOGI(TAG, "Board Orientation: '%i'", s_config.orientation);
+    ESP_LOGI(TAG, "============================================");
 }
 
-bool config_is_access_point(void)
+bool config_mode_is(config_mode_t mode)
 {
-    return s_config.mode == CONFIG_MODE_ACCESS_POINT;
+    return s_config.mode == mode;
+}
+
+bool config_orientation_is(config_orientation_t orientation)
+{
+    return s_config.orientation == orientation;
 }
