@@ -58,7 +58,7 @@ static err_t linkoutput_function(struct netif *netif, struct pbuf *p)
 
     struct pbuf *q = p;
     u16_t alloc_len = (u16_t)(p->tot_len);
-    ip4_debug_print(q);
+    // ip4_debug_print(q);
     esp_netif_t *esp_netif = esp_netif_get_handle_from_netif_impl(netif);
     esp_err_t ret = ESP_FAIL;
 

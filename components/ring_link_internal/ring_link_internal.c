@@ -28,7 +28,7 @@ static void ring_link_internal_process_task(void *pvParameters)
     while (true) {
         if (xQueueReceive(ring_link_internal_queue, &payload, portMAX_DELAY) == pdTRUE) {
             rc = ring_link_internal_handler(payload);
-            ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
+            // ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
             ring_link_lowlevel_free_rx_buffer(payload);
             taskYIELD();
         }

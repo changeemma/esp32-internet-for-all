@@ -67,7 +67,7 @@ void config_setup(void)
         s_config.orientation = CONFIG_ORIENTATION_NONE;
     }
     s_config.rx_ip_addr = ESP_IP4TOADDR(192, 168, 0, (int)(s_config.orientation) + 1);
-    s_config.tx_ip_addr = ESP_IP4TOADDR(192, 168, 1, (int)(s_config.orientation) + 1);
+    s_config.tx_ip_addr = ESP_IP4TOADDR(192, 168, 0, (int)(s_config.orientation) + 10);
 }
 
 config_id_t config_get_id(void)
@@ -90,7 +90,7 @@ esp_netif_ip_info_t config_get_tx_ip_info(void)
     esp_netif_ip_info_t ip_info = {
         .ip = {.addr = s_config.tx_ip_addr},
         .gw = {.addr = s_config.tx_ip_addr},
-        .netmask = {.addr = ESP_IP4TOADDR(0, 0, 0, 0)},
+        .netmask = {.addr = ESP_IP4TOADDR(255, 255, 0, 0)},
     };
     return ip_info;
 }
