@@ -1,0 +1,21 @@
+Connecting to host 192.168.5.3, port 5201
+Reverse mode, remote host 192.168.5.3 is sending
+[  5] local 192.168.1.2 port 41195 connected to 192.168.5.3 port 5201
+[ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
+[  5]   0.00-1.00   sec   254 KBytes  2.08 Mbits/sec  8.941 ms  259/779 (33%)  
+[  5]   1.00-2.00   sec   143 KBytes  1.17 Mbits/sec  2.516 ms  362/655 (55%)  
+[  5]   2.00-3.00   sec   208 KBytes  1.70 Mbits/sec  3.386 ms  424/850 (50%)  
+[  5]   3.00-4.00   sec   198 KBytes  1.62 Mbits/sec  4.460 ms  228/633 (36%)  
+[  5]   4.00-5.00   sec   244 KBytes  2.00 Mbits/sec  2.299 ms  384/884 (43%)  
+[  5]   5.00-6.00   sec   189 KBytes  1.55 Mbits/sec  3.879 ms  243/631 (39%)  
+[  5]   6.00-7.00   sec   185 KBytes  1.51 Mbits/sec  5.631 ms  399/777 (51%)  
+[  5]   7.00-8.00   sec   188 KBytes  1.54 Mbits/sec  3.202 ms  430/816 (53%)  
+[  5]   8.00-9.00   sec   156 KBytes  1.28 Mbits/sec  5.919 ms  277/597 (46%)  
+[  5]   9.00-10.00  sec   228 KBytes  1.86 Mbits/sec  1.738 ms  396/862 (46%)  
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Jitter    Lost/Total Datagrams
+[  5]   0.00-10.19  sec  3.64 MBytes  3.00 Mbits/sec  0.000 ms  0/7642 (0%)  sender
+[SUM]  0.0-10.2 sec  3 datagrams received out-of-order
+[  5]   0.00-10.00  sec  1.95 MBytes  1.63 Mbits/sec  1.738 ms  3402/7484 (45%)  receiver
+
+iperf Done.

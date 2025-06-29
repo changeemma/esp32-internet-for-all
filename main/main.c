@@ -31,7 +31,7 @@ void app_main(void)
     config_print();
 
     ESP_ERROR_CHECK(ring_link_init());
-    test_spi_run_all();
+    //test_spi_run_all();
 
     #ifdef CONFIG_RING_LINK_LOWLEVEL_IMPL_PHYSIM
     ESP_LOGI(TAG, "CONFIG_RING_LINK_LOWLEVEL_IMPL_PHYSIM\n");
@@ -45,5 +45,5 @@ void app_main(void)
 
     print_route_table();
     
-    ESP_ERROR_CHECK(heartbeat_init());
+    // ESP_ERROR_CHECK(heartbeat_init());
 }
