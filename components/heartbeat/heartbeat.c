@@ -16,10 +16,14 @@ static void node_offline_callback(){
 }
 
 static void heartbeat_callback() {
+    int64_t start_time = esp_timer_get_time();
     bool succeded = broadcast_to_siblings(HEARTBEAT_PAYLOAD, sizeof(HEARTBEAT_PAYLOAD));
+    int64_t end_time = esp_timer_get_time();
+    int64_t duration = end_time - start_time;
     if (succeded) {
         s_fail_streak = 0;  // reset counter after each success
-        ESP_LOGD(TAG, "Heartbeat %d succeeded.", s_heartbeat_id);
+        //ESP_LOGD(TAG, "Heartbeat %d succeeded.", s_heartbeat_id);
+        ESP_LOGI(TAG, "Heartbeat %d succeeded in %lld μs", s_heartbeat_id, duration);
         if (!s_node_online) {
             node_online_callback();
             s_node_online = true;
@@ -36,6 +40,12 @@ static void heartbeat_callback() {
 }
 
 esp_err_t heartbeat_init(void) {
+    if (!config_mode_is(CONFIG_MODE_ACCESS_POINT)) {
+        ESP_LOGI(TAG, "TEST_MODE: heartbeat_init: skipping...");
+        return ESP_OK;
+    }
+    ESP_LOGI(TAG, "TEST_MODE: heartbeat_init: initializing...");
+    
     esp_timer_handle_t timer_handle;
     esp_timer_create_args_t timer_args = {
         .name                  = HEARTBEAT_TIMER_NAME,
