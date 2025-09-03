@@ -12,8 +12,7 @@ extern "C" {
 #endif
 
 
-#define PADDING_SIZE(x) (4 - ((x) % 4))
-#define RING_LINK_PAYLOAD_BUFFER_SIZE (RING_LINK_LOWLEVEL_BUFFER_SIZE + PADDING_SIZE(RING_LINK_LOWLEVEL_BUFFER_SIZE))
+#define RING_LINK_PAYLOAD_BUFFER_SIZE (RING_LINK_LOWLEVEL_BUFFER_SIZE - 8)
 #define RING_LINK_PAYLOAD_TTL 4
 
 /**
@@ -31,23 +30,35 @@ extern "C" {
  * - Used for payloads originating from or destined to external systems.
  * - Include types like ESP-NETIF messages.
  */
-typedef enum __attribute__((__packed__)) {
+typedef uint16_t ring_link_payload_buffer_type_t;
+
+enum {
     RING_LINK_PAYLOAD_TYPE_INTERNAL = 0x11,
     RING_LINK_PAYLOAD_TYPE_ESP_NETIF = 0x80,
-} ring_link_payload_buffer_type_t;
+};
 
 typedef uint8_t ring_link_payload_id_t;
 
-typedef struct
-{
-    ring_link_payload_id_t id;
-    ring_link_payload_buffer_type_t buffer_type;
-    uint16_t len;
-    uint8_t ttl;
-    config_id_t src_id;
-    config_id_t dst_id;
+typedef struct __attribute__((packed, aligned(4))) {
+    ring_link_payload_id_t id;                      // uint8_t
+    ring_link_payload_buffer_type_t buffer_type;    // uint16_t
+    uint16_t len;                                   // uint16_t
+    uint8_t ttl;                                    // uint8_t
+    config_id_t src_id;                             // uint8_t
+    config_id_t dst_id;                             // uint8_t
+    // uint8_t _reserved;                              // padding
     char buffer[RING_LINK_PAYLOAD_BUFFER_SIZE];
 } ring_link_payload_t;
+
+// Compile-time checks
+_Static_assert((RING_LINK_PAYLOAD_BUFFER_SIZE % 4) == 0,
+               "RING_LINK_PAYLOAD_BUFFER_SIZE must be a multiple of 4 for DMA compatibility");
+
+_Static_assert((sizeof(ring_link_payload_t) % 4) == 0,
+               "ring_link_payload_t is not 4-byte aligned");
+
+_Static_assert(__alignof__(ring_link_payload_t) == 4,
+               "ring_link_payload_t does not have 4-byte alignment");
 
 bool ring_link_payload_is_for_device(ring_link_payload_t *p);
 

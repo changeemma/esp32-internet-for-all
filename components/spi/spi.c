@@ -10,7 +10,7 @@ static const char* TAG = "==> SPI";
 
 #define NUM_BUFFERS  8
 
-static ring_link_payload_t buffer_pool[NUM_BUFFERS];        // Buffers preasignados
+static ring_link_payload_t buffer_pool[NUM_BUFFERS];
 static QueueHandle_t free_buf_queue = NULL;       // Buffers libres
 static QueueHandle_t spi_rx_queue = NULL;         // Mensajes recibidos
 
@@ -22,7 +22,7 @@ static void spi_polling_task(void *pvParameters) {
         if (xQueueReceive(free_buf_queue, &payload, portMAX_DELAY) != pdTRUE) continue;
 
         spi_slave_transaction_t t = { 0 };
-        t.length = SPI_BUFFER_SIZE * 8;
+        t.length = sizeof(ring_link_payload_t) * 8;
         t.rx_buffer = payload;
 
         esp_err_t ret = spi_slave_transmit(SPI_RECEIVER_HOST, &t, portMAX_DELAY);
@@ -130,13 +130,13 @@ esp_err_t spi_init(QueueHandle_t **rx_queue) {
 
 
 esp_err_t spi_transmit(void *p, size_t len) {
-    ring_link_payload_t* payload = (ring_link_payload_t*)p;
-    ESP_LOGD(TAG, "Pre-transmit payload - Type: 0x%02x, ID: %d, TTL: %d", 
-             payload->buffer_type, payload->id, payload->ttl);
-             
+    // ring_link_payload_t* payload = (ring_link_payload_t*)p;
+    // ESP_LOGD(TAG, "Pre-transmit payload - Type: 0x%02x, ID: %d, TTL: %d", 
+    //          payload->buffer_type, payload->id, payload->ttl);
+    ring_link_payload_t *payload = (ring_link_payload_t *)p;
     spi_transaction_t t = {
         .length = len * 8,
-        .tx_buffer = p,
+        .tx_buffer = payload,
     };
     return spi_device_transmit(s_spi_device_handle, &t);
 }

@@ -13,6 +13,9 @@ void print_route_table(void)
         printf("ip4: %s\n", ip4addr_ntoa(netif_ip4_addr(netif)));
         printf("netmask: %s\n", ip4addr_ntoa(netif_ip4_netmask(netif)));
         printf("gw: %s\n", ip4addr_ntoa(netif_ip4_gw(netif)));
+        ESP_LOGI("NETIF", "Interface %c%c%c MTU: %d",
+             netif->name[0], netif->name[1],
+             netif->name[2], netif->mtu);
     }
     printf("------------------------\n");
 }
