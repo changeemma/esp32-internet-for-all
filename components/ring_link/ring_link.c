@@ -65,12 +65,11 @@ static esp_err_t process_payload(ring_link_payload_t *p)
 static void ring_link_process_task(void *pvParameters)
 {
     ring_link_payload_t *payload;
-    esp_err_t rc;
     
     while (true) {
         if (xQueueReceive(*lowlevel_queue, &payload, portMAX_DELAY) == pdTRUE) {
-            rc = process_payload(payload);
-            // ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
+            process_payload(payload);
+            // ESP_ERROR_CHECK_WITHOUT_ABORT(process_payload(payload));
             taskYIELD();
         }
     }

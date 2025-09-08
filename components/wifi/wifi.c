@@ -132,7 +132,6 @@ esp_err_t get_wifi_ip_info(esp_netif_ip_info_t *ip_info) {
         return ret;
     }
 
-    uint8_t last_octet = mac[5];
     ip_info->ip.addr = ESP_IP4TOADDR(CONFIG_WIFI_AP_IP_FIRST_OCTET, 168, config_get_id() + 1, 1);
     ip_info->gw.addr = ESP_IP4TOADDR(CONFIG_WIFI_AP_IP_FIRST_OCTET, 168, config_get_id() + 1, 1);
     ip_info->netmask.addr = ESP_IP4TOADDR(CONFIG_WIFI_AP_NETMASK_FIRST_OCTET, 
