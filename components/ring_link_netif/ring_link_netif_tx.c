@@ -5,12 +5,11 @@ static const char* TAG = "==> ring_link_netif";
 ESP_EVENT_DEFINE_BASE(RING_LINK_TX_EVENT);
 
 static esp_netif_t *ring_link_tx_netif = NULL;
-static ring_link_payload_id_t s_id_counter = 0;
 
 static const struct esp_netif_netstack_config netif_netstack_config = {
     .lwip = {
-        .init_fn = ring_link_tx_netstack_init_fn,
-        .input_fn = ring_link_tx_netstack_input_fn
+        .init_fn = ring_link_tx_netstack_lwip_init_fn,
+        .input_fn = ring_link_tx_netstack_lwip_input_fn
     }
 };
 
@@ -32,96 +31,7 @@ static const esp_netif_config_t netif_config = {
     .stack = &netif_netstack_config,
 };
 
-
-esp_netif_t *get_ring_link_tx_netif(void){
-    return ring_link_tx_netif;
-}
-
-static err_t output_function(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr)
-{
-    ESP_LOGD(TAG, "Output function - len: %u, tot_len: %u", p->len, p->tot_len);
-
-    if (p->len >= sizeof(struct ip_hdr)) {
-        struct ip_hdr *iphdr = (struct ip_hdr *)p->payload;
-        if (IPH_V(iphdr) == 4) {
-            return netif->linkoutput(netif, p);
-        } else {
-            ESP_LOGW(TAG, "Unsupported packet version (v=%d)", IPH_V(iphdr));
-            return ERR_VAL;
-        }
-    } else {
-        ESP_LOGW(TAG, "Truncated packet in output_function (len=%u)", p->len);
-        return ERR_BUF;
-    }
-}
-
-static err_t linkoutput_function(struct netif *netif, struct pbuf *p)
-{
-    esp_netif_t *esp_netif = esp_netif_get_handle_from_netif_impl(netif);
-    if (!esp_netif) {
-        LWIP_DEBUGF(NETIF_DEBUG, ("linkoutput: esp-netif is NULL (netif=%p pbuf=%p len=%d)\n",
-                                  netif, p, p->len));
-        return ERR_IF;
-    }
-
-    esp_err_t ret;
-    if (p->next == NULL) {
-        // Fast path: single contiguous pbuf
-
-        if (p->len > RING_LINK_PAYLOAD_BUFFER_SIZE) {
-            ESP_LOGE(TAG, "buffer length %zu exceeds max %u", p->len, RING_LINK_PAYLOAD_BUFFER_SIZE);
-            return ERR_MEM;
-        }
-        ret = esp_netif_transmit(esp_netif, p->payload, p->len);
-    } else {
-        if (p->tot_len > RING_LINK_PAYLOAD_BUFFER_SIZE) {
-            ESP_LOGE(TAG, "buffer length %zu exceeds max %u", p->tot_len, RING_LINK_PAYLOAD_BUFFER_SIZE);
-            return ERR_MEM;
-        }
-        // Slow path: chained pbuf → copy into contiguous buffer
-        LWIP_DEBUGF(PBUF_DEBUG, ("linkoutput: pbuf chain detected, copying into RAM buffer\n"));
-        struct pbuf *q = pbuf_alloc(PBUF_RAW_TX, p->tot_len, PBUF_RAM);
-        if (!q) {
-            return ERR_MEM;
-        }
-        pbuf_copy(q, p);
-        ret = esp_netif_transmit(esp_netif, q->payload, q->len);
-        pbuf_free(q);
-    }
-
-    switch (ret) {
-        case ESP_OK:          return ERR_OK;
-        case ESP_ERR_NO_MEM:  return ERR_MEM;
-        default:              return ERR_IF;
-    }
-}
-
-static esp_err_t esp_netif_ring_link_driver_transmit(void *h, void *buffer, size_t len)
-{   
-    if (buffer == NULL || len == 0) {
-        ESP_LOGE(TAG, "buffer is NULL");
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    if (len >= RING_LINK_PAYLOAD_BUFFER_SIZE) {
-        ESP_LOGE(TAG, "buffer length %zu exceeds max %u", len, RING_LINK_PAYLOAD_BUFFER_SIZE);
-        return ESP_ERR_INVALID_SIZE;
-    }
-
-    ring_link_payload_t p = {
-        .id          = s_id_counter++,
-        .ttl         = RING_LINK_PAYLOAD_TTL,
-        .src_id      = config_get_id(),
-        .dst_id      = CONFIG_ID_ANY,
-        .buffer_type = RING_LINK_PAYLOAD_TYPE_ESP_NETIF,
-        .len         = len,
-    };
-
-    memcpy(p.buffer, buffer, len);
-    return ring_link_lowlevel_transmit_payload(&p);
-}
-
-err_t ring_link_tx_netstack_init_fn(struct netif *netif)
+err_t ring_link_tx_netstack_lwip_init_fn(struct netif *netif)
 {
     LWIP_ASSERT("netif != NULL", (netif != NULL));
     netif->name[0]= 's';
@@ -134,45 +44,12 @@ err_t ring_link_tx_netstack_init_fn(struct netif *netif)
     return ERR_OK;
 }
 
-esp_netif_recv_ret_t ring_link_tx_netstack_input_fn(void *h, void *buffer, size_t len, void* l2_buff)
+esp_netif_recv_ret_t ring_link_tx_netstack_lwip_input_fn(void *h, void *buffer, size_t len, void* l2_buff)
 {
-    ESP_LOGW(TAG, "ring_link_tx_netstack_input_fn() called, but this is a TX-only netif");
+    ESP_LOGW(TAG, "ring_link_tx_netstack_lwip_input_fn() called, but this is a TX-only netif");
     // No packets should ever be delivered to the stack on this netif
     return ESP_NETIF_OPTIONAL_RETURN_CODE(ESP_OK);
 }
-
-static esp_err_t esp_netif_ring_link_driver_transmit_wrap(void *h, void *buffer, size_t len, void *netstack_buffer)
-{
-    if (len == 0) {
-        ESP_LOGW(TAG, "Ignoring zero-length TX packet");
-        return ESP_OK;
-    }
-    return esp_netif_ring_link_driver_transmit(h, buffer, len);
-}
-
-static esp_err_t ring_link_tx_driver_post_attach(esp_netif_t * esp_netif, void * args)
-{
-    ESP_LOGI(TAG, "Calling esp_netif_ring_link_post_attach_start(esp_netif_t * esp_netif, void *args)");
-    ring_link_netif_driver_t driver = (ring_link_netif_driver_t) args;
-    driver->base.netif = esp_netif;
-    esp_netif_driver_ifconfig_t driver_ifconfig = {
-        .handle = driver,
-        .transmit = esp_netif_ring_link_driver_transmit,
-        .transmit_wrap = esp_netif_ring_link_driver_transmit_wrap,
-        .driver_free_rx_buffer = NULL,
-    };
-
-    ESP_ERROR_CHECK(esp_netif_set_driver_config(esp_netif, &driver_ifconfig));
-
-    return ESP_OK;
-}
-
-static void ring_link_tx_default_handler(void *arg, esp_event_base_t base, int32_t event_id, void *data)
-{
-    ESP_LOGI(TAG, "Calling ring_link_tx_default_handler");
-    esp_netif_action_got_ip(ring_link_tx_netif, base, event_id, data);
-}
-
 
 static void ring_link_tx_default_action_start(void *arg, esp_event_base_t base, int32_t event_id, void *data)
 {
@@ -180,8 +57,8 @@ static void ring_link_tx_default_action_start(void *arg, esp_event_base_t base, 
     const esp_netif_ip_info_t ip_info = config_get_tx_ip_info();
 
     ESP_ERROR_CHECK(esp_netif_set_ip_info(ring_link_tx_netif, &ip_info));
-
     esp_netif_action_start(ring_link_tx_netif, base, event_id, data);
+
     ESP_ERROR_CHECK(esp_netif_set_default_netif(ring_link_tx_netif));
 }
 
@@ -191,23 +68,10 @@ esp_err_t ring_link_tx_netif_init(void)
 
     ring_link_tx_netif = ring_link_netif_new(&netif_config);
     
-    ESP_ERROR_CHECK(ring_link_netif_esp_netif_attach(ring_link_tx_netif, ring_link_tx_driver_post_attach));
-
-    uint8_t mac[6];
-    esp_err_t ret = esp_read_mac(mac, ESP_MAC_WIFI_SOFTAP);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Error getting MAC address");
-        return ret;
-    }
-    esp_netif_set_mac(ring_link_tx_netif, mac);
-
+    ESP_ERROR_CHECK(ring_link_netif_set_mac(ring_link_tx_netif, RING_LINK_TX_NETIF_OFFSET));
+    
     ESP_ERROR_CHECK(esp_event_handler_instance_register(RING_LINK_TX_EVENT, RING_LINK_EVENT_START, ring_link_tx_default_action_start, NULL, NULL));
+    
     ESP_ERROR_CHECK(esp_event_post(RING_LINK_TX_EVENT, RING_LINK_EVENT_START, NULL, 0, portMAX_DELAY));
     return ESP_OK;
-}
-
-esp_ip4_addr_t get_spi_tx_ip_interface_address(void){
-    esp_netif_ip_info_t ip_info;
-    ESP_ERROR_CHECK(esp_netif_get_ip_info(ring_link_tx_netif, &ip_info));
-    return ip_info.ip;
 }
