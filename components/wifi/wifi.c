@@ -43,22 +43,32 @@ esp_err_t wifi_init(void) {
 
 esp_err_t wifi_netif_init(void)
 {
+#ifdef CONFIG_WIFI_TEST_MODE
+
+    if (config_mode_is(CONFIG_MODE_ACCESS_POINT) || config_orientation_is(CONFIG_ORIENTATION_NORTH)) {
+        ESP_ERROR_CHECK(wifi_init());
+        ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                    ESP_EVENT_ANY_ID,
+                                                    &wifi_event_handler,
+                                                    NULL,
+                                                    NULL));
+        ESP_LOGI(WIFI_TAG, "TEST_MODE: wifi_netif_init: I'm AP! Configuring as AP.");
+        wifi_ap_netif_init();
+        return esp_wifi_start();
+
+    } else {
+        ESP_LOGI(WIFI_TAG, "TEST_MODE: wifi_netif_init: I'm not root! I'm going to sleep!");
+        return ESP_OK;
+    }
+#endif
+
+#ifdef CONFIG_WIFI_NORMAL_MODE
+    ESP_ERROR_CHECK(wifi_init());
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
                                                         ESP_EVENT_ANY_ID,
                                                         &wifi_event_handler,
                                                         NULL,
                                                         NULL));
-#ifdef CONFIG_WIFI_TEST_MODE
-    if (config_mode_is(CONFIG_MODE_ACCESS_POINT) || config_orientation_is(CONFIG_ORIENTATION_NORTH)) {
-        ESP_LOGI(WIFI_TAG, "TEST_MODE: wifi_netif_init: I'm AP! Configuring as AP.");
-        wifi_ap_netif_init();
-    } else {
-        ESP_LOGI(WIFI_TAG, "TEST_MODE: wifi_netif_init: I'm not root! I'm gonna be a STAr!");
-        wifi_sta_netif_init();
-    }
-#endif
-
-#ifdef CONFIG_WIFI_NORMAL_MODE
     if (config_mode_is(CONFIG_MODE_ACCESS_POINT)) {
         ESP_LOGI(WIFI_TAG, "wifi_netif_init: I'm AP! Configuring as AP.");
         wifi_ap_netif_init();
@@ -66,8 +76,8 @@ esp_err_t wifi_netif_init(void)
         ESP_LOGI(WIFI_TAG, "wifi_netif_init: I'm not root! I'm gonna be a STAr!");
         wifi_sta_netif_init();
     }
-#endif
     return esp_wifi_start();
+#endif
 }
 void wifi_sta_netif_init(void) {
     esp_netif_config_t cfg = ESP_NETIF_DEFAULT_WIFI_STA();
@@ -97,6 +107,14 @@ void wifi_sta_netif_init(void) {
 }
 
 uint8_t get_wifi_channel() {
+    // hardcoded for testing
+    if (config_get_id() == CONFIG_ID_CENTER) {
+        return 3;
+    } else if (config_get_id() == CONFIG_ID_NORTH)
+    {
+        return 8;
+    }
+    
     uint8_t mac[6];
     esp_err_t ret = esp_read_mac(mac, ESP_MAC_WIFI_SOFTAP);
     if (ret != ESP_OK) {
@@ -114,7 +132,6 @@ esp_err_t get_wifi_ip_info(esp_netif_ip_info_t *ip_info) {
         return ret;
     }
 
-    uint8_t last_octet = mac[5];
     ip_info->ip.addr = ESP_IP4TOADDR(CONFIG_WIFI_AP_IP_FIRST_OCTET, 168, config_get_id() + 1, 1);
     ip_info->gw.addr = ESP_IP4TOADDR(CONFIG_WIFI_AP_IP_FIRST_OCTET, 168, config_get_id() + 1, 1);
     ip_info->netmask.addr = ESP_IP4TOADDR(CONFIG_WIFI_AP_NETMASK_FIRST_OCTET, 

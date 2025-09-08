@@ -1,7 +1,5 @@
 #include "ring_link_payload.h"
 
-static const char* TAG = "==> ring_link_payload";
-
 
 bool ring_link_payload_is_for_device(ring_link_payload_t *p)
 {

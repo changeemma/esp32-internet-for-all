@@ -9,7 +9,6 @@
 #include "config.h"
 #include "ring_link.h"
 #include "wifi.h"
-#include "route.h"
 #include "heartbeat.h"
 
 #include "nvs.h"
@@ -45,5 +44,5 @@ void app_main(void)
 
     print_route_table();
     
-    // ESP_ERROR_CHECK(heartbeat_init());
+    ESP_ERROR_CHECK(heartbeat_init());
 }

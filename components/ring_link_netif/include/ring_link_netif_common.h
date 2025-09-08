@@ -32,7 +32,10 @@
 extern "C" {
 #endif
 
-#define RING_LINK_NETIF_MTU RING_LINK_PAYLOAD_BUFFER_SIZE
+#define RING_LINK_TX_NETIF_OFFSET 0
+#define RING_LINK_RX_NETIF_OFFSET 1
+
+#define RING_LINK_NETIF_MTU (RING_LINK_PAYLOAD_BUFFER_SIZE)
 
 typedef enum
 {
@@ -51,7 +54,17 @@ typedef struct ring_link_netif_driver *ring_link_netif_driver_t;
 
 esp_netif_t* ring_link_netif_new(const esp_netif_config_t* config);
 
+esp_err_t ring_link_netif_set_mac(esp_netif_t *netif, int offset);
+
 esp_err_t ring_link_netif_esp_netif_attach(esp_netif_t *esp_netif, esp_err_t (*post_attach_callback)(esp_netif_t *, void *));
+
+err_t linkoutput_function(struct netif *netif, struct pbuf *p);
+
+err_t output_function(struct netif *netif, struct pbuf *p, const ip4_addr_t *ipaddr);
+
+esp_err_t ring_link_driver_transmit(void *h, void *buffer, size_t len);
+
+esp_err_t ring_link_driver_transmit_wrap(void *h, void *buffer, size_t len, void *netstack_buffer);
 
 #ifdef __cplusplus
 }

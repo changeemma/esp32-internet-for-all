@@ -12,10 +12,9 @@ static QueueHandle_t *esp_netif_queue;
 static esp_err_t process_payload(ring_link_payload_t *p)
 {
     QueueHandle_t *specific_queue;
-
     ESP_LOGD(TAG, "Received payload:");
-    ESP_LOGD(TAG, "  buffer_type: 0x%02x", p->buffer_type);
     ESP_LOGD(TAG, "  id: %d", p->id);
+    ESP_LOGD(TAG, "  buffer_type: 0x%02x", p->buffer_type);
     ESP_LOGD(TAG, "  src_id: %d", p->src_id);
     ESP_LOGD(TAG, "  dst_id: %d", p->dst_id);
     
@@ -39,7 +38,7 @@ static esp_err_t process_payload(ring_link_payload_t *p)
     }
     else
     {
-        ESP_LOGE(TAG, "Unknown payload type: '0x%02x'", p->buffer_type);
+        ESP_LOG_BUFFER_HEX("RX_RAW", (uint8_t*)p, 16);
         ESP_LOGD(TAG, "Expected types: INTERNAL=0x%02x, ESP_NETIF=0x%02x",
                  RING_LINK_PAYLOAD_TYPE_INTERNAL,
                  RING_LINK_PAYLOAD_TYPE_ESP_NETIF);
@@ -47,6 +46,7 @@ static esp_err_t process_payload(ring_link_payload_t *p)
         ESP_LOGW(TAG, "Received payload:");
         ESP_LOGW(TAG, "  id: %d", p->id);
         ESP_LOGW(TAG, "  ttl: %d", p->ttl);
+        ESP_LOGE(TAG, "Unknown payload type: '0x%02x'", p->buffer_type);
         ESP_LOGW(TAG, "  src_id: %d", p->src_id);
         ESP_LOGW(TAG, "  dst_id: %d", p->dst_id);
         ESP_LOGW(TAG, "  len: %d", p->len);
@@ -65,12 +65,11 @@ static esp_err_t process_payload(ring_link_payload_t *p)
 static void ring_link_process_task(void *pvParameters)
 {
     ring_link_payload_t *payload;
-    esp_err_t rc;
     
     while (true) {
         if (xQueueReceive(*lowlevel_queue, &payload, portMAX_DELAY) == pdTRUE) {
-            rc = process_payload(payload);
-            // ESP_ERROR_CHECK_WITHOUT_ABORT(rc);
+            process_payload(payload);
+            // ESP_ERROR_CHECK_WITHOUT_ABORT(process_payload(payload));
             taskYIELD();
         }
     }
